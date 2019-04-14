@@ -49,12 +49,12 @@ import java.util.List;
 @ActiveProfiles("dev")
 public class ImdbgraphApplicationTests {
 
-    @Autowired
-    private ImdbDao imdbDao;
-
-    @Test
-    public void testSearch() {
-        List<Show> results = imdbDao.searchShows("Game");
-        Assert.assertEquals("Game of Thrones", results.get(0).getTitle());
-    }
+//    @Autowired
+//    private ImdbDao imdbDao;
+//
+//    @Test
+//    public void testSearch() {
+//        List<Show> results = imdbDao.searchShows("Game");
+//        Assert.assertEquals("Game of Thrones", results.get(0).getTitle());
+//    }
 }
