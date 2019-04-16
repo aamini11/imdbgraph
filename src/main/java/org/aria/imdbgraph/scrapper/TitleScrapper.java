@@ -15,9 +15,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
 import java.util.function.Function;
 
-import static org.aria.imdbgraph.scrapper.ImdbScrappingJob.CHUNK_SIZE;
-import static org.aria.imdbgraph.scrapper.TitleScrapper.TitleType.TVEPISODE;
-import static org.aria.imdbgraph.scrapper.TitleScrapper.TitleType.TVSERIES;
+import static org.aria.imdbgraph.scrapper.JobConfig.CHUNK_SIZE;
 
 final class TitleScrapper implements Step {
 
@@ -27,22 +25,22 @@ final class TitleScrapper implements Step {
         this.delegateStep = createStep(jdbc, stepBuilderFactory, resourceToRead);
     }
 
-    enum TitleType {
-        MOVIE,
-        SHORT,
-        TVSERIES,
-        TVEPISODE,
-        TVMOVIE,
-        VIDEO,
-        TVSHORT,
-        TVMINISERIES,
-        TVSPECIAL,
-        VIDEOGAME
-    }
+//    enum TitleType {
+//        MOVIE,
+//        SHORT,
+//        TVSERIES,
+//        TVEPISODE,
+//        TVMOVIE,
+//        VIDEO,
+//        TVSHORT,
+//        TVMINISERIES,
+//        TVSPECIAL,
+//        VIDEOGAME
+//    }
 
     private static final class TitleRecord {
         final String imdbId;
-        final TitleType titleType;
+        final String titleType;
         final String primaryTitle;
         final String originalTitle;
         final String startYear;
@@ -51,7 +49,7 @@ final class TitleScrapper implements Step {
         TitleRecord(String line) {
             String[] fields = line.split("\t");
             imdbId = fields[0];
-            titleType = TitleType.valueOf(fields[1].toUpperCase());
+            titleType = fields[1];
             primaryTitle = fields[2];
             originalTitle = fields[3];
             startYear = (fields[5].equals("\\N")) ? null : fields[5];
@@ -64,7 +62,7 @@ final class TitleScrapper implements Step {
                 .<TitleRecord, TitleRecord>chunk(CHUNK_SIZE)
                 .reader(createReader(resourceToRead))
                 .processor((Function<TitleRecord, TitleRecord>) show -> {
-                    if (show.titleType == TVSERIES || show.titleType == TVEPISODE) return show;
+                    if (show.titleType.equals("tvSeries") || show.titleType.equals("tvEpisode")) return show;
                     else return null;
                 })
                 .writer(sqlTitleWriter(jdbc))
@@ -116,8 +114,8 @@ final class TitleScrapper implements Step {
 
         ClassifierCompositeItemWriter<TitleRecord> writer = new ClassifierCompositeItemWriter<>();
         writer.setClassifier(titleRecord -> {
-            if (titleRecord.titleType == TVEPISODE) return episodeTitleWriter;
-            if (titleRecord.titleType == TVSERIES) return showTitleWriter;
+            if (titleRecord.titleType.equals("tvEpisode")) return episodeTitleWriter;
+            if (titleRecord.titleType.equals("tvSeries")) return showTitleWriter;
             return null;
         });
         return writer;

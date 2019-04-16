@@ -1,6 +1,8 @@
 package org.aria.imdbgraph.imdb;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Data class containing all the ratings of a show and basic information about that show.
@@ -8,12 +10,12 @@ import java.util.*;
 public final class Ratings {
 
     private final Show show;
-    private final SortedMap<Integer, SortedMap<Integer, Episode>> allRatings;
+    private final Map<Integer, Map<Integer, Episode>> allRatings;
 
-    private static SortedMap<Integer, SortedMap<Integer, Episode>> toMap(List<Episode> episodeSequence) {
-        SortedMap<Integer, SortedMap<Integer, Episode>> map = new TreeMap<>();
+    private static Map<Integer, Map<Integer, Episode>> toMap(List<Episode> episodeSequence) {
+        Map<Integer, Map<Integer, Episode>> map = new LinkedHashMap<>();
         for (Episode e : episodeSequence) {
-            SortedMap<Integer, Episode> seasonRatings = map.computeIfAbsent(e.getSeason(), (key) -> new TreeMap<>());
+            Map<Integer, Episode> seasonRatings = map.computeIfAbsent(e.getSeason(), (key) -> new LinkedHashMap<>());
             seasonRatings.put(e.getEpisode(), e);
         }
         return map;
@@ -28,7 +30,7 @@ public final class Ratings {
         return show;
     }
 
-    public SortedMap<Integer, SortedMap<Integer, Episode>> getAllRatings() {
+    public Map<Integer, Map<Integer, Episode>> getAllRatings() {
         return allRatings;
     }
 }

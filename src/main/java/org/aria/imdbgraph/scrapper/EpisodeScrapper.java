@@ -14,7 +14,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
 import java.util.function.Function;
 
-import static org.aria.imdbgraph.scrapper.ImdbScrappingJob.CHUNK_SIZE;
+import static org.aria.imdbgraph.scrapper.JobConfig.CHUNK_SIZE;
 
 /**
  * Service class to load episodes from flat files provided by IMDB into the database.

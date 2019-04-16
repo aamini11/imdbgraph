@@ -1,6 +1,6 @@
 package org.aria.imdbgraph.imdb;
 
-public final class Episode {
+final class Episode {
 
     private final String episodeTitle;
     private final int season;

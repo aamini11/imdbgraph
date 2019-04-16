@@ -3,8 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!--    <meta name="description" content="">-->
-    <!--    <meta name="author" content="">-->
+    <meta name="description" content="Display IMDB ratings of a show as a graph">
 
     <title>IMDB graph</title>
 
@@ -12,8 +11,7 @@
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
           crossorigin="anonymous">
 
-    <!-- Custom styles for this template -->
-    <link th:href="@{ratings.css}" rel="stylesheet">
+    <link th:href="@{/css/ratings.css}" href="/static/css/ratings.css" rel="stylesheet">
 </head>
 
 <body>
@@ -85,26 +83,26 @@
         return series;
     }
 
-    function format_title(show) {
-        let showRunTime = "";
-        if (show.startYear != null) {
-            let endDate = data.show.endYear;
-            if (endDate == null) {
-                endDate = "Present";
-            }
-            showRunTime = `(${show.startYear} - ${endDate})`
-        }
-
-        let ratings = "";
-        if (show.showRating != null) {
-            ratings = `(rating: ${show.showRating}, votes: ${show.numVotes})`;
-        }
-
-        return `${show.title} ${showRunTime} ${ratings}`;
-    }
-
     function load_graph(html_id, data) {
         let highcharts_data = parse_ratings(data);
+
+        function format_title(show) {
+            let showRunTime = "";
+            if (show.startYear != null) {
+                let endDate = data.show.endYear;
+                if (endDate == null) {
+                    endDate = "Present";
+                }
+                showRunTime = `(${show.startYear} - ${endDate})`
+            }
+
+            let ratings = "";
+            if (show.showRating != null) {
+                ratings = `(rating: ${show.showRating}, votes: ${show.numVotes})`;
+            }
+
+            return `${show.title} ${showRunTime} ${ratings}`;
+        }
 
         Highcharts.chart(html_id, {
             title: {

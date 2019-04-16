@@ -12,7 +12,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
-import static org.aria.imdbgraph.scrapper.ImdbScrappingJob.CHUNK_SIZE;
+import static org.aria.imdbgraph.scrapper.JobConfig.CHUNK_SIZE;
 
 final class RatingScrapper implements Step {
 

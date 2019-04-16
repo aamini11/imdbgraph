@@ -1,7 +1,5 @@
 package org.aria.imdbgraph.imdb;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public final class Show {
 
     private final String imdbId;
