@@ -1,8 +1,6 @@
 package org.aria.imdbgraph.scrapper;
 
-import org.springframework.batch.core.JobInterruptedException;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
@@ -19,13 +17,9 @@ import static org.aria.imdbgraph.scrapper.JobConfig.CHUNK_SIZE;
 /**
  * Service class to load episodes from flat files provided by IMDB into the database.
  */
-final class EpisodeScrapper implements Step {
+final class EpisodeScrapper {
 
-    private final Step delegateStep;
-
-    EpisodeScrapper(NamedParameterJdbcOperations jdbc, StepBuilderFactory stepBuilderFactory, Resource resourceToRead) {
-        this.delegateStep = createStep(jdbc, stepBuilderFactory, resourceToRead);
-    }
+    private EpisodeScrapper() {}
 
     private static final class EpisodeRecord {
         final String episodeId;
@@ -42,10 +36,10 @@ final class EpisodeScrapper implements Step {
         }
     }
 
-    private static Step createStep(NamedParameterJdbcOperations jdbc, StepBuilderFactory stepBuilderFactory, Resource resource) {
-        return stepBuilderFactory.get("updateEpisodes")
+    static Step createEpisodeScrapper(StepBuilderFactory stepBuilder, Resource input, NamedParameterJdbcOperations jdbc) {
+        return stepBuilder.get("updateEpisodes")
                 .<EpisodeRecord, EpisodeRecord>chunk(CHUNK_SIZE)
-                .reader(createReader(resource))
+                .reader(createReader(input))
                 .processor((Function<EpisodeRecord, EpisodeRecord>) record -> {
                     if (record.episode != -1 && record.season != -1) return record;
                     else return null;
@@ -82,25 +76,5 @@ final class EpisodeScrapper implements Step {
                 .build();
         writer.afterPropertiesSet();
         return writer;
-    }
-
-    @Override
-    public String getName() {
-        return delegateStep.getName();
-    }
-
-    @Override
-    public boolean isAllowStartIfComplete() {
-        return delegateStep.isAllowStartIfComplete();
-    }
-
-    @Override
-    public int getStartLimit() {
-        return delegateStep.getStartLimit();
-    }
-
-    @Override
-    public void execute(StepExecution stepExecution) throws JobInterruptedException {
-        delegateStep.execute(stepExecution);
     }
 }

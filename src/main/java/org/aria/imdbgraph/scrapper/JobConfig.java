@@ -8,9 +8,16 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
+import java.net.MalformedURLException;
+
+import static org.aria.imdbgraph.scrapper.EpisodeScrapper.createEpisodeScrapper;
 import static org.aria.imdbgraph.scrapper.FileUtil.*;
+import static org.aria.imdbgraph.scrapper.RatingScrapper.createRatingsScrapper;
+import static org.aria.imdbgraph.scrapper.TitleScrapper.createTitleScrapper;
 
 @Configuration
 @EnableBatchProcessing
@@ -18,26 +25,30 @@ public class JobConfig {
 
     static final int CHUNK_SIZE = 100;
 
-    private final JobBuilderFactory jobBuilderFactory;
-    private final Step episodeScrapper;
-    private final Step ratingScrapper;
-    private final Step titleScrapper;
+    private final JobBuilderFactory jobBuilder;
+    private final StepBuilderFactory stepBuilder;
+    private final NamedParameterJdbcOperations jdbc;
 
     @Autowired
     public JobConfig(JobBuilderFactory jobBuilder, StepBuilderFactory stepBuilder, NamedParameterJdbcOperations jdbc) {
-        this.jobBuilderFactory = jobBuilder;
-
-        this.episodeScrapper = new EpisodeScrapper(jdbc, stepBuilder, openUrl(EPISODES_FILE_URL));
-        this.ratingScrapper = new RatingScrapper(jdbc, stepBuilder, openUrl(RATINGS_FILE_URL));
-        this.titleScrapper = new TitleScrapper(jdbc, stepBuilder, openUrl(SHOW_FILE_URL));
-    }
+        this.jobBuilder = jobBuilder;
+        this.stepBuilder = stepBuilder;
+        this.jdbc = jdbc; }
 
     @Bean
-    public Job imdbScrapper() {
-        return jobBuilderFactory.get("imdbScrapper")
-                .start(episodeScrapper)
-                .next(ratingScrapper)
-                .next(titleScrapper)
+    public Job imdbScrapper() throws MalformedURLException {
+        final Resource episodesInput = new UnzippedResource(new UrlResource(EPISODES_FILE_URL));
+        final Resource ratingsInput = new UnzippedResource(new UrlResource(RATINGS_FILE_URL));
+        final Resource showTitlesInput = new UnzippedResource(new UrlResource(SHOW_FILE_URL));
+
+        final Step episodeStep = createEpisodeScrapper(stepBuilder, episodesInput, jdbc);
+        final Step ratingsStep = createRatingsScrapper(stepBuilder, ratingsInput, jdbc);
+        final Step titleStep = createTitleScrapper(stepBuilder, showTitlesInput, jdbc);
+
+        return jobBuilder.get("imdbScrapper")
+                .start(titleStep)
+                .next(episodeStep)
+                .next(ratingsStep)
                 .build();
     }
 }

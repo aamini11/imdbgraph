@@ -28,7 +28,20 @@ public class ImdbgraphApplicationTests {
 
     @Test
     public void testJob() throws Exception {
-        launcher.launchStep("updateTitles");
+        testRatings();
+        testEpisode();
+    }
+
+    private void launchJob() throws Exception {
+        launcher.launchJob();
+    }
+
+    private void testEpisode() {
+        launcher.launchStep("updateEpisodes");
+    }
+
+    private void testRatings() {
+        launcher.launchStep("updateRatings");
     }
 
     @Test

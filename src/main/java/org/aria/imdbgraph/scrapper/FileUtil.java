@@ -11,7 +11,12 @@ import java.util.zip.GZIPInputStream;
 
 class FileUtil {
 
-    private FileUtil() {}
+    private FileUtil() {
+    }
+
+    static final String RATING_FILE_NAME = "title.ratings.tsv";
+    static final String EPISODES_FILE_NAME = "title.episode.tsv";
+    static final String SHOW_FILE_NAME = "title.basics.tsv";
 
     static final String RATINGS_FILE_URL = "https://datasets.imdbws.com/title.ratings.tsv.gz";
     static final String EPISODES_FILE_URL = "https://datasets.imdbws.com/title.episode.tsv.gz";
@@ -20,8 +25,8 @@ class FileUtil {
     static Resource openUrl(String url) {
         try {
             InputStream stream = new URL(url).openStream();
-            InputStream unzipedStream = new GZIPInputStream(stream);
-            return new InputStreamResource(unzipedStream);
+            InputStream unzippedStream = new GZIPInputStream(stream);
+            return new InputStreamResource(unzippedStream);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

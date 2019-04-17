@@ -12,6 +12,11 @@ public final class Ratings {
     private final Show show;
     private final Map<Integer, Map<Integer, Episode>> allRatings;
 
+    Ratings(Show show, List<Episode> allRatings) {
+        this.show = show;
+        this.allRatings = toMap(allRatings);
+    }
+
     private static Map<Integer, Map<Integer, Episode>> toMap(List<Episode> episodeSequence) {
         Map<Integer, Map<Integer, Episode>> map = new LinkedHashMap<>();
         for (Episode e : episodeSequence) {
@@ -19,11 +24,6 @@ public final class Ratings {
             seasonRatings.put(e.getEpisode(), e);
         }
         return map;
-    }
-
-    Ratings(Show show, List<Episode> allRatings) {
-        this.show = show;
-        this.allRatings = toMap(allRatings);
     }
 
     public Show getShow() {
