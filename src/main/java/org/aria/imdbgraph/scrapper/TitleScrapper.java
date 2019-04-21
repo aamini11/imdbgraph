@@ -2,7 +2,6 @@ package org.aria.imdbgraph.scrapper;
 
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.batch.item.file.FlatFileItemReader;
@@ -44,10 +43,6 @@ class TitleScrapper {
         return stepBuilder.get("updateTitles")
                 .<TitleRecord, TitleRecord>chunk(CHUNK_SIZE)
                 .reader(createReader(input))
-                .processor((ItemProcessor<TitleRecord, TitleRecord>) record -> {
-                    if (record.titleType.equals("tvEpisode") || record.titleType.equals("tvSeries")) return record;
-                    else return null;
-                })
                 .writer(sqlTitleWriter(dataSource))
                 .build();
     }

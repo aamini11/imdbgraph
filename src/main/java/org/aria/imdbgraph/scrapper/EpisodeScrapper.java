@@ -76,7 +76,7 @@ class EpisodeScrapper {
         final String updateSql = "" +
                 "INSERT INTO imdb.episode(show_id, episode_id, season, episode)\n" +
                 "VALUES (:showId, :episodeId, :season, :episode)\n" +
-                "ON CONFLICT (episode_id) DO NOTHING;";
+                "ON CONFLICT (show_id, episode_id) DO NOTHING;";
 
         var writer = new JdbcBatchItemWriterBuilder<EpisodeRecord>()
                 .sql(updateSql)
