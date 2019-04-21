@@ -1,6 +1,6 @@
 create schema imdb;
 
-alter schema imdb owner to postgres;
+alter schema imdb owner to aamini;
 
 create table if not exists episode
 (
@@ -14,29 +14,7 @@ create table if not exists episode
         unique (episode_id, episode, season)
 );
 
-alter table episode owner to postgres;
-
-create table if not exists show_title
-(
-    show_id varchar(10) not null
-        constraint show_pk
-            primary key,
-    primary_title text,
-    start_year char(4),
-    end_year char(4)
-);
-
-alter table show_title owner to postgres;
-
-create table if not exists episode_title
-(
-    episode_id varchar(10) not null
-        constraint episode_title_pk
-            primary key,
-    primary_title text
-);
-
-alter table episode_title owner to postgres;
+alter table episode owner to aamini;
 
 create table if not exists rating
 (
@@ -47,5 +25,18 @@ create table if not exists rating
     num_votes integer not null
 );
 
-alter table rating owner to postgres;
+alter table rating owner to aamini;
+
+create table if not exists title
+(
+    imdb_id varchar(10) not null
+        constraint title_pk
+            primary key,
+    primary_title text,
+    title_type text,
+    start_year char(4),
+    end_year char(4)
+);
+
+alter table title owner to aamini;
 

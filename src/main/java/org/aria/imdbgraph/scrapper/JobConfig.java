@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
+import javax.sql.DataSource;
 import java.net.MalformedURLException;
 
 import static org.aria.imdbgraph.scrapper.EpisodeScrapper.createEpisodeScrapper;
@@ -27,23 +27,24 @@ public class JobConfig {
 
     private final JobBuilderFactory jobBuilder;
     private final StepBuilderFactory stepBuilder;
-    private final NamedParameterJdbcOperations jdbc;
+    private final DataSource dataSource;
 
     @Autowired
-    public JobConfig(JobBuilderFactory jobBuilder, StepBuilderFactory stepBuilder, NamedParameterJdbcOperations jdbc) {
+    public JobConfig(JobBuilderFactory jobBuilder, StepBuilderFactory stepBuilder, DataSource dataSource) {
         this.jobBuilder = jobBuilder;
         this.stepBuilder = stepBuilder;
-        this.jdbc = jdbc; }
+        this.dataSource = dataSource;
+    }
 
     @Bean
     public Job imdbScrapper() throws MalformedURLException {
-        final Resource episodesInput = new UnzippedResource(new UrlResource(EPISODES_FILE_URL));
-        final Resource ratingsInput = new UnzippedResource(new UrlResource(RATINGS_FILE_URL));
-        final Resource showTitlesInput = new UnzippedResource(new UrlResource(SHOW_FILE_URL));
+        final Resource episodesInput = new ZippedResource(new UrlResource(EPISODES_FILE_URL));
+        final Resource ratingsInput = new ZippedResource(new UrlResource(RATINGS_FILE_URL));
+        final Resource showTitlesInput = new ZippedResource(new UrlResource(SHOW_FILE_URL));
 
-        final Step episodeStep = createEpisodeScrapper(stepBuilder, episodesInput, jdbc);
-        final Step ratingsStep = createRatingsScrapper(stepBuilder, ratingsInput, jdbc);
-        final Step titleStep = createTitleScrapper(stepBuilder, showTitlesInput, jdbc);
+        final Step episodeStep = createEpisodeScrapper(stepBuilder, episodesInput, dataSource);
+        final Step ratingsStep = createRatingsScrapper(stepBuilder, ratingsInput, dataSource);
+        final Step titleStep = createTitleScrapper(stepBuilder, showTitlesInput, dataSource);
 
         return jobBuilder.get("imdbScrapper")
                 .start(titleStep)

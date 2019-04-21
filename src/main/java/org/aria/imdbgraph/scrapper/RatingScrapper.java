@@ -8,11 +8,15 @@ import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+
+import javax.sql.DataSource;
 
 import static org.aria.imdbgraph.scrapper.JobConfig.CHUNK_SIZE;
 
-final class RatingScrapper {
+/**
+ * Static utility class to create the ratings scrapping step which is used in the job configuration.
+ */
+class RatingScrapper {
 
     private RatingScrapper() {}
 
@@ -29,11 +33,11 @@ final class RatingScrapper {
         }
     }
 
-    static Step createRatingsScrapper(StepBuilderFactory stepBuilder, Resource input, NamedParameterJdbcOperations jdbc) {
+    static Step createRatingsScrapper(StepBuilderFactory stepBuilder, Resource input, DataSource dataSource) {
         return stepBuilder.get("updateRatings")
                 .<RatingRecord, RatingRecord>chunk(CHUNK_SIZE)
                 .reader(createReader(input))
-                .writer(createWriter(jdbc))
+                .writer(createWriter(dataSource))
                 .build();
     }
 
@@ -46,7 +50,7 @@ final class RatingScrapper {
                 .build();
     }
 
-    private static JdbcBatchItemWriter<RatingRecord> createWriter(NamedParameterJdbcOperations jdbc) {
+    private static JdbcBatchItemWriter<RatingRecord> createWriter(DataSource dataSource) {
         //language=SQL
         final String updateSql = "" +
                 "INSERT INTO imdb.rating(imdb_id, imdb_rating, num_votes)\n" +
@@ -58,7 +62,7 @@ final class RatingScrapper {
 
         var writer = new JdbcBatchItemWriterBuilder<RatingRecord>()
                 .sql(updateSql)
-                .namedParametersJdbcTemplate(jdbc)
+                .dataSource(dataSource)
                 .itemSqlParameterSourceProvider(record -> new MapSqlParameterSource()
                         .addValue("imdbId", record.imdbId)
                         .addValue("imdbRating", record.imdbRating)

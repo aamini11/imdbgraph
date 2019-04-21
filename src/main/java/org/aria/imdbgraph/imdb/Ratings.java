@@ -20,8 +20,8 @@ public final class Ratings {
     private static Map<Integer, Map<Integer, Episode>> toMap(List<Episode> episodeSequence) {
         Map<Integer, Map<Integer, Episode>> map = new LinkedHashMap<>();
         for (Episode e : episodeSequence) {
-            Map<Integer, Episode> seasonRatings = map.computeIfAbsent(e.getSeason(), (key) -> new LinkedHashMap<>());
-            seasonRatings.put(e.getEpisode(), e);
+            Map<Integer, Episode> seasonRatings = map.computeIfAbsent(e.getSeason(), key -> new LinkedHashMap<>());
+            seasonRatings.put(e.getEpisodeNumber(), e);
         }
         return map;
     }

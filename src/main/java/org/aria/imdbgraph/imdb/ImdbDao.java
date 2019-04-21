@@ -42,7 +42,7 @@ public class ImdbDao {
         final String sql = "" +
                 "WITH rankings AS (\n" +
                 "    SELECT *\n" +
-                "    FROM imdb.episode LEFT JOIN imdb.rating ON (episode_id = imdb_id)\n" +
+                "    FROM imdb.episode JOIN imdb.rating ON (episode_id = imdb_id)\n" +
                 "    WHERE show_id = :showId \n" +
                 "    ORDER BY season, episode.episode ASC)\n" +
                 "SELECT " +
@@ -51,7 +51,7 @@ public class ImdbDao {
                 "  episode," +
                 "  imdb_rating, " +
                 "  num_votes " +
-                "FROM rankings LEFT JOIN imdb.episode_title USING (episode_id);";
+                "FROM rankings LEFT JOIN imdb.title USING (imdb_id);";
         List<Episode> allEpisodeRatings = jdbc.query(sql, params, (rs, rowNum) -> {
             String title = rs.getString("primary_title");
             int season = rs.getInt("season");
@@ -74,14 +74,14 @@ public class ImdbDao {
                 .addValue("searchTerm", searchTerm);
         String sql = "" +
                 "SELECT " +
-                "  show_id," +
+                "  imdb_id," +
                 "  primary_title," +
                 "  start_year," +
                 "  end_year," +
                 "  COALESCE(imdb_rating, 0) as imdb_rating," +
                 "  COALESCE(num_votes, 0) as num_votes\n" +
-                "FROM imdb.show_title LEFT JOIN imdb.rating ON (show_id = imdb_id)\n" +
-                "WHERE lower(primary_title) ~ lower(trim(:searchTerm))\n" +
+                "FROM imdb.title LEFT JOIN imdb.rating USING (imdb_id)\n" +
+                "WHERE lower(primary_title) ~ lower(trim(:searchTerm)) AND title_type = 'tvSeries'\n" +
                 "ORDER BY num_votes DESC LIMIT 500;";
         return jdbc.query(sql, params, (rs, rowNum) -> mapToShow(rs));
     }
@@ -90,24 +90,25 @@ public class ImdbDao {
         try {
             SqlParameterSource params = new MapSqlParameterSource()
                     .addValue("showId", showId);
-            return jdbc.queryForObject("" +
-                            "SELECT" +
-                            "  show_id," +
-                            "  primary_title, " +
-                            "  start_year," +
-                            "  end_year, " +
-                            "  COALESCE(imdb_rating, 0) as imdb_rating, " +
-                            "  COALESCE(num_votes, 0) as num_votes\n" +
-                            "FROM imdb.show_title LEFT JOIN imdb.rating ON (show_id = imdb_id) " +
-                            "WHERE show_id = :showId",
-                    params, (rs, rowNum) -> Optional.of(mapToShow(rs)));
+            //language=SQL
+            final String sql = "" +
+                    "SELECT" +
+                    "  imdb_id," +
+                    "  primary_title, " +
+                    "  start_year," +
+                    "  end_year, " +
+                    "  COALESCE(imdb_rating, 0) as imdb_rating, " +
+                    "  COALESCE(num_votes, 0) as num_votes\n" +
+                    "FROM imdb.title LEFT JOIN imdb.rating USING (imdb_id) " +
+                    "WHERE imdb_id = :showId";
+            return jdbc.queryForObject(sql, params, (rs, rowNum) -> Optional.of(mapToShow(rs)));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
     private Show mapToShow(ResultSet rs) throws SQLException {
-        String imdbId = rs.getString("show_id");
+        String imdbId = rs.getString("imdb_id");
         String title = rs.getString("primary_title");
         String startYear = rs.getString("start_year");
         String endYear = rs.getString("end_year");

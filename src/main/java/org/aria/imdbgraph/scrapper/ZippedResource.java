@@ -15,11 +15,11 @@ import java.util.zip.GZIPInputStream;
  * The flat files IMDB provides are zipped by default and need to be passed through
  * java's GZIPInputStream before being read.
  */
-final class UnzippedResource implements Resource {
+final class ZippedResource implements Resource {
 
     private final Resource delegate;
 
-    UnzippedResource(Resource resource) {
+    ZippedResource(Resource resource) {
         this.delegate = resource;
     }
 
@@ -28,6 +28,7 @@ final class UnzippedResource implements Resource {
         return new GZIPInputStream(delegate.getInputStream());
     }
 
+    // Boiler plate wrapper methods...
     @Override
     public boolean exists() {
         return delegate.exists();

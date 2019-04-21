@@ -4,14 +4,14 @@ public final class Episode {
 
     private final String episodeTitle;
     private final int season;
-    private final int episode;
+    private final int episodeNumber;
     private final double imdbRating;
     private final int numVotes;
 
-    Episode(String episodeTitle, int season, int episode, double imdbRating, int numVotes) {
+    Episode(String episodeTitle, int season, int episodeNumber, double imdbRating, int numVotes) {
         this.episodeTitle = episodeTitle;
         this.season = season;
-        this.episode = episode;
+        this.episodeNumber = episodeNumber;
         this.imdbRating = imdbRating;
         this.numVotes = numVotes;
     }
@@ -24,8 +24,8 @@ public final class Episode {
         return season;
     }
 
-    public int getEpisode() {
-        return episode;
+    public int getEpisodeNumber() {
+        return episodeNumber;
     }
 
     public double getImdbRating() {
