@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class RatingController {
 
-    private final ImdbDao imbdService;
+    private final ImdbDao imdbService;
 
     @Autowired
-    public RatingController(ImdbDao imbdService) {
-        this.imbdService = imbdService;
+    public RatingController(ImdbDao imdbService) {
+        this.imdbService = imdbService;
     }
 
     @GetMapping(value = "/")
@@ -25,13 +25,13 @@ public class RatingController {
 
     @GetMapping(value = "/ratings/{showId}")
     public String getRating(@PathVariable(value = "showId") String showId, Model model) {
-        model.addAttribute("ratingsData", imbdService.getAllShowRatings(showId));
+        model.addAttribute("ratingsData", imdbService.getAllShowRatings(showId));
         return "rating_page.html";
     }
 
     @GetMapping(value = "/search")
     public String search(@RequestParam(value="q") String searchTerm, Model model) {
-        model.addAttribute("results", imbdService.searchShows(searchTerm));
+        model.addAttribute("results", imdbService.searchShows(searchTerm));
         return "search_results.html";
     }
 }
