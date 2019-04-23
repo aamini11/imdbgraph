@@ -3,6 +3,7 @@ package org.aria.imdbgraph.scrapper;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -68,6 +69,11 @@ class FileService {
         for (ImdbFlatFile file : allFiles) {
             Path downloadLocation = baseDir.resolve(file.getOutputFileName());
             try (InputStream in = new GZIPInputStream(file.downloadUrl.openStream())) { // unzips files as well.
+                File outputFile = downloadLocation.toFile();
+                if (!outputFile.exists()) {
+                    boolean fileCreated = outputFile.createNewFile();
+                    if (!fileCreated) throw new IOException("Unable to create file");
+                }
                 Files.copy(in, downloadLocation, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
