@@ -72,7 +72,7 @@ class FileService {
                 File outputFile = downloadLocation.toFile();
                 if (!outputFile.exists()) {
                     boolean fileCreated = outputFile.createNewFile();
-                    if (!fileCreated) throw new IOException("Unable to create file");
+                    if (!fileCreated) throw new IOException("Unable to create file: " + outputFile.toString());
                 }
                 Files.copy(in, downloadLocation, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
