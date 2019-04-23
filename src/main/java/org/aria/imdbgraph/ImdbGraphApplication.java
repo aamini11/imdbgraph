@@ -1,5 +1,7 @@
 package org.aria.imdbgraph;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -26,6 +28,8 @@ import java.util.stream.Collectors;
 @SpringBootApplication
 public class ImdbGraphApplication implements CommandLineRunner {
 
+    private static final Logger logger = LoggerFactory.getLogger(CommandLineRunner.class);
+
     private final Job imdbScrapper;
     private final JobLauncher jobLauncher;
 
@@ -40,11 +44,11 @@ public class ImdbGraphApplication implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         Set<CommandLineOption> options = CommandLineOption.fromArgs(args);
 
         if (options.contains(CommandLineOption.LAUNCH_JOB)) {
-            dailyJob();
+            runDailyJob();
         }
     }
 
@@ -64,14 +68,14 @@ public class ImdbGraphApplication implements CommandLineRunner {
     }
 
     @Scheduled(cron = "0 0 1 * * *")
-    public void dailyJob() {
+    public void runDailyJob() {
         try {
             JobParameters params = new JobParametersBuilder()
                     .addDate("start-time", new Date())
                     .toJobParameters();
             jobLauncher.run(imdbScrapper, params);
         } catch (JobExecutionAlreadyRunningException | JobParametersInvalidException | JobInstanceAlreadyCompleteException | JobRestartException e) {
-            e.printStackTrace();
+            logger.error("Job failed", e);
         }
     }
 }

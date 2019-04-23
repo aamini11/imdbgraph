@@ -7,17 +7,14 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 
 import javax.sql.DataSource;
 
-import java.net.URL;
-
 import static org.aria.imdbgraph.scrapper.EpisodeScrapper.createEpisodeScrapper;
-import static org.aria.imdbgraph.scrapper.FileUtil.*;
+import static org.aria.imdbgraph.scrapper.FileService.ImdbFlatFile.*;
 import static org.aria.imdbgraph.scrapper.RatingScrapper.createRatingsScrapper;
 import static org.aria.imdbgraph.scrapper.TitleScrapper.createTitleScrapper;
 
@@ -39,29 +36,25 @@ public class JobConfig {
     }
 
     @Bean
-    public Job imdbScrapper() {
-        final Resource titlesInput = new FileSystemResource(TITLES_FILE_PATH);
-        final Resource episodesInput = new FileSystemResource(EPISODES_FILE_PATH);
-        final Resource ratingsInput = new FileSystemResource(RATINGS_FILE_PATH);
+    public Job imdbScrapper(@Value("${DATA_DIR}") String dataDirectory) {
+        final FileService fileService = new FileService(dataDirectory);
 
-        final Step titleStep = createTitleScrapper(stepBuilder, titlesInput, dataSource);
-        final Step episodeStep = createEpisodeScrapper(stepBuilder, episodesInput, dataSource);
-        final Step ratingsStep = createRatingsScrapper(stepBuilder, ratingsInput, dataSource);
+        final Step titleStep = createTitleScrapper(stepBuilder, fileService.toResource(TITLES_FILE), dataSource);
+        final Step episodeStep = createEpisodeScrapper(stepBuilder, fileService.toResource(EPISODES_FILE), dataSource);
+        final Step ratingsStep = createRatingsScrapper(stepBuilder, fileService.toResource(RATINGS_FILE), dataSource);
 
         return jobBuilder.get("imdbScrapper")
-                .start(downloadFilesStep())
+                .start(downloadFilesStep(fileService))
                 .next(titleStep)
                 .next(episodeStep)
                 .next(ratingsStep)
                 .build();
     }
 
-    private Step downloadFilesStep() {
+    private Step downloadFilesStep(FileService fileService) {
         return stepBuilder.get("fileDownload")
                 .tasklet((contribution, chunkContext) -> {
-                    downloadAndUnzipFile(new URL(TITLES_FILE_URL), TITLES_FILE_PATH);
-                    downloadAndUnzipFile(new URL(EPISODES_FILE_URL), EPISODES_FILE_PATH);
-                    downloadAndUnzipFile(new URL(RATINGS_FILE_URL), RATINGS_FILE_PATH);
+                    fileService.downloadAllFiles();
                     return RepeatStatus.FINISHED;
                 })
                 .build();
