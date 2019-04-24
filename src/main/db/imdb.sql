@@ -1,3 +1,5 @@
+create schema imdb;
+
 create table imdb.episode
 (
     show_id varchar(10) not null,
