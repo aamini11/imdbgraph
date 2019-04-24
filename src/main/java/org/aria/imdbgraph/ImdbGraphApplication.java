@@ -7,9 +7,6 @@ import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.launch.JobOperator;
-import org.springframework.batch.core.launch.NoSuchJobException;
-import org.springframework.batch.core.launch.NoSuchJobExecutionException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
@@ -22,7 +19,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.EnumSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @SpringBootApplication
 public class ImdbGraphApplication implements CommandLineRunner {
@@ -31,13 +32,11 @@ public class ImdbGraphApplication implements CommandLineRunner {
 
     private final Job imdbScrapper;
     private final JobLauncher jobLauncher;
-    private final JobOperator jobOperator;
 
     @Autowired
-    public ImdbGraphApplication(Job imdbScrapper, JobLauncher jobLauncher, JobOperator jobOperator) {
+    public ImdbGraphApplication(Job imdbScrapper, JobLauncher jobLauncher) {
         this.imdbScrapper = imdbScrapper;
         this.jobLauncher = jobLauncher;
-        this.jobOperator = jobOperator;
     }
 
     public static void main(String[] args) {
@@ -46,13 +45,20 @@ public class ImdbGraphApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (args[0].equals("RESTART")) {
-            long executionId = Long.parseLong(args[1]);
-            try {
-                jobOperator.restart(executionId);
-            } catch (JobInstanceAlreadyCompleteException | JobParametersInvalidException | JobRestartException | NoSuchJobException | NoSuchJobExecutionException e) {
-                logger.error("Job failed", e);
-            }
+        Set<CommandLineOption> options = CommandLineOption.fromArgs(args);
+
+        if (options.contains(CommandLineOption.LAUNCH_JOB)) {
+            runDailyJob();
+        }
+    }
+
+    private enum CommandLineOption {
+        LAUNCH_JOB;
+
+        static Set<CommandLineOption> fromArgs(String[] args) {
+            return Arrays.stream(args)
+                    .map(CommandLineOption::valueOf)
+                    .collect(Collectors.toCollection(() -> EnumSet.noneOf(CommandLineOption.class)));
         }
     }
 
