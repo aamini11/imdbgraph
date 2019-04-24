@@ -29,12 +29,15 @@ class FileService {
      * Enum to represent all flat files provided by IMDB that need to be downloaded and parsed.
      */
     enum ImdbFlatFile {
+
         TITLES_FILE("title.basics.tsv.gz"),
         EPISODES_FILE("title.episode.tsv.gz"),
         RATINGS_FILE("title.ratings.tsv.gz");
 
-        final String fileName;
-        final URL downloadUrl;
+        private static final String BASE_URL = "https://datasets.imdbws.com";
+
+        private final String fileName;
+        private final URL downloadUrl;
 
         ImdbFlatFile(String fileName) {
             try {
@@ -45,15 +48,22 @@ class FileService {
             }
         }
 
-        private static final String BASE_URL = "https://datasets.imdbws.com";
+        public String getInputFileName() {
+            return fileName;
+        }
 
-        String getOutputFileName() {
+        public String getOutputFileName() {
             return fileName.substring(0, fileName.lastIndexOf('.')); //remove .gz extension.
+        }
+
+        public URL getDownloadUrl() {
+            return downloadUrl;
         }
     }
 
+
     /**
-     * Convert IMDB flat file to a Spring resource to be used by the Item reader.
+     * Convert IMDB flat file to a Spring resource. Mainly used as helper method to set up item readers.
      * @param file The file to convert to a resource
      * @return An IMDB flat file now wrapped in a spring resource.
      */
@@ -68,7 +78,7 @@ class FileService {
         Set<ImdbFlatFile> allFiles = EnumSet.allOf(ImdbFlatFile.class);
         for (ImdbFlatFile file : allFiles) {
             Path downloadLocation = baseDir.resolve(file.getOutputFileName());
-            try (InputStream in = new GZIPInputStream(file.downloadUrl.openStream())) { // unzips files as well.
+            try (InputStream in = new GZIPInputStream(file.getDownloadUrl().openStream())) { // unzips files as well.
                 File outputFile = downloadLocation.toFile();
                 if (!outputFile.exists()) {
                     boolean fileCreated = outputFile.createNewFile();
