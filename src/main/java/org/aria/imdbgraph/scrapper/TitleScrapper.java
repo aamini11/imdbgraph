@@ -11,6 +11,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import javax.sql.DataSource;
 
+import java.util.function.Function;
+
 import static org.aria.imdbgraph.scrapper.JobConfig.CHUNK_SIZE;
 
 /**
@@ -43,6 +45,12 @@ class TitleScrapper {
         return stepBuilder.get("updateTitles")
                 .<TitleRecord, TitleRecord>chunk(CHUNK_SIZE)
                 .reader(createReader(input))
+                .processor((Function<TitleRecord, TitleRecord>) record -> {
+                    if (record.titleType.equals("tvSeries") || record.titleType.equals("tvEpisode")) {
+                        return record;
+                    }
+                    return null;
+                })
                 .writer(sqlTitleWriter(dataSource))
                 .build();
     }
