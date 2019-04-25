@@ -36,7 +36,6 @@ public class ImdbDao {
         if (showInfo.isEmpty()) {
             throw new InvalidParameterException("Invalid show ID");
         }
-
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("showId", showId);
         final String sql = "" +
@@ -82,7 +81,7 @@ public class ImdbDao {
                 "  COALESCE(num_votes, 0) as num_votes\n" +
                 "FROM imdb.title LEFT JOIN imdb.rating USING (imdb_id)\n" +
                 "WHERE lower(primary_title) ~ lower(trim(:searchTerm)) AND title_type = 'tvSeries'\n" +
-                "ORDER BY num_votes DESC LIMIT 500;";
+                "ORDER BY num_votes DESC LIMIT 10;";
         return jdbc.query(sql, params, (rs, rowNum) -> mapToShow(rs));
     }
 
