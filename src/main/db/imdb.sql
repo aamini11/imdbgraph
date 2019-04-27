@@ -30,7 +30,7 @@ create table imdb.title
     title_type text,
     start_year char(4),
     end_year char(4)
-) PARTITION BY LIST (imdb_id);
+);
 
 alter table imdb.title owner to aamini;
 
