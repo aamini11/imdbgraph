@@ -30,10 +30,10 @@ create table imdb.title
     title_type text,
     start_year char(4),
     end_year char(4)
-);
+) PARTITION BY LIST (imdb_id);
 
 alter table imdb.title owner to aamini;
 
 create index title_title_type_index
-    on imdb.title (title_type);
+    on imdb.title (title_type) where title_type = 'tvSeries'
 
