@@ -1,6 +1,8 @@
 create schema imdb;
 
-create table imdb.episode
+alter schema imdb owner to aamini;
+
+create table if not exists episode
 (
     show_id varchar(10) not null,
     episode_id varchar(10) not null,
@@ -10,9 +12,9 @@ create table imdb.episode
         primary key (show_id, episode_id)
 );
 
-alter table imdb.episode owner to aamini;
+alter table episode owner to aamini;
 
-create table imdb.rating
+create table if not exists rating
 (
     imdb_id varchar(10) not null
         constraint rating_pk
@@ -21,9 +23,9 @@ create table imdb.rating
     num_votes integer
 );
 
-alter table imdb.rating owner to aamini;
+alter table rating owner to aamini;
 
-create table imdb.title
+create table if not exists title
 (
     imdb_id varchar(10) not null
         constraint title_pk
@@ -34,5 +36,8 @@ create table imdb.title
     end_year char(4)
 );
 
-alter table imdb.title owner to aamini;
+alter table title owner to aamini;
+
+create index if not exists title_title_type_index
+    on title (title_type);
 

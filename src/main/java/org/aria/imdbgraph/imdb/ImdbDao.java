@@ -79,27 +79,26 @@ public class ImdbDao {
                 "  end_year," +
                 "  COALESCE(imdb_rating, 0) as imdb_rating," +
                 "  COALESCE(num_votes, 0) as num_votes\n" +
-                "FROM imdb.title LEFT JOIN imdb.rating USING (imdb_id)\n" +
-                "WHERE lower(primary_title) ~ lower(trim(:searchTerm)) AND title_type = 'tvSeries'\n" +
-                "ORDER BY num_votes DESC LIMIT 10;";
+                "FROM imdb.title JOIN imdb.rating USING (imdb_id)\n" +
+                "WHERE lower(primary_title) ~ trim(lower(:searchTerm)) AND title_type = 'tvSeries'\n" +
+                "ORDER BY num_votes DESC LIMIT 500;";
         return jdbc.query(sql, params, (rs, rowNum) -> mapToShow(rs));
     }
 
     private Optional<Show> getShow(String showId) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("showId", showId);
+        final String sql =
+                "SELECT\n" +
+                "  imdb_id," +
+                "  primary_title, " +
+                "  start_year," +
+                "  end_year, " +
+                "  COALESCE(imdb_rating, 0) as imdb_rating, " +
+                "  COALESCE(num_votes, 0) as num_votes\n" +
+                "FROM imdb.title LEFT JOIN imdb.rating USING (imdb_id) " +
+                "WHERE imdb_id = :showId";
         try {
-            SqlParameterSource params = new MapSqlParameterSource()
-                    .addValue("showId", showId);
-            //language=SQL
-            final String sql = "" +
-                    "SELECT" +
-                    "  imdb_id," +
-                    "  primary_title, " +
-                    "  start_year," +
-                    "  end_year, " +
-                    "  COALESCE(imdb_rating, 0) as imdb_rating, " +
-                    "  COALESCE(num_votes, 0) as num_votes\n" +
-                    "FROM imdb.title LEFT JOIN imdb.rating USING (imdb_id) " +
-                    "WHERE imdb_id = :showId";
             return jdbc.queryForObject(sql, params, (rs, rowNum) -> Optional.of(mapToShow(rs)));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();

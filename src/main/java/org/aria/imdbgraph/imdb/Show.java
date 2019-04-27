@@ -1,5 +1,8 @@
 package org.aria.imdbgraph.imdb;
 
+/**
+ * Data class to represent information about a show (including its rating)
+ */
 public final class Show {
 
     private final String imdbId;
