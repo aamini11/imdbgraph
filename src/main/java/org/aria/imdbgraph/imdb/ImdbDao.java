@@ -78,13 +78,11 @@ public class ImdbDao {
                 "       end_year,\n" +
                 "       COALESCE(imdb_rating, 0) as imdb_rating,\n" +
                 "       COALESCE(num_votes, 0)   as num_votes\n" +
-                "FROM imdb.title\n" +
-                "         JOIN imdb.rating USING (imdb_id),\n" +
-                "     plainto_tsquery(:searchTerm) query\n" +
+                "FROM imdb.title JOIN imdb.rating USING (imdb_id)\n" +
                 "WHERE title_type = 'tvSeries'\n" +
-                "  AND query @@ to_tsvector('english', primary_title)\n" +
-                "ORDER BY ts_rank_cd(to_tsvector('english', primary_title), query) DESC, num_votes DESC\n" +
-                "LIMIT 10;";
+                "  AND plainto_tsquery(:searchTerm) @@ to_tsvector('english', primary_title)\n" +
+                "ORDER BY ts_rank_cd(to_tsvector('english', primary_title), plainto_tsquery(:searchTerm)) DESC, num_votes DESC\n" +
+                "LIMIT 500;";
         return jdbc.query(sql, params, (rs, rowNum) -> mapToShow(rs));
     }
 
