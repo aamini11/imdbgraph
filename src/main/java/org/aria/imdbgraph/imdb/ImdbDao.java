@@ -71,7 +71,7 @@ public class ImdbDao {
     public List<Show> searchShows(String searchTerm) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("searchTerm", searchTerm);
-        String sql =
+        String sql = "" +
                 "SELECT imdb_id,\n" +
                 "       primary_title,\n" +
                 "       start_year,\n" +
@@ -83,7 +83,8 @@ public class ImdbDao {
                 "     plainto_tsquery(:searchTerm) query\n" +
                 "WHERE title_type = 'tvSeries'\n" +
                 "  AND query @@ to_tsvector('english', primary_title)\n" +
-                "ORDER BY ts_rank_cd(to_tsvector('english', primary_title), query) DESC, num_votes DESC";
+                "ORDER BY ts_rank_cd(to_tsvector('english', primary_title), query) DESC, num_votes DESC\n" +
+                "LIMIT 10;";
         return jdbc.query(sql, params, (rs, rowNum) -> mapToShow(rs));
     }
 
