@@ -71,17 +71,19 @@ public class ImdbDao {
     public List<Show> searchShows(String searchTerm) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("searchTerm", searchTerm);
-        String sql = "" +
-                "SELECT " +
-                "  imdb_id," +
-                "  primary_title," +
-                "  start_year," +
-                "  end_year," +
-                "  COALESCE(imdb_rating, 0) as imdb_rating," +
-                "  COALESCE(num_votes, 0) as num_votes\n" +
-                "FROM imdb.title JOIN imdb.rating USING (imdb_id)\n" +
-                "WHERE lower(primary_title) ~ trim(lower(:searchTerm)) AND title_type = 'tvSeries'\n" +
-                "ORDER BY num_votes DESC LIMIT 10;";
+        String sql =
+                "SELECT imdb_id,\n" +
+                "       primary_title,\n" +
+                "       start_year,\n" +
+                "       end_year,\n" +
+                "       COALESCE(imdb_rating, 0) as imdb_rating,\n" +
+                "       COALESCE(num_votes, 0)   as num_votes\n" +
+                "FROM imdb.title\n" +
+                "         JOIN imdb.rating USING (imdb_id),\n" +
+                "     plainto_tsquery(:searchTerm) query\n" +
+                "WHERE title_type = 'tvSeries'\n" +
+                "  AND query @@ to_tsvector('english', primary_title)\n" +
+                "ORDER BY ts_rank_cd(to_tsvector('english', primary_title), query) DESC, num_votes DESC";
         return jdbc.query(sql, params, (rs, rowNum) -> mapToShow(rs));
     }
 
