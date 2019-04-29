@@ -82,7 +82,7 @@ public class ImdbDao {
                 "WHERE title_type = 'tvSeries'\n" +
                 "  AND plainto_tsquery(:searchTerm) @@ to_tsvector('english', primary_title)\n" +
                 "ORDER BY ts_rank_cd(to_tsvector('english', primary_title), plainto_tsquery(:searchTerm)) DESC, num_votes DESC\n" +
-                "LIMIT 500;";
+                "LIMIT 50;";
         return jdbc.query(sql, params, (rs, rowNum) -> mapToShow(rs));
     }
 
