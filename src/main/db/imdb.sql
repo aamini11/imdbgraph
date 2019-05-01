@@ -37,6 +37,9 @@ create table imdb.title
 
 alter table imdb.title owner to aamini;
 
+CREATE INDEX title_title_type_index ON imdb.title(title_type)
+	WHERE title_type = 'tvSeries';
+
 create index title_primary_title_index
 	on imdb.title (to_tsvector('english'::regconfig, primary_title));
 

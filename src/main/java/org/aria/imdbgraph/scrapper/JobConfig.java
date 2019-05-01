@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import javax.sql.DataSource;
 
 import static org.aria.imdbgraph.scrapper.EpisodeScrapper.createEpisodeScrapper;
-import static org.aria.imdbgraph.scrapper.FileService.ImdbFlatFile.*;
+import static org.aria.imdbgraph.scrapper.ImdbFileService.ImdbFlatFile.*;
 import static org.aria.imdbgraph.scrapper.RatingScrapper.createRatingsScrapper;
 import static org.aria.imdbgraph.scrapper.TitleScrapper.createTitleScrapper;
 
@@ -37,7 +37,7 @@ public class JobConfig {
 
     @Bean
     public Job imdbScrapper(@Value("${DATA_DIR}") String dataDirectory) {
-        final FileService fileService = new FileService(dataDirectory);
+        final ImdbFileService fileService = new ImdbFileService(dataDirectory);
 
         final Step titleStep = createTitleScrapper(stepBuilder, fileService.toResource(TITLES_FILE), dataSource);
         final Step episodeStep = createEpisodeScrapper(stepBuilder, fileService.toResource(EPISODES_FILE), dataSource);
@@ -51,7 +51,12 @@ public class JobConfig {
                 .build();
     }
 
-    private Step downloadFilesStep(FileService fileService) {
+    /**
+     * Creates and configures a step to download all the IMDB flat files for processing by the scrapperss.
+     * @param fileService The file service which will download all the files
+     * @return The download step
+     */
+    private Step downloadFilesStep(ImdbFileService fileService) {
         return stepBuilder.get("fileDownload")
                 .tasklet((contribution, chunkContext) -> {
                     fileService.downloadAllFiles();

@@ -41,7 +41,7 @@ public class ImdbDao {
         final String sql = "" +
                 "WITH rankings AS (\n" +
                 "    SELECT *\n" +
-                "    FROM imdb.episode JOIN imdb.rating ON (episode_id = imdb_id)\n" +
+                "    FROM imdb.episode LEFT JOIN imdb.rating ON (episode_id = imdb_id)\n" +
                 "    WHERE show_id = :showId \n" +
                 "    ORDER BY season, episode.episode ASC)\n" +
                 "SELECT " +

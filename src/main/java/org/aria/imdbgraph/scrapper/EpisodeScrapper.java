@@ -22,7 +22,7 @@ class EpisodeScrapper {
     private EpisodeScrapper() {}
 
     /**
-     * POJO to represent a record in the Episode file.
+     * Data class to represent a record in the Episode file.
      */
     private static final class EpisodeRecord {
         final String episodeId;
@@ -30,6 +30,10 @@ class EpisodeScrapper {
         final int season;
         final int episode;
 
+        /**
+         * Constructor accepts a line from the episodes IMDB file and parses it into a EpisodeRecord.
+         * @param line The line to split and parse
+         */
         EpisodeRecord(String line) {
             String[] fields = line.split("\t");
             episodeId = fields[0];
