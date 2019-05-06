@@ -1,7 +1,7 @@
 package org.aria.imdbgraph.imdb;
 
 /**
- * Data class to represent information about a show (including its rating)
+ * Immutable data class to represent information about a show. Includes rating information about the show.
  */
 public final class Show {
 
@@ -12,6 +12,15 @@ public final class Show {
     private final double showRating;
     private final int numVotes;
 
+    /**
+     * Constructor used to initialize show information.
+     * @param imdbId The IMDB id of the show.
+     * @param title Title of the show
+     * @param startYear Year show began
+     * @param endYear Year show ended
+     * @param showRating Average rating of a show (0-10)
+     * @param numVotes Number of people that voted for that episode
+     */
     Show(String imdbId, String title, String startYear, String endYear, double showRating, int numVotes) {
         this.imdbId = imdbId;
         this.title = title;

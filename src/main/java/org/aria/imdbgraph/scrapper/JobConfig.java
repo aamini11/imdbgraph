@@ -36,14 +36,14 @@ public class JobConfig {
     }
 
     @Bean
-    public Job imdbScrapper(@Value("${DATA_DIR}") String dataDirectory) {
+    public Job imdbScrappingJob(@Value("${imdbgraph.data.directory}") String dataDirectory) {
         final ImdbFileService fileService = new ImdbFileService(dataDirectory);
 
         final Step titleStep = createTitleScrapper(stepBuilder, fileService.toResource(TITLES_FILE), dataSource);
         final Step episodeStep = createEpisodeScrapper(stepBuilder, fileService.toResource(EPISODES_FILE), dataSource);
         final Step ratingsStep = createRatingsScrapper(stepBuilder, fileService.toResource(RATINGS_FILE), dataSource);
 
-        return jobBuilder.get("imdbScrapper")
+        return jobBuilder.get("imdbScrappingJob")
                 .start(downloadFilesStep(fileService))
                 .next(titleStep)
                 .next(episodeStep)
@@ -52,7 +52,7 @@ public class JobConfig {
     }
 
     /**
-     * Creates and configures a step to download all the IMDB flat files for processing by the scrapperss.
+     * Creates and configures a step to download all the IMDB flat files for processing by the scrappers.
      * @param fileService The file service which will download all the files
      * @return The download step
      */

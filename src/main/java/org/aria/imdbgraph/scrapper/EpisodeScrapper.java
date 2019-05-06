@@ -21,6 +21,8 @@ class EpisodeScrapper {
 
     private EpisodeScrapper() {}
 
+    private static final String STEP_NAME = "updateEpisodes";
+
     /**
      * Data class to represent a record in the Episode file.
      */

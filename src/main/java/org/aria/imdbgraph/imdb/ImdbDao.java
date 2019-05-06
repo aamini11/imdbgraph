@@ -31,9 +31,10 @@ public class ImdbDao {
      * @param showId The Imdb ID of the show to fetch ratings for.
      * @return POJO containing the basic show info and ratings
      */
+    @SuppressWarnings("SimplifyOptionalCallChains")
     public Ratings getAllShowRatings(String showId) {
         Optional<Show> showInfo = getShow(showId);
-        if (showInfo.isEmpty()) {
+        if (!showInfo.isPresent()) {
             throw new InvalidParameterException("Invalid show ID");
         }
         SqlParameterSource params = new MapSqlParameterSource()
@@ -63,10 +64,10 @@ public class ImdbDao {
     }
 
     /**
-     * Search for shows using the OMDB api
+     * Method to search for a show using a search term provided by an end user.
      *
      * @param searchTerm The search term to use
-     * @return Returns a list of shows matching the search term provided
+     * @return List of shows that match the search term
      */
     public List<Show> searchShows(String searchTerm) {
         SqlParameterSource params = new MapSqlParameterSource()

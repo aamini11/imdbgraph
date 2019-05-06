@@ -72,7 +72,7 @@ class ImdbFileService {
          * Helper method to remove the .gz file extension from a file name.
          * @return file name after its extension has been removed.
          */
-        public String unzippedFileName() {
+        String unzippedFileName() {
             return inputFileName.substring(0, inputFileName.lastIndexOf('.'));
         }
     }
