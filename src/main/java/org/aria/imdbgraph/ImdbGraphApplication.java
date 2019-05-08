@@ -67,7 +67,7 @@ public class ImdbGraphApplication implements CommandLineRunner {
         return builder.build();
     }
 
-    @Scheduled(cron = "0 0 1 * * *")
+    @Scheduled(cron = "0 0 1 * * ?")
     public void runDailyJob() {
         try {
             JobParameters params = new JobParametersBuilder()
