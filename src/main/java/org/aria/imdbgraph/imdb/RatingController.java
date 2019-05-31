@@ -1,6 +1,5 @@
-package org.aria.imdbgraph;
+package org.aria.imdbgraph.imdb;
 
-import org.aria.imdbgraph.imdb.ImdbDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

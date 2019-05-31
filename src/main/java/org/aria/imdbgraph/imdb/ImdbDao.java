@@ -32,7 +32,7 @@ public class ImdbDao {
      * @return POJO containing the basic show info and ratings
      */
     @SuppressWarnings("SimplifyOptionalCallChains")
-    public Ratings getAllShowRatings(String showId) {
+    Ratings getAllShowRatings(String showId) {
         Optional<Show> showInfo = getShow(showId);
         if (!showInfo.isPresent()) {
             throw new InvalidParameterException("Invalid show ID");
@@ -69,7 +69,7 @@ public class ImdbDao {
      * @param searchTerm The search term to use
      * @return List of shows that match the search term
      */
-    public List<Show> searchShows(String searchTerm) {
+    List<Show> searchShows(String searchTerm) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("searchTerm", searchTerm);
         String sql = "" +
@@ -101,13 +101,14 @@ public class ImdbDao {
                 "FROM imdb.title LEFT JOIN imdb.rating USING (imdb_id) " +
                 "WHERE imdb_id = :showId";
         try {
-            return jdbc.queryForObject(sql, params, (rs, rowNum) -> Optional.of(mapToShow(rs)));
+            Show show = jdbc.queryForObject(sql, params, (rs, rowNum) -> mapToShow(rs));
+            return Optional.ofNullable(show);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
-    private Show mapToShow(ResultSet rs) throws SQLException {
+    private static Show mapToShow(ResultSet rs) throws SQLException {
         String imdbId = rs.getString("imdb_id");
         String title = rs.getString("primary_title");
         String startYear = rs.getString("start_year");

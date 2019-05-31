@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Data class containing all the ratings data for a show.
+ * Data class containing all the ratings data for a specific show.
  */
 public final class Ratings {
 
