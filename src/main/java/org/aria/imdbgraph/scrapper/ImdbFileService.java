@@ -1,5 +1,7 @@
 package org.aria.imdbgraph.scrapper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -24,6 +26,8 @@ import java.util.zip.GZIPInputStream;
  * Documentation for each file: https://www.imdb.com/interfaces/
  */
 class ImdbFileService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ImdbFileService.class);
 
     private final Path baseDir;
 
@@ -97,7 +101,12 @@ class ImdbFileService {
             Path downloadLocation = baseDir.resolve(file.unzippedFileName());
             try (InputStream in = new GZIPInputStream(file.downloadUrl.openStream())) { // unzips files as well.
                 File outputFile = downloadLocation.toFile();
-                if (!outputFile.exists()) Files.createFile(downloadLocation);
+                if (outputFile.getParentFile().mkdirs()) {
+                    logger.info("Creating path: {}", outputFile.getParentFile());
+                }
+                if (outputFile.createNewFile()) {
+                    logger.info("Creating new file: {}", outputFile.getName());
+                }
                 Files.copy(in, downloadLocation, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
