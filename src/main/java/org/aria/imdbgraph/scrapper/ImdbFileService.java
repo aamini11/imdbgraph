@@ -4,6 +4,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -95,6 +96,8 @@ class ImdbFileService {
         for (ImdbFlatFile file : allFiles) {
             Path downloadLocation = baseDir.resolve(file.unzippedFileName());
             try (InputStream in = new GZIPInputStream(file.downloadUrl.openStream())) { // unzips files as well.
+                File outputFile = downloadLocation.toFile();
+                if (!outputFile.exists()) Files.createFile(downloadLocation);
                 Files.copy(in, downloadLocation, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
