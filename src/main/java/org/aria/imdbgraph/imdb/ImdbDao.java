@@ -69,7 +69,7 @@ public class ImdbDao {
      * @param searchTerm The search term to use
      * @return List of shows that match the search term
      */
-    List<Show> searchShows(String searchTerm) {
+    public List<Show> searchShows(String searchTerm) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("searchTerm", searchTerm);
         String sql = "" +
