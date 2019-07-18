@@ -1,5 +1,6 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!doctype html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>IMDB graph</title>
@@ -11,11 +12,13 @@
     <link th:href="@{/css/ratings.css}" href="/static/css/ratings.css" rel="stylesheet">
 </head>
 <body>
+<div id="search"></div>
 
-<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+<nav class="navbar navbar-expand navbar-dark bg-dark fixed-top">
     <div class="collapse navbar-collapse">
         <form class="form-inline my-2 my-lg-0" action="/search" id="showSearch">
-            <input class="form-control mr-sm-2" type="text" name="q" placeholder="Search show" aria-label="Search" required>
+            <input class="form-control mr-sm-2" type="text" name="q" placeholder="Search show" aria-label="Search"
+                   required>
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
     </div>
@@ -24,8 +27,9 @@
 <div th:if="${param.q != null and not #lists.isEmpty(results)}">
     <h1>Shows</h1>
     <ul>
-        <li th:each="result : ${results}"><a th:href="@{/ratings/{id}(id=${result.imdbId})}"
-                                             th:text="${result.title}"></a></li>
+        <li th:each="result : ${results}">
+            <a th:href="@{/ratings/{id}(id=${result.imdbId})}"
+               th:text="${result.title} + ' (Votes: '+ ${result.getNumVotes()} + ', Rating: ' + ${result.getShowRating()} + ')'"></a></li>
     </ul>
 </div>
 <div th:if="${(param.q != null) and #lists.isEmpty(results)}">

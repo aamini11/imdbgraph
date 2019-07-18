@@ -67,7 +67,7 @@
         });
 
         // Order episodes
-        const totalEpisodesInSeries = ratings.reduce((total, [season_num, episode_ratings]) => {
+        const totalEpisodesInSeries = ratings.reduce((total, [, episode_ratings]) => {
             return total + Object.keys(episode_ratings).length;
         }, 0);
 

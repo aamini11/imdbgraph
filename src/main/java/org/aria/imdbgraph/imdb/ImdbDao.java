@@ -32,7 +32,7 @@ public class ImdbDao {
      * @return POJO containing the basic show info and ratings
      */
     @SuppressWarnings("SimplifyOptionalCallChains")
-    Ratings getAllShowRatings(String showId) {
+    public Ratings getAllShowRatings(String showId) {
         Optional<Show> showInfo = getShow(showId);
         if (!showInfo.isPresent()) {
             throw new InvalidParameterException("Invalid show ID");
@@ -77,8 +77,8 @@ public class ImdbDao {
                 "       primary_title,\n" +
                 "       start_year,\n" +
                 "       end_year,\n" +
-                "       COALESCE(imdb_rating, 0) as imdb_rating,\n" +
-                "       COALESCE(num_votes, 0)   as num_votes\n" +
+                "       imdb_rating as imdb_rating,\n" +
+                "       num_votes as num_votes\n" +
                 "FROM imdb.title JOIN imdb.rating USING (imdb_id)\n" +
                 "WHERE title_type = 'tvSeries'\n" +
                 "  AND plainto_tsquery(:searchTerm) @@ to_tsvector('english', primary_title)\n" +
@@ -87,7 +87,7 @@ public class ImdbDao {
         return jdbc.query(sql, params, (rs, rowNum) -> mapToShow(rs));
     }
 
-    private Optional<Show> getShow(String showId) {
+    public Optional<Show> getShow(String showId) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("showId", showId);
         final String sql =

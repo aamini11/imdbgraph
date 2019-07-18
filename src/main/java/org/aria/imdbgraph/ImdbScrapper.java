@@ -28,8 +28,8 @@ public class ImdbScrapper {
     private final JobLauncher jobLauncher;
 
     @Autowired
-    public ImdbScrapper(Job jobToLaunch, JobLauncher jobLauncher) {
-        this.dailyScrapper = jobToLaunch;
+    public ImdbScrapper(Job dailyScrapper, JobLauncher jobLauncher) {
+        this.dailyScrapper = dailyScrapper;
         this.jobLauncher = jobLauncher;
     }
 

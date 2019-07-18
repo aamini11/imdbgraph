@@ -1,5 +1,8 @@
 package org.aria.imdbgraph.scrapper;
 
+import org.aria.imdbgraph.scrapper.EpisodeScrapper.EpisodeRecord;
+import org.aria.imdbgraph.scrapper.RatingScrapper.RatingRecord;
+import org.aria.imdbgraph.scrapper.TitleScrapper.TitleRecord;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -7,56 +10,54 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.sql.DataSource;
+import java.nio.file.Path;
 
-import static org.aria.imdbgraph.scrapper.EpisodeScrapper.createEpisodeScrapper;
-import static org.aria.imdbgraph.scrapper.ImdbFileService.ImdbFlatFile.*;
-import static org.aria.imdbgraph.scrapper.RatingScrapper.createRatingsScrapper;
-import static org.aria.imdbgraph.scrapper.TitleScrapper.createTitleScrapper;
+import static org.aria.imdbgraph.scrapper.ImdbFileDownloader.ImdbFlatFile.*;
 
 @Configuration
 @EnableBatchProcessing
 public class JobConfig {
 
-    static final int CHUNK_SIZE = 100;
-
     private final JobBuilderFactory jobBuilder;
     private final StepBuilderFactory stepBuilder;
-    private final DataSource dataSource;
+    private final ImdbFileDownloader fileDownloader;
 
     @Autowired
-    public JobConfig(JobBuilderFactory jobBuilder, StepBuilderFactory stepBuilder, DataSource dataSource) {
+    JobConfig(JobBuilderFactory jobBuilder,
+              StepBuilderFactory stepBuilder,
+              ImdbFileDownloader fileDownloader) {
         this.jobBuilder = jobBuilder;
         this.stepBuilder = stepBuilder;
-        this.dataSource = dataSource;
+        this.fileDownloader = fileDownloader;
     }
 
     @Bean
-    public Job imdbScrappingJob(@Value("${imdbgraph.data.directory}") String dataDirectory) {
-        final ImdbFileService fileService = new ImdbFileService(dataDirectory);
+    public Job imdbScrappingJob(Step downloadFilesStep,
+                                Scrapper<TitleRecord> titleScrapper,
+                                Scrapper<EpisodeRecord> episodeScrapper,
+                                Scrapper<RatingRecord> ratingsScrapper) {
+        Path titleFile = fileDownloader.getPath(TITLES_FILE);
+        Step titleStep = titleScrapper.createStep(titleFile);
 
-        final Step titleStep = createTitleScrapper(stepBuilder, fileService.toResource(TITLES_FILE), dataSource);
-        final Step episodeStep = createEpisodeScrapper(stepBuilder, fileService.toResource(EPISODES_FILE), dataSource);
-        final Step ratingsStep = createRatingsScrapper(stepBuilder, fileService.toResource(RATINGS_FILE), dataSource);
+        Path episodeFile = fileDownloader.getPath(EPISODES_FILE);
+        Step episodeStep = episodeScrapper.createStep(episodeFile);
+
+        Path ratingsFile = fileDownloader.getPath(RATINGS_FILE);
+        Step ratingsStep = ratingsScrapper.createStep(ratingsFile);
 
         return jobBuilder.get("imdbScrappingJob")
-                .start(downloadFilesStep(fileService))
+                .start(downloadFilesStep)
                 .next(titleStep)
                 .next(episodeStep)
                 .next(ratingsStep)
                 .build();
     }
 
-    /**
-     * Creates and configures a step to download all the IMDB flat files for processing by the scrappers.
-     * @param fileService The file service which will download all the files
-     * @return The download step
-     */
-    private Step downloadFilesStep(ImdbFileService fileService) {
+    @Bean
+    public Step downloadFilesStep(ImdbFileDownloader fileService) {
         return stepBuilder.get("fileDownload")
                 .tasklet((contribution, chunkContext) -> {
                     fileService.downloadAllFiles();
@@ -65,3 +66,4 @@ public class JobConfig {
                 .build();
     }
 }
+

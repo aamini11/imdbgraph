@@ -1,8 +1,8 @@
 package org.aria.imdbgraph.imdb;
 
 /**
- * Immutable data class to represent information about a show. Includes rating information about the show (avg rating,
- * total votes).
+ * Immutable data class to represent information about a show. Includes rating
+ * information about the show (avg rating, total votes).
  */
 public final class Show {
 

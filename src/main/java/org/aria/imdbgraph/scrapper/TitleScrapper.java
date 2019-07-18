@@ -1,28 +1,30 @@
 package org.aria.imdbgraph.scrapper;
 
-import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.item.database.JdbcBatchItemWriter;
-import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
-import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
-import org.springframework.core.io.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
+import java.util.List;
 
-import java.util.function.Function;
-
-import static org.aria.imdbgraph.scrapper.JobConfig.CHUNK_SIZE;
+import static org.aria.imdbgraph.scrapper.TitleScrapper.TitleRecord;
 
 /**
- * Static utility class to create the title scrapping step which is used in the job configuration.
+ * Class responsible for reading the file containing all the title information
+ * for the shows and episodes
  */
-class TitleScrapper {
+@Service
+public class TitleScrapper extends Scrapper<TitleRecord> {
 
-    private TitleScrapper() {}
+    @Autowired
+    public TitleScrapper(StepBuilderFactory stepBuilderFactory,
+                         DataSource dataSource) {
+        super(stepBuilderFactory, dataSource);
+    }
 
-    private static final class TitleRecord {
+    static final class TitleRecord {
         final String imdbId;
         final String titleType;
         final String primaryTitle;
@@ -41,48 +43,29 @@ class TitleScrapper {
         }
     }
 
-    static Step createTitleScrapper(StepBuilderFactory stepBuilder, Resource input, DataSource dataSource) {
-        return stepBuilder.get("updateTitles")
-                .<TitleRecord, TitleRecord>chunk(CHUNK_SIZE)
-                .reader(createReader(input))
-                .processor((Function<TitleRecord, TitleRecord>) record -> {
-                    if (record.titleType.equals("tvSeries") || record.titleType.equals("tvEpisode")) {
-                        return record;
-                    }
-                    return null;
-                })
-                .writer(sqlTitleWriter(dataSource))
-                .build();
+    @Override
+    TitleRecord mapLine(String line) {
+        return new TitleRecord(line);
     }
 
-    private static FlatFileItemReader<TitleRecord> createReader(Resource resourceToRead) {
-        return new FlatFileItemReaderBuilder<TitleRecord>()
-                .name("imdbEpisodeReader")
-                .resource(resourceToRead)
-                .linesToSkip(1)
-                .lineMapper((line, lineNum) -> new TitleRecord(line))
-                .build();
-    }
-
-    private static JdbcBatchItemWriter<TitleRecord> sqlTitleWriter(DataSource dataSource) {
-        //language=SQL
-        final String updateShowTitleSql =
-                "INSERT INTO imdb.title(imdb_id, primary_title, title_type, start_year, end_year)\n" +
-                "VALUES (:imdbId, :primaryTitle, :titleType, :startYear, :endYear)\n" +
-                "ON CONFLICT (imdb_id) DO UPDATE\n" +
-                "SET \n" +
-                "  end_year = :endYear;";
-        JdbcBatchItemWriter<TitleRecord> showTitleWriter = new JdbcBatchItemWriterBuilder<TitleRecord>()
-                .sql(updateShowTitleSql)
-                .dataSource(dataSource)
-                .itemSqlParameterSourceProvider(record -> new MapSqlParameterSource()
+    @Override
+    void saveRecords(List<? extends TitleRecord> records) {
+        SqlParameterSource[] showParams = records.stream()
+                .map(record -> new MapSqlParameterSource()
                         .addValue("imdbId", record.imdbId)
                         .addValue("primaryTitle", record.primaryTitle)
                         .addValue("titleType", record.titleType)
                         .addValue("startYear", record.startYear)
                         .addValue("endYear", record.endYear))
-                .build();
-        showTitleWriter.afterPropertiesSet();
-        return showTitleWriter;
+                .toArray(SqlParameterSource[]::new);
+        jdbc.batchUpdate("" +
+                "INSERT INTO imdb.title(imdb_id, primary_title, title_type, start_year, end_year)\n" +
+                "VALUES (:imdbId, :primaryTitle, :titleType, :startYear, :endYear)\n" +
+                "ON CONFLICT (imdb_id) DO UPDATE\n" +
+                "SET \n" +
+                "  primary_title = :primaryTitle," +
+                "  title_type = :titleType," +
+                "  start_year = :startYear," +
+                "  end_year = :endYear;", showParams);
     }
 }

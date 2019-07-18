@@ -1,6 +1,7 @@
 package org.aria.imdbgraph;
 
 import org.aria.imdbgraph.imdb.ImdbDao;
+import org.aria.imdbgraph.imdb.Ratings;
 import org.aria.imdbgraph.imdb.Show;
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -22,15 +24,22 @@ public class TestImdbDao {
     @Autowired
     private ImdbDao imdbDao;
 
-    // TODO: add more tests...
-
     @Test
     public void testGameOfThrones() {
         List<Show> searchResults = imdbDao.searchShows("Game");
 
-        boolean containsGOT = searchResults.stream()
-                .anyMatch(show -> show.getImdbId().equals(GAME_OF_THRONE_ID));
+        List<Show> matches = searchResults.stream()
+                .filter(show -> show.getImdbId().equals(GAME_OF_THRONE_ID))
+                .collect(Collectors.toList());
 
-        Assert.assertTrue(containsGOT);
+        Assert.assertEquals(1, matches.size());
+        Show match = matches.get(0);
+
+        Assert.assertEquals("Game of Thrones", match.getTitle());
+        Assert.assertEquals(GAME_OF_THRONE_ID, match.getImdbId());
+
+        Ratings gotRatings = imdbDao.getAllShowRatings(match.getImdbId());
+        int numSeasons = gotRatings.getAllRatings().keySet().size();
+        Assert.assertEquals(8, numSeasons);
     }
 }
