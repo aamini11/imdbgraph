@@ -26,7 +26,8 @@ public class ImdbDao {
     }
 
     /**
-     * Returns every ratings for a show along with some basic information about that show (title, year, etc...).
+     * Returns every ratings for a show along with some basic information about
+     * that show (title, year, etc...).
      *
      * @param showId The Imdb ID of the show to fetch ratings for.
      * @return POJO containing the basic show info and ratings
