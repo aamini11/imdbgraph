@@ -2,7 +2,9 @@
 
 create table imdb.episode
 (
-    show_id    varchar(10) not null,
+    show_id    varchar(10) not null
+        constraint episode_title_imdb_id_fk
+            references imdb.title,
     episode_id varchar(10) not null,
     season     integer,
     episode    integer,
