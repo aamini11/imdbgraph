@@ -1,6 +1,5 @@
 package org.aria.imdbgraph.scrapper;
 
-import org.aria.imdbgraph.scrapper.ImdbFileDownloader.ImdbFlatFile;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.item.file.ResourceAwareItemReaderItemStream;
@@ -15,8 +14,9 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * Base class for each used to implement the classes that will be responsible
- * for scrapping data from {@link ImdbFlatFile} files.
+ * Base class used to implement all the classes that will be responsible
+ * for scrapping data from flat files provided by IMDB and storing it into
+ * the database.
  *
  * @param <T> The type representing each record of the file being parsed
  */
