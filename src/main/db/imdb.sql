@@ -1,5 +1,3 @@
--- Note: Database has no foreign keys since IMDB doesn't enforce
-
 create table imdb.episode
 (
     show_id    varchar(10) not null

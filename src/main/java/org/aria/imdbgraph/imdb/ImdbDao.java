@@ -78,9 +78,9 @@ public class ImdbDao {
                 "       primary_title,\n" +
                 "       start_year,\n" +
                 "       end_year,\n" +
-                "       imdb_rating as imdb_rating,\n" +
-                "       num_votes as num_votes\n" +
-                "FROM imdb.title JOIN imdb.rating USING (imdb_id)\n" +
+                "       COALESCE(imdb_rating, 0) as imdb_rating,\n" +
+                "       COALESCE(num_votes, 0) as num_votes\n" +
+                "FROM imdb.title LEFT JOIN imdb.rating USING (imdb_id)\n" +
                 "WHERE title_type = 'tvSeries'\n" +
                 "  AND plainto_tsquery(:searchTerm) @@ to_tsvector('english', primary_title)\n" +
                 "ORDER BY ts_rank_cd(to_tsvector('english', primary_title), plainto_tsquery(:searchTerm)) DESC, num_votes DESC\n" +
