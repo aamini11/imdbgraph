@@ -40,19 +40,17 @@ public class ImdbDao {
         }
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("showId", showId);
-        final String sql = "" +
+        final String sql =
                 "WITH rankings AS (\n" +
-                "    SELECT *\n" +
-                "    FROM imdb.episode LEFT JOIN imdb.rating ON (episode_id = imdb_id)\n" +
-                "    WHERE show_id = :showId \n" +
-                "    ORDER BY season, episode.episode ASC)\n" +
-                "SELECT " +
-                "  COALESCE(primary_title, 'No title was found') AS primary_title," +
-                "  season," +
-                "  episode," +
-                "  imdb_rating, " +
-                "  num_votes " +
-                "FROM rankings LEFT JOIN imdb.title USING (imdb_id);";
+                "    SELECT episode_id, season, episode, imdb_rating, num_votes\n" +
+                "    FROM imdb.episode\n" +
+                "             LEFT JOIN imdb.rating ON (episode_id = imdb_id)\n" +
+                "    WHERE show_id = :showId)\n" +
+                "SELECT rankings.*,\n" +
+                "       COALESCE(primary_title, 'No title was found') AS primary_title\n" +
+                "FROM rankings LEFT JOIN imdb.title ON (imdb_id = episode_id)\n" +
+                "WHERE title_type = 'tvEpisode' AND episode > 0 AND season > 0\n" +
+                "ORDER BY season, episode ASC;";
         List<Episode> allEpisodeRatings = jdbc.query(sql, params, (rs, rowNum) -> {
             String title = rs.getString("primary_title");
             int season = rs.getInt("season");
