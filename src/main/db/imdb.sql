@@ -2,7 +2,7 @@ create schema imdb;
 
 alter schema imdb owner to aamini;
 
-create table title
+create table if not exists title
 (
     imdb_id varchar(10) not null
         constraint title_pk
@@ -15,7 +15,7 @@ create table title
 
 alter table title owner to aamini;
 
-create table episode
+create table if not exists episode
 (
     show_id varchar(10) not null
         constraint episode_title_imdb_id_fk
@@ -23,13 +23,16 @@ create table episode
     episode_id varchar(10) not null
         constraint episode_pk
             primary key,
-    season integer,
-    episode integer
+    season_num integer,
+    episode_num integer
 );
 
 alter table episode owner to aamini;
 
-create table rating
+create index if not exists episode_show_id_index
+    on episode (show_id);
+
+create table if not exists rating
 (
     imdb_id varchar(10) not null
         constraint rating_pk
@@ -42,9 +45,10 @@ create table rating
 
 alter table rating owner to aamini;
 
-create index title_title_type_index
+create index if not exists title_title_type_index
     on title (title_type)
     where (title_type = 'tvSeries'::text);
 
-create index title_primary_title_index
+create index if not exists title_primary_title_index
     on title (to_tsvector('english', primary_title));
+

@@ -76,7 +76,7 @@ public class ImdbDao {
                 "    SELECT *, ts_rank(title_vec, title_query) as rank\n" +
                 "    FROM (SELECT *,\n" +
                 "                 to_tsvector('english', primary_title) as title_vec,\n" +
-                "                 plainto_tsquery('english', 'game')    as title_query\n" +
+                "                 plainto_tsquery('english', :searchTerm)    as title_query\n" +
                 "          FROM imdb.title) as query_ranking\n" +
                 "             JOIN imdb.rating USING (imdb_id)\n" +
                 "    WHERE title_type = 'tvSeries'\n" +
