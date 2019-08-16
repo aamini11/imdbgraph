@@ -72,12 +72,22 @@ public class ImdbDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("searchTerm", searchTerm);
         String sql = "" +
-                "WITH show_ratings AS (\n" +
-                "    SELECT show_id, COUNT(show_id), SUM(num_votes)\n" +
-                "    FROM imdb.rating\n" +
-                "        JOIN imdb.episode ON (imdb_id = show_id)\n" +
+                "WITH show_query AS (\n" +
+                "    SELECT *, ts_rank(title_vec, title_query) as rank\n" +
+                "    FROM (SELECT *,\n" +
+                "                 to_tsvector('english', primary_title) as title_vec,\n" +
+                "                 plainto_tsquery('english', 'game')    as title_query\n" +
+                "          FROM imdb.title) as query_ranking\n" +
+                "             JOIN imdb.rating USING (imdb_id)\n" +
+                "    WHERE title_type = 'tvSeries'\n" +
+                "      AND title_vec @@ title_query\n" +
+                "), non_empty_shows AS (\n" +
+                "    SELECT show_id\n" +
+                "    FROM show_query\n" +
+                "             JOIN imdb.episode ON (show_id = imdb_id)\n" +
                 "    GROUP BY show_id\n" +
-                "    HAVING COUNT(show_id) > 0 AND SUM(num_votes) > 0\n" +
+                "    HAVING COUNT(episode_id) > 0\n" +
+                "       AND SUM(num_votes) > 0\n" +
                 ")\n" +
                 "SELECT imdb_id,\n" +
                 "       primary_title,\n" +
@@ -85,14 +95,8 @@ public class ImdbDao {
                 "       end_year,\n" +
                 "       COALESCE(imdb_rating, 0) as imdb_rating,\n" +
                 "       COALESCE(num_votes, 0)   as num_votes\n" +
-                "FROM (SELECT *,\n" +
-                "             to_tsvector('english', primary_title) as title_vec,\n" +
-                "             plainto_tsquery('english', 'game')    as title_query\n" +
-                "      FROM imdb.title\n" +
-                "               JOIN imdb.rating USING (imdb_id)) as ranking\n" +
-                "WHERE title_vec @@ title_query\n" +
-                "  AND title_type = 'tvSeries'\n" +
-                "ORDER BY ts_rank(title_vec, title_query) DESC, num_votes DESC\n" +
+                "FROM show_query\n" +
+                "ORDER BY rank DESC, num_votes DESC\n" +
                 "LIMIT 50;";
         return jdbc.query(sql, params, (rs, rowNum) -> mapToShow(rs));
     }
