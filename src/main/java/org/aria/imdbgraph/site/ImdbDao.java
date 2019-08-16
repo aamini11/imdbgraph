@@ -75,27 +75,27 @@ public class ImdbDao {
                 "WITH show_query AS (\n" +
                 "    SELECT *, ts_rank(title_vec, title_query) as rank\n" +
                 "    FROM (SELECT *,\n" +
-                "                 to_tsvector('english', primary_title) as title_vec,\n" +
-                "                 plainto_tsquery('english', :searchTerm)    as title_query\n" +
+                "                 to_tsvector('english', primary_title)  as title_vec,\n" +
+                "                 plainto_tsquery('english', :searchTerm) as title_query\n" +
                 "          FROM imdb.title) as query_ranking\n" +
-                "             JOIN imdb.rating USING (imdb_id)\n" +
                 "    WHERE title_type = 'tvSeries'\n" +
                 "      AND title_vec @@ title_query\n" +
-                "), non_empty_shows AS (\n" +
-                "    SELECT show_id\n" +
-                "    FROM show_query\n" +
-                "             JOIN imdb.episode ON (show_id = imdb_id)\n" +
-                "    GROUP BY show_id\n" +
-                "    HAVING COUNT(episode_id) > 0\n" +
-                "       AND SUM(num_votes) > 0\n" +
                 ")\n" +
                 "SELECT imdb_id,\n" +
                 "       primary_title,\n" +
                 "       start_year,\n" +
                 "       end_year,\n" +
-                "       COALESCE(imdb_rating, 0) as imdb_rating,\n" +
-                "       COALESCE(num_votes, 0)   as num_votes\n" +
+                "       imdb_rating,\n" +
+                "       num_votes\n" +
                 "FROM show_query\n" +
+                "         JOIN imdb.rating USING (imdb_id)\n" +
+                "WHERE imdb_id IN (SELECT show_id AS d\n" +
+                "                      FROM show_query\n" +
+                "                               LEFT JOIN imdb.episode ON (imdb_id = show_id)\n" +
+                "                               LEFT JOIN imdb.rating ON (episode_id = rating.imdb_id)\n" +
+                "                      GROUP BY show_id\n" +
+                "                      HAVING COUNT(episode_id) > 0\n" +
+                "                         AND COALESCE(SUM(num_votes), 0) > 0)\n" +
                 "ORDER BY rank DESC, num_votes DESC\n" +
                 "LIMIT 50;";
         return jdbc.query(sql, params, (rs, rowNum) -> mapToShow(rs));
