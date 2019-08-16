@@ -1,15 +1,13 @@
 package org.aria.imdbgraph;
 
-import org.aria.imdbgraph.scrapper.EpisodeScrapper;
-import org.aria.imdbgraph.scrapper.RatingScrapper;
-import org.aria.imdbgraph.scrapper.Scrapper;
-import org.aria.imdbgraph.scrapper.TitleScrapper;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.Step;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.test.JobLauncherTestUtils;
@@ -29,13 +27,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class TestScrappers {
 
     @Autowired
-    private TitleScrapper titleScrapper;
+    private Step scrapeTitles;
 
     @Autowired
-    private EpisodeScrapper episodeScrapper;
+    private Step scrapeEpisode;
 
     @Autowired
-    private RatingScrapper ratingScrapper;
+    private Step scrapeRatings;
 
     @Autowired
     private JobLauncherTestUtils testLauncher;
@@ -51,29 +49,23 @@ public class TestScrappers {
         return launcher;
     }
 
-    private void testScrapper(Scrapper scrapperToTest) {
-        JobExecution stepExecution = testLauncher.launchStep(scrapperToTest.getName());
+    private void test(Step stepToTest) {
+        JobExecution stepExecution = testLauncher.launchStep(stepToTest.getName());
         Assert.assertEquals(ExitStatus.COMPLETED, stepExecution.getExitStatus());
     }
 
     @Test
     public void testTitleScrapper() {
-        testScrapper(titleScrapper);
+        test(scrapeTitles);
     }
 
     @Test
     public void testEpisodeScrapper() {
-        testScrapper(episodeScrapper);
+        test(scrapeEpisode);
     }
 
     @Test
     public void testRatingsScrapper() {
-        testScrapper(ratingScrapper);
-    }
-
-    @Test
-    public void testFullScrappingJob() throws Exception {
-        JobExecution jobExecution = testLauncher.launchJob();
-        Assert.assertEquals(ExitStatus.COMPLETED, jobExecution.getExitStatus());
+        test(scrapeRatings);
     }
 }

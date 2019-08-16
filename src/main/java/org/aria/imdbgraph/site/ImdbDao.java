@@ -1,4 +1,4 @@
-package org.aria.imdbgraph.imdb;
+package org.aria.imdbgraph.site;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -72,16 +72,27 @@ public class ImdbDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("searchTerm", searchTerm);
         String sql = "" +
+                "WITH show_ratings AS (\n" +
+                "    SELECT show_id, COUNT(show_id), SUM(num_votes)\n" +
+                "    FROM imdb.rating\n" +
+                "        JOIN imdb.episode ON (imdb_id = show_id)\n" +
+                "    GROUP BY show_id\n" +
+                "    HAVING COUNT(show_id) > 0 AND SUM(num_votes) > 0\n" +
+                ")\n" +
                 "SELECT imdb_id,\n" +
                 "       primary_title,\n" +
                 "       start_year,\n" +
                 "       end_year,\n" +
                 "       COALESCE(imdb_rating, 0) as imdb_rating,\n" +
-                "       COALESCE(num_votes, 0) as num_votes\n" +
-                "FROM imdb.title LEFT JOIN imdb.rating USING (imdb_id)\n" +
-                "WHERE title_type = 'tvSeries'\n" +
-                "  AND plainto_tsquery(:searchTerm) @@ to_tsvector('english', primary_title)\n" +
-                "ORDER BY ts_rank_cd(to_tsvector('english', primary_title), plainto_tsquery(:searchTerm)) DESC, num_votes DESC\n" +
+                "       COALESCE(num_votes, 0)   as num_votes\n" +
+                "FROM (SELECT *,\n" +
+                "             to_tsvector('english', primary_title) as title_vec,\n" +
+                "             plainto_tsquery('english', 'game')    as title_query\n" +
+                "      FROM imdb.title\n" +
+                "               JOIN imdb.rating USING (imdb_id)) as ranking\n" +
+                "WHERE title_vec @@ title_query\n" +
+                "  AND title_type = 'tvSeries'\n" +
+                "ORDER BY ts_rank(title_vec, title_query) DESC, num_votes DESC\n" +
                 "LIMIT 50;";
         return jdbc.query(sql, params, (rs, rowNum) -> mapToShow(rs));
     }

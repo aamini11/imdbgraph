@@ -15,14 +15,14 @@ import java.util.function.Function;
 
 /**
  * Base class used to implement all the classes that will be responsible
- * for scrapping data from flat files provided by IMDB and storing it into
- * the database.
+ * for scrapping data from Flat files provided by IMDB.
  *
  * @param <T> The type representing each record of the file being parsed
  */
-public abstract class Scrapper<T> {
+abstract class Scrapper<T> {
 
     private static final int CHUNK_SIZE = 100;
+    private static final String STEP_NAME = Scrapper.class.getSimpleName();
 
     private final StepBuilderFactory stepBuilderFactory;
     final NamedParameterJdbcOperations jdbc;
@@ -43,10 +43,6 @@ public abstract class Scrapper<T> {
         this.jdbc = new NamedParameterJdbcTemplate(dataSource);
     }
 
-    public String getName() {
-        return this.getClass().getSimpleName();
-    }
-
     /**
      * Configures a step in the daily job that scraps files from IMDB
      *
@@ -54,7 +50,7 @@ public abstract class Scrapper<T> {
      * @return {@link Step} object to be used by spring batch.
      */
     Step createStep(Path fileLocation) {
-        return stepBuilderFactory.get(getName())
+        return stepBuilderFactory.get(STEP_NAME)
                 .<T, T>chunk(CHUNK_SIZE)
                 .reader(createReader(fileLocation, this::mapLine))
                 .writer(this::saveRecords)
@@ -81,7 +77,7 @@ public abstract class Scrapper<T> {
             Path fileLocation,
             Function<String, T> lineMapper) {
         return new FlatFileItemReaderBuilder<T>()
-                .name(getName() + "Reader")
+                .name(STEP_NAME + "Reader")
                 .resource(new FileSystemResource(fileLocation))
                 .linesToSkip(1)
                 .lineMapper((line, lineNum) -> lineMapper.apply(line))

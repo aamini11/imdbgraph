@@ -16,10 +16,10 @@ import static org.aria.imdbgraph.scrapper.TitleScrapper.TitleRecord;
  * for the shows and episodes
  */
 @Service
-public class TitleScrapper extends Scrapper<TitleRecord> {
+class TitleScrapper extends Scrapper<TitleRecord> {
 
     @Autowired
-    public TitleScrapper(StepBuilderFactory stepBuilderFactory,
+    TitleScrapper(StepBuilderFactory stepBuilderFactory,
                          DataSource dataSource) {
         super(stepBuilderFactory, dataSource);
     }

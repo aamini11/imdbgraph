@@ -14,9 +14,9 @@ import static org.aria.imdbgraph.scrapper.EpisodeScrapper.EpisodeRecord;
  * Scrapper responsible for extracting all episode information.
  */
 @Service
-public class EpisodeScrapper extends Scrapper<EpisodeRecord> {
+class EpisodeScrapper extends Scrapper<EpisodeRecord> {
 
-    public EpisodeScrapper(StepBuilderFactory stepBuilderFactory,
+    EpisodeScrapper(StepBuilderFactory stepBuilderFactory,
                            DataSource dataSource) {
         super(stepBuilderFactory, dataSource);
     }
@@ -60,5 +60,4 @@ public class EpisodeScrapper extends Scrapper<EpisodeRecord> {
     EpisodeRecord mapLine(String line) {
         return new EpisodeRecord(line);
     }
-
 }

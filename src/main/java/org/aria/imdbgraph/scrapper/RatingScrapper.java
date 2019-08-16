@@ -15,10 +15,10 @@ import static org.aria.imdbgraph.scrapper.RatingScrapper.RatingRecord;
  * Class responsible for extracting all the ratings data.
  */
 @Service
-public class RatingScrapper extends Scrapper<RatingRecord> {
+class RatingScrapper extends Scrapper<RatingRecord> {
 
     @Autowired
-    public RatingScrapper(StepBuilderFactory stepBuilderFactory,
+    RatingScrapper(StepBuilderFactory stepBuilderFactory,
                           DataSource dataSource) {
         super(stepBuilderFactory, dataSource);
     }
@@ -37,7 +37,7 @@ public class RatingScrapper extends Scrapper<RatingRecord> {
     }
 
     @Override
-    public RatingRecord mapLine(String line) {
+    RatingRecord mapLine(String line) {
         return new RatingRecord(line);
     }
 

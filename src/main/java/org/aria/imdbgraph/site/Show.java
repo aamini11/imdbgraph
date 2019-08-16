@@ -1,4 +1,4 @@
-package org.aria.imdbgraph.imdb;
+package org.aria.imdbgraph.site;
 
 /**
  * Immutable data class to represent information about a show. Includes rating

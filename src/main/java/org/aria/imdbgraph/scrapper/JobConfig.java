@@ -36,30 +36,39 @@ public class JobConfig {
     }
 
     @Bean
-    public Job imdbScrappingJob(Step downloadFilesStep,
-                                Scrapper<TitleRecord> titleScrapper,
-                                Scrapper<EpisodeRecord> episodeScrapper,
-                                Scrapper<RatingRecord> ratingsScrapper) {
-        Path titleFile = fileDownloader.getPath(TITLES_FILE);
-        Step titleStep = titleScrapper.createStep(titleFile);
-
-        Path episodeFile = fileDownloader.getPath(EPISODES_FILE);
-        Step episodeStep = episodeScrapper.createStep(episodeFile);
-
-        Path ratingsFile = fileDownloader.getPath(RATINGS_FILE);
-        Step ratingsStep = ratingsScrapper.createStep(ratingsFile);
-
+    public Job imdbScrappingJob(Step downloadFiles,
+                                Step scrapeTitles,
+                                Step scrapeEpisode,
+                                Step scrapeRatings) {
         return jobBuilder.get("imdbScrappingJob")
                 .incrementer(new RunIdIncrementer())
-                .start(downloadFilesStep)
-                .next(titleStep)
-                .next(episodeStep)
-                .next(ratingsStep)
+                .start(downloadFiles)
+                .next(scrapeTitles)
+                .next(scrapeEpisode)
+                .next(scrapeRatings)
                 .build();
     }
 
     @Bean
-    public Step downloadFilesStep(ImdbFileDownloader fileService) {
+    Step scrapeRatings(Scrapper<RatingRecord> ratingsScrapper) {
+        Path ratingsFile = fileDownloader.getPath(RATINGS_FILE);
+        return ratingsScrapper.createStep(ratingsFile);
+    }
+
+    @Bean
+    Step scrapeTitles(Scrapper<TitleRecord> titleScrapper) {
+        Path titleFile = fileDownloader.getPath(TITLES_FILE);
+        return titleScrapper.createStep(titleFile);
+    }
+
+    @Bean
+    Step scrapeEpisode(Scrapper<EpisodeRecord> episodeScrapper) {
+        Path episodeFile = fileDownloader.getPath(EPISODES_FILE);
+        return episodeScrapper.createStep(episodeFile);
+    }
+
+    @Bean
+    Step downloadFiles(ImdbFileDownloader fileService) {
         return stepBuilder.get("fileDownload")
                 .tasklet((contribution, chunkContext) -> {
                     fileService.downloadAllFiles();

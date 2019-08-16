@@ -1,8 +1,8 @@
 package org.aria.imdbgraph;
 
-import org.aria.imdbgraph.imdb.ImdbDao;
-import org.aria.imdbgraph.imdb.Ratings;
-import org.aria.imdbgraph.imdb.Show;
+import org.aria.imdbgraph.site.ImdbDao;
+import org.aria.imdbgraph.site.Ratings;
+import org.aria.imdbgraph.site.Show;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
