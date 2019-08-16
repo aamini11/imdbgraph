@@ -19,7 +19,7 @@ class RatingScrapper extends Scrapper<RatingRecord> {
 
     @Autowired
     RatingScrapper(StepBuilderFactory stepBuilderFactory,
-                          DataSource dataSource) {
+                   DataSource dataSource) {
         super(stepBuilderFactory, dataSource);
     }
 
@@ -45,11 +45,12 @@ class RatingScrapper extends Scrapper<RatingRecord> {
     void saveRecords(List<? extends RatingRecord> records) {
         final String updateSql = "" +
                 "INSERT INTO imdb.rating(imdb_id, imdb_rating, num_votes)\n" +
-                "VALUES (:imdbId, :imdbRating, :numVotes)\n" +
+                "SELECT vals.imdb_id, vals.imdb_rating, vals.num_votes\n" +
+                "FROM (VALUES (:imdbId, :imdbRating, :numVotes)) vals(imdb_id, imdb_rating, num_votes)\n" +
+                "         LEFT JOIN imdb.title USING (imdb_id)\n" +
                 "ON CONFLICT (imdb_id) DO UPDATE\n" +
-                "SET\n" +
-                "  imdb_rating = :imdbRating," +
-                "  num_votes = :numVotes;";
+                "    SET imdb_rating = EXCLUDED.imdb_rating,\n" +
+                "        num_votes   = EXCLUDED.num_votes;";
         SqlParameterSource[] params = records.stream()
                 .map(record -> new MapSqlParameterSource()
                         .addValue("imdbId", record.imdbId)

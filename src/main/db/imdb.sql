@@ -16,11 +16,11 @@ create table imdb.episode
     show_id varchar(10) not null
         constraint episode_title_imdb_id_fk
             references imdb.title,
-    episode_id varchar(10) not null
-        constraint episode_pk
-            primary key,
+    episode_id varchar(10) not null,
     season integer,
-    episode integer
+    episode integer,
+    constraint episode_pk
+        primary key (episode_id, show_id)
 );
 
 alter table imdb.episode owner to aamini;

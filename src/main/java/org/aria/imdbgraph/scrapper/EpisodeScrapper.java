@@ -17,7 +17,7 @@ import static org.aria.imdbgraph.scrapper.EpisodeScrapper.EpisodeRecord;
 class EpisodeScrapper extends Scrapper<EpisodeRecord> {
 
     EpisodeScrapper(StepBuilderFactory stepBuilderFactory,
-                           DataSource dataSource) {
+                    DataSource dataSource) {
         super(stepBuilderFactory, dataSource);
     }
 
@@ -37,21 +37,21 @@ class EpisodeScrapper extends Scrapper<EpisodeRecord> {
     }
 
     @Override
-    void saveRecords(List<? extends EpisodeRecord> records) {
+    void saveRecords(List<? extends EpisodeRecord> episodes) {
         final String updateSql = "" +
                 "INSERT INTO imdb.episode\n" +
                 "SELECT val.show_id, val.episode_id, val.season, val.episode\n" +
                 "FROM (VALUES (:showId, :episodeId, :season, :episode)) val(show_id, episode_id, season, episode)\n" +
-                "         JOIN imdb.title ON (show_id = imdb_id)\n" +
+                "         JOIN imdb.title ON (imdb_id = show_id)\n" +
                 "ON CONFLICT (show_id, episode_id) DO UPDATE\n" +
                 "    SET season  = EXCLUDED.season,\n" +
                 "        episode = EXCLUDED.episode;";
-        SqlParameterSource[] params = records.stream()
+        SqlParameterSource[] params = episodes.stream()
                 .map(record -> new MapSqlParameterSource()
-                .addValue("showId", record.showId)
-                .addValue("episodeId", record.episodeId)
-                .addValue("season", record.season)
-                .addValue("episode", record.episode))
+                        .addValue("showId", record.showId)
+                        .addValue("episodeId", record.episodeId)
+                        .addValue("season", record.season)
+                        .addValue("episode", record.episode))
                 .toArray(SqlParameterSource[]::new);
         super.jdbc.batchUpdate(updateSql, params);
     }
