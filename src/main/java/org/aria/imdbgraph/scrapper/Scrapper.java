@@ -22,7 +22,6 @@ import java.util.function.Function;
 abstract class Scrapper<T> {
 
     private static final int CHUNK_SIZE = 100;
-    private static final String STEP_NAME = Scrapper.class.getSimpleName();
 
     private final StepBuilderFactory stepBuilderFactory;
     final NamedParameterJdbcOperations jdbc;
@@ -50,7 +49,7 @@ abstract class Scrapper<T> {
      * @return {@link Step} object to be used by spring batch.
      */
     Step createStep(Path fileLocation) {
-        return stepBuilderFactory.get(STEP_NAME)
+        return stepBuilderFactory.get(this.getClass().getSimpleName())
                 .<T, T>chunk(CHUNK_SIZE)
                 .reader(createReader(fileLocation, this::mapLine))
                 .writer(this::saveRecords)
@@ -77,7 +76,7 @@ abstract class Scrapper<T> {
             Path fileLocation,
             Function<String, T> lineMapper) {
         return new FlatFileItemReaderBuilder<T>()
-                .name(STEP_NAME + "Reader")
+                .name(this.getClass().getSimpleName() + "Reader")
                 .resource(new FileSystemResource(fileLocation))
                 .linesToSkip(1)
                 .lineMapper((line, lineNum) -> lineMapper.apply(line))

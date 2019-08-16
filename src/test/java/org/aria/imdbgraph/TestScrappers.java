@@ -24,7 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBatchTest
 @ActiveProfiles("dev")
 @TestConfiguration
-public class TestScrappers {
+public class TestScrappers implements IntegrationTests {
 
     @Autowired
     private Step scrapeTitles;
@@ -55,17 +55,9 @@ public class TestScrappers {
     }
 
     @Test
-    public void testTitleScrapper() {
+    public void testAllScrappers() {
         test(scrapeTitles);
-    }
-
-    @Test
-    public void testEpisodeScrapper() {
-        test(scrapeEpisode);
-    }
-
-    @Test
-    public void testRatingsScrapper() {
         test(scrapeRatings);
+        test(scrapeEpisode);
     }
 }
