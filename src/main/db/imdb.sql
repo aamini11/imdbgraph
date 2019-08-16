@@ -1,4 +1,8 @@
-create table imdb.title
+create schema imdb;
+
+alter schema imdb owner to aamini;
+
+create table title
 (
     imdb_id varchar(10) not null
         constraint title_pk
@@ -9,42 +13,38 @@ create table imdb.title
     end_year char(4)
 );
 
-alter table imdb.title owner to aamini;
+alter table title owner to aamini;
 
-create table imdb.episode
+create table episode
 (
     show_id varchar(10) not null
         constraint episode_title_imdb_id_fk
-            references imdb.title,
-    episode_id varchar(10) not null,
+            references title,
+    episode_id varchar(10) not null
+        constraint episode_pk
+            primary key,
     season integer,
-    episode integer,
-    constraint episode_pk
-        primary key (episode_id, show_id)
+    episode integer
 );
 
-alter table imdb.episode owner to aamini;
+alter table episode owner to aamini;
 
-create table imdb.rating
+create table rating
 (
     imdb_id varchar(10) not null
         constraint rating_pk
             primary key
         constraint rating_title_imdb_id_fk
-            references imdb.title,
+            references title,
     imdb_rating double precision,
     num_votes integer
 );
 
-alter table imdb.rating owner to aamini;
-
-create index rating_num_votes_index
-    on imdb.rating (num_votes desc);
+alter table rating owner to aamini;
 
 create index title_title_type_index
-    on imdb.title (title_type)
+    on title (title_type)
     where (title_type = 'tvSeries'::text);
 
 create index title_primary_title_index
-    on imdb.title (to_tsvector('english', primary_title));
-
+    on title (to_tsvector('english', primary_title));

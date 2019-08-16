@@ -42,19 +42,19 @@ public class ImdbDao {
                 .addValue("showId", showId);
         final String sql =
                 "WITH rankings AS (\n" +
-                "    SELECT episode_id, season, episode, imdb_rating, num_votes\n" +
+                "    SELECT episode_id, season_num, episode_num, imdb_rating, num_votes\n" +
                 "    FROM imdb.episode\n" +
                 "             LEFT JOIN imdb.rating ON (episode_id = imdb_id)\n" +
                 "    WHERE show_id = :showId)\n" +
                 "SELECT rankings.*,\n" +
                 "       COALESCE(primary_title, 'No title was found') AS primary_title\n" +
                 "FROM rankings LEFT JOIN imdb.title ON (imdb_id = episode_id)\n" +
-                "WHERE title_type = 'tvEpisode' AND episode > 0 AND season > 0\n" +
-                "ORDER BY season, episode ASC;";
+                "WHERE title_type = 'tvEpisode' AND episode_num > 0 AND season_num > 0\n" +
+                "ORDER BY season_num, episode_num ASC;";
         List<Episode> allEpisodeRatings = jdbc.query(sql, params, (rs, rowNum) -> {
             String title = rs.getString("primary_title");
-            int season = rs.getInt("season");
-            int episode = rs.getInt("episode");
+            int season = rs.getInt("season_num");
+            int episode = rs.getInt("episode_num");
             double imdbRating = rs.getDouble("imdb_rating");
             int numVotes = rs.getInt("num_votes");
             return new Episode(title, season, episode, imdbRating, numVotes);
