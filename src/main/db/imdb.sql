@@ -50,5 +50,5 @@ create index if not exists title_title_type_index
     where (title_type = 'tvSeries'::text);
 
 create index if not exists title_primary_title_index
-    on title (to_tsvector('english', primary_title));
+    on title (to_tsvector('english', primary_title) desc);
 
