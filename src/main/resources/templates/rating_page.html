@@ -45,47 +45,49 @@
 <script th:inline="none">
     load_graph("graph", data);
 
-    function parse_ratings(ratings_json) {
+    function parse_ratings(ratings) {
         // Transform data into a format that Highcharts understands
-        let ratings = Object.entries(ratings_json.allRatings);
-        let series = ratings.map(([season_num, season_ratings]) => {
-            let data = Object.entries(season_ratings).map(([episode_num, episode]) => {
+        let allRatings = Object.entries(ratings.allEpisodeRatings);
+        let series = allRatings.map(([seasonNum, allEpisodeRatings]) => {
+            let data = Object.entries(allEpisodeRatings).map(([episode_num, episode]) => {
                 return {
                     numVotes: episode.numVotes,
                     y: parseFloat(episode.imdbRating),
                     episode: episode_num,
-                    season: season_num,
+                    season: seasonNum,
                     title: episode.episodeTitle
                 };
             });
 
             return {
-                name: "Season " + season_num,
+                name: "Season " + seasonNum,
                 type: "spline",
-                data: data
+                data: data,
+                regression: true,
+                regressionSettings: {
+                    name : "Season " + seasonNum,
+                    type: 'linear',
+                    dashStyle: 'solid'
+                },
             };
         });
 
-        // Order episodes
-        const totalEpisodesInSeries = ratings.reduce((total, [, episode_ratings]) => {
-            return total + Object.keys(episode_ratings).length;
-        }, 0);
-
-        for (let ordinal = 1; ordinal <= totalEpisodesInSeries;) {
-            series.forEach(season => {
-                season.data.forEach(episode => {
-                    episode.x = ordinal;
-                    ordinal++;
-                });
-            });
+        let i = 1;
+        for (let {data, ...rest} of series) {
+            let numberedData = [];
+            for (let episodeRating of data) {
+                if (episodeRating.numVotes > 0) { // ignore episodes without ratings
+                    episodeRating.x = i;
+                    numberedData.push(episodeRating);
+                }
+                i++;
+            }
+            data = numberedData;
         }
-
         return series;
     }
 
     function load_graph(html_id, data) {
-        let highcharts_data = parse_ratings(data);
-
         function format_title(show) {
             let showRunTime = "";
             if (show.startYear != null) {
@@ -144,7 +146,7 @@
                 enabled: false
             },
 
-            series: highcharts_data
+            series: parse_ratings(data)
         });
     }
 </script>

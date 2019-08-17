@@ -24,16 +24,18 @@
     </div>
 </nav>
 
-<div th:if="${param.q != null and not #lists.isEmpty(results)}">
-    <h1>Shows</h1>
-    <ul>
-        <li th:each="result : ${results}">
-            <a th:href="@{/ratings/{id}(id=${result.imdbId})}"
-               th:text="${result.title} + ' (Votes: '+ ${result.getNumVotes()} + ', Rating: ' + ${result.getShowRating()} + ')'"></a></li>
-    </ul>
-</div>
-<div th:if="${(param.q != null) and #lists.isEmpty(results)}">
-    <h1>No shows found</h1>
+<div id="search_results" th:if="${param.q != null}">
+    <div th:if="${not #lists.isEmpty(results)}">
+        <h1>Shows</h1>
+        <ul>
+            <li th:each="result : ${results}">
+                <a th:href="@{/ratings/{id}(id=${result.imdbId})}"
+                   th:text="${result.title} + ' (Votes: '+ ${result.getNumVotes()} + ', Rating: ' + ${result.getShowRating()} + ')'"></a></li>
+        </ul>
+    </div>
+    <div th:if="${#lists.isEmpty(results)}">
+        <h1>No shows found</h1>
+    </div>
 </div>
 
 </body>

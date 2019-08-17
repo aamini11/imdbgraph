@@ -1,7 +1,7 @@
 package org.aria.imdbgraph;
 
 import org.aria.imdbgraph.site.ImdbDao;
-import org.aria.imdbgraph.site.Ratings;
+import org.aria.imdbgraph.site.ShowRatings;
 import org.aria.imdbgraph.site.Show;
 import org.junit.Assert;
 import org.junit.Test;
@@ -38,8 +38,8 @@ public class TestImdbDao {
         Assert.assertEquals("Game of Thrones", match.getTitle());
         Assert.assertEquals(GAME_OF_THRONE_ID, match.getImdbId());
 
-        Ratings gotRatings = imdbDao.getAllShowRatings(match.getImdbId());
-        int numSeasons = gotRatings.getAllRatings().keySet().size();
+        ShowRatings gotShowRatings = imdbDao.getAllShowRatings(match.getImdbId());
+        int numSeasons = gotShowRatings.getAllEpisodeRatings().keySet().size();
         Assert.assertEquals(8, numSeasons);
     }
 }

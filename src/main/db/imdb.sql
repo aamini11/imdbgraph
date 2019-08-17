@@ -1,8 +1,4 @@
-create schema imdb;
-
-alter schema imdb owner to aamini;
-
-create table if not exists title
+create table if not exists imdb.title
 (
     imdb_id varchar(10) not null
         constraint title_pk
@@ -13,13 +9,11 @@ create table if not exists title
     end_year char(4)
 );
 
-alter table title owner to aamini;
-
-create table if not exists episode
+create table if not exists imdb.episode
 (
     show_id varchar(10) not null
         constraint episode_title_imdb_id_fk
-            references title,
+            references imdb.title,
     episode_id varchar(10) not null
         constraint episode_pk
             primary key,
@@ -27,28 +21,26 @@ create table if not exists episode
     episode_num integer
 );
 
-alter table episode owner to aamini;
-
 create index if not exists episode_show_id_index
-    on episode (show_id);
+    on imdb.episode (show_id);
 
-create table if not exists rating
+create table if not exists imdb.rating
 (
     imdb_id varchar(10) not null
         constraint rating_pk
             primary key
         constraint rating_title_imdb_id_fk
-            references title,
+            references imdb.title,
     imdb_rating double precision,
     num_votes integer
 );
 
-alter table rating owner to aamini;
+create index if not exists rating_num_votes_index
+    on imdb.rating (num_votes desc);
 
 create index if not exists title_title_type_index
-    on title (title_type)
-    where (title_type = 'tvSeries'::text);
+    on imdb.title (title_type)
+    where (title_type = 'tvSeries'::text OR title_type = 'tvEpisode');
 
 create index if not exists title_primary_title_index
-    on title (to_tsvector('english', primary_title) desc);
-
+    on imdb.title (to_tsvector('english', primary_title));

@@ -8,23 +8,23 @@ import java.util.Map;
 /**
  * Data class containing all the ratings data for a specific show.
  */
-public final class Ratings {
+public final class ShowRatings {
 
     private final Show show;
-    private final Map<Integer, Map<Integer, Episode>> allRatings;
+    private final Map<Integer, Map<Integer, Episode>> allEpisodeRatings;
 
     /**
-     * Constructor to initialize {@link Ratings} object.
+     * Constructor to initialize {@link ShowRatings} object.
      * @param show Show object which holds basic information about the show along with its rating.
-     * @param allRatings A list containing every episode rating for a show.
+     * @param allEpisodeRatings A list containing every episode rating for a show.
      */
-    Ratings(Show show, List<Episode> allRatings) {
+    ShowRatings(Show show, List<Episode> allEpisodeRatings) {
         this.show = show;
-        this.allRatings = toMap(allRatings);
+        this.allEpisodeRatings = toMap(allEpisodeRatings);
     }
 
     /**
-     * Returns a #{@link Show} object which contains information about the show for each {@link Ratings} object.
+     * Returns a #{@link Show} object which contains information about the show for each {@link ShowRatings} object.
      * @return #{@link Show} The show object
      */
     public Show getShow() {
@@ -35,8 +35,8 @@ public final class Ratings {
      * Returns ratings information for a show as a 2D map where (season number, episode number) -> episode rating.
      * @return The episode to rating map.
      */
-    public Map<Integer, Map<Integer, Episode>> getAllRatings() {
-        return allRatings;
+    public Map<Integer, Map<Integer, Episode>> getAllEpisodeRatings() {
+        return allEpisodeRatings;
     }
 
     /**
@@ -46,8 +46,8 @@ public final class Ratings {
      * @return {@link Episode} object containing ratings information
      */
     public Episode getEpisode(int episode, int season) {
-        if (allRatings.containsKey(season)) {
-            Map<Integer, Episode> seasonRatings = allRatings.get(season);
+        if (allEpisodeRatings.containsKey(season)) {
+            Map<Integer, Episode> seasonRatings = allEpisodeRatings.get(season);
             if (seasonRatings.containsKey(episode)) {
                 return seasonRatings.get(episode);
             }
