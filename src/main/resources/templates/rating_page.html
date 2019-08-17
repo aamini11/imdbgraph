@@ -61,7 +61,6 @@
 
             return {
                 name: "Season " + seasonNum,
-                type: "spline",
                 data: data,
                 regression: true,
                 regressionSettings: {
@@ -73,18 +72,21 @@
         });
 
         let i = 1;
-        for (let {data, ...rest} of series) {
-            let numberedData = [];
-            for (let episodeRating of data) {
+        let filteredSeries = [];
+        for (let s of series) {
+            let filteredData = [];
+            for (let episodeRating of s.data) {
                 if (episodeRating.numVotes > 0) { // ignore episodes without ratings
                     episodeRating.x = i;
-                    numberedData.push(episodeRating);
+                    filteredData.push(episodeRating);
                 }
                 i++;
             }
-            data = numberedData;
+            let filtered = {...s};
+            filtered.data = filteredData;
+            filteredSeries.push(filtered);
         }
-        return series;
+        return filteredSeries;
     }
 
     function load_graph(html_id, data) {
@@ -109,6 +111,10 @@
         Highcharts.chart(html_id, {
             title: {
                 text: format_title(data.show)
+            },
+
+            chart: {
+                type: 'line',
             },
 
             plotOptions: {
