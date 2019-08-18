@@ -61,13 +61,7 @@
 
             return {
                 name: "Season " + seasonNum,
-                data: data,
-                regression: true,
-                regressionSettings: {
-                    name : "Season " + seasonNum,
-                    type: 'linear',
-                    dashStyle: 'solid'
-                },
+                data: data
             };
         });
 
@@ -82,9 +76,11 @@
                 }
                 i++;
             }
-            let filtered = {...s};
-            filtered.data = filteredData;
-            filteredSeries.push(filtered);
+            if (filteredData.length > 0) {
+                let filtered = {...s};
+                filtered.data = filteredData;
+                filteredSeries.push(filtered);
+            }
         }
         return filteredSeries;
     }
@@ -114,7 +110,7 @@
             },
 
             chart: {
-                type: 'line',
+                type: 'spline',
             },
 
             plotOptions: {
