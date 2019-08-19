@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @Controller
-public class RatingController {
+public class ImdbController {
 
     private final ImdbDao imdbService;
 
     @Autowired
-    public RatingController(ImdbDao imdbService) {
+    public ImdbController(ImdbDao imdbService) {
         this.imdbService = imdbService;
     }
 
