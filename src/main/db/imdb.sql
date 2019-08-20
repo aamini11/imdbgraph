@@ -44,3 +44,10 @@ create index if not exists title_title_type_index
 
 create index if not exists title_primary_title_index
     on imdb.title (to_tsvector('english', primary_title));
+
+CREATE MATERIALIZED VIEW imdb.ratings_count AS
+SELECT show_id, COUNT(episode_id) AS num_episodes, SUM(COALESCE(num_votes, 0)) AS num_votes
+FROM imdb.title
+         JOIN imdb.episode ON (imdb_id = show_id)
+         LEFT JOIN imdb.rating ON (episode_id = rating.imdb_id)
+GROUP BY show_id;

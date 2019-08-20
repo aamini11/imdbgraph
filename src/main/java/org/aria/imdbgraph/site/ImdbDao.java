@@ -63,7 +63,7 @@ public class ImdbDao {
     }
 
     /**
-     * Method to search for a show using a search term provided by an end user.
+     * Method to search for a show using a search term provided by a user.
      *
      * @param searchTerm The search term to use
      * @return List of shows that match the search term
@@ -73,27 +73,28 @@ public class ImdbDao {
                 .addValue("searchTerm", searchTerm);
         String sql = "" +
                 "WITH query_result AS (\n" +
-                "    SELECT *, ts_rank(title_vec, title_query) as rank\n" +
+                "    SELECT *, ts_rank(title_vec, title_query) as q_rank\n" +
                 "    FROM (SELECT *,\n" +
                 "                 to_tsvector('english', primary_title) as title_vec,\n" +
                 "                 plainto_tsquery('english', :searchTerm)    as title_query\n" +
                 "          FROM imdb.title) as query_ranking\n" +
+                "             JOIN imdb.rating USING (imdb_id)\n" +
                 "    WHERE title_type = 'tvSeries'\n" +
                 "      AND title_vec @@ title_query\n" +
+                "    ORDER BY num_votes DESC\n" +
                 ")\n" +
                 "SELECT imdb_id,\n" +
                 "       primary_title,\n" +
                 "       start_year,\n" +
                 "       end_year,\n" +
                 "       imdb_rating,\n" +
-                "       num_votes\n" +
+                "       num_votes,\n" +
+                "       q_rank\n" +
                 "FROM query_result\n" +
-                "         JOIN imdb.rating USING (imdb_id)\n" +
-                "WHERE imdb_id IN (SELECT show_id AS d\n" +
-                "                  FROM query_result\n" +
-                "                           JOIN imdb.episode ON (query_result.imdb_id = show_id)\n" +
-                "                           JOIN imdb.rating ON (episode_id = rating.imdb_id))\n" +
-                "ORDER BY rank DESC, num_votes DESC\n" +
+                "WHERE imdb_id NOT IN (SELECT show_id\n" +
+                "                      FROM imdb.ratings_count\n" +
+                "                      WHERE num_votes = 0\n" +
+                "                         OR num_episodes = 0)\n" +
                 "LIMIT 50;";
         return jdbc.query(sql, params, (rs, rowNum) -> mapToShow(rs));
     }

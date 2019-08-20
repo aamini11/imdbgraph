@@ -27,9 +27,9 @@ public class JobConfig {
     private final ImdbFileDownloader fileDownloader;
 
     @Autowired
-    JobConfig(JobBuilderFactory jobBuilder,
-              StepBuilderFactory stepBuilder,
-              ImdbFileDownloader fileDownloader) {
+    public JobConfig(JobBuilderFactory jobBuilder,
+                     StepBuilderFactory stepBuilder,
+                     ImdbFileDownloader fileDownloader) {
         this.jobBuilder = jobBuilder;
         this.stepBuilder = stepBuilder;
         this.fileDownloader = fileDownloader;
