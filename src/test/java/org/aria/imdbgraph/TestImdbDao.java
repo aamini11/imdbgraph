@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @SpringBootTest
 @SpringBatchTest
 @ActiveProfiles("dev")
-public class TestImdb {
+public class TestImdbDao {
 
     private static final String GAME_OF_THRONE_ID = "tt0944947";
     private static final String AVATAR_ID = "tt0417299";
@@ -46,7 +46,7 @@ public class TestImdb {
     @Autowired
     private ImdbDao imdbDao;
 
-    private void test(Step stepToTest) {
+    public void test(Step stepToTest) {
         JobExecution stepExecution = testLauncher.launchStep(stepToTest.getName());
         Assert.assertEquals(ExitStatus.COMPLETED, stepExecution.getExitStatus());
     }
@@ -57,6 +57,26 @@ public class TestImdb {
         test(scrapeTitles);
         test(scrapeRatings);
         test(scrapeEpisode);
+    }
+
+    @Test
+    public void searchGOT() {
+        testSearch("Game", "Game of Thrones", GAME_OF_THRONE_ID);
+    }
+
+    @Test
+    public void searchAvatar() {
+        testSearch("Avatar", "Avatar: The Last Airbender", AVATAR_ID);
+    }
+
+    @Test
+    public void validateGOTRatings() {
+        validateRatings(GAME_OF_THRONE_ID, 8);
+    }
+
+    @Test
+    public void validateAvatarRatings() {
+        validateRatings(AVATAR_ID, 3);
     }
 
     private void testSearch(String searchTerm, String expectedTitle, String imdbId) {
@@ -79,25 +99,5 @@ public class TestImdb {
         EpisodeRatings ratings = imdbDao.getAllShowRatings(avatar.getImdbId());
         int numSeasons = ratings.getAllEpisodeRatings().keySet().size();
         Assert.assertEquals(expectedNumSeasons, numSeasons);
-    }
-
-    @Test
-    public void searchGOT() {
-        testSearch("Game", "Game of Thrones", GAME_OF_THRONE_ID);
-    }
-
-    @Test
-    public void searchAvatar() {
-        testSearch("Avatar", "Avatar: The Last Airbender", AVATAR_ID);
-    }
-
-    @Test
-    public void validateGOTRatings() {
-        validateRatings(GAME_OF_THRONE_ID, 8);
-    }
-
-    @Test
-    public void validateAvatarRatings() {
-        validateRatings(AVATAR_ID, 3);
     }
 }

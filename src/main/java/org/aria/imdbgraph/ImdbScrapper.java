@@ -11,7 +11,6 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,7 @@ import java.util.Date;
 @EnableScheduling
 public class ImdbScrapper {
 
-    private static final Logger logger = LoggerFactory.getLogger(CommandLineRunner.class);
+    private static final Logger logger = LoggerFactory.getLogger(ImdbScrapper.class);
 
     private final Job dailyScrapper;
     private final JobLauncher jobLauncher;
