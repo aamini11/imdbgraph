@@ -91,10 +91,9 @@ public class ImdbDao {
                 "       num_votes,\n" +
                 "       q_rank\n" +
                 "FROM query_result\n" +
-                "WHERE imdb_id NOT IN (SELECT show_id\n" +
+                "WHERE imdb_id IN (SELECT imdb_id\n" +
                 "                      FROM imdb.ratings_count\n" +
-                "                      WHERE num_votes = 0\n" +
-                "                         OR num_episodes = 0)\n" +
+                "                      WHERE num_votes > 0)\n" +
                 "LIMIT 50;";
         return jdbc.query(sql, params, (rs, rowNum) -> mapToShow(rs));
     }
