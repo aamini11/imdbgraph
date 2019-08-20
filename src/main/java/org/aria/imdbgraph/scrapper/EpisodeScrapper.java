@@ -43,7 +43,7 @@ class EpisodeScrapper extends Scrapper<EpisodeRecord> {
                 "SELECT val.show_id, val.episode_id, val.season, val.episode\n" +
                 "FROM (VALUES (:showId, :episodeId, :season, :episode)) val(show_id, episode_id, season, episode)\n" +
                 "         JOIN imdb.title ON (imdb_id = show_id)\n" +
-                "ON CONFLICT (show_id, episode_id) DO UPDATE\n" +
+                "ON CONFLICT (episode_id) DO UPDATE\n" +
                 "    SET season_num  = EXCLUDED.season_num,\n" +
                 "        episode_num = EXCLUDED.episode_num;";
         SqlParameterSource[] params = episodes.stream()
