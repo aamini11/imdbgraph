@@ -45,9 +45,6 @@ public class TestScrappers implements IntegrationTests {
     private Step scrapeRatings;
 
     @Autowired
-    private JobOperator jobOperator;
-
-    @Autowired
     private JobLauncherTestUtils testLauncher;
 
     @Bean
