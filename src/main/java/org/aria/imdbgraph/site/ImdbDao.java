@@ -33,7 +33,7 @@ public class ImdbDao {
      * @return POJO containing the basic show info and ratings
      */
     @SuppressWarnings("SimplifyOptionalCallChains")
-    public ShowRatings getAllShowRatings(String showId) {
+    public EpisodeRatings getAllShowRatings(String showId) {
         Optional<Show> showInfo = getShow(showId);
         if (!showInfo.isPresent()) {
             throw new InvalidParameterException("Invalid show ID");
@@ -59,7 +59,7 @@ public class ImdbDao {
             int numVotes = rs.getInt("num_votes");
             return new Episode(title, season, episode, imdbRating, numVotes);
         });
-        return new ShowRatings(showInfo.get(), allEpisodeRatings);
+        return new EpisodeRatings(showInfo.get(), allEpisodeRatings);
     }
 
     /**

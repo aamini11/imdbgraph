@@ -8,23 +8,23 @@ import java.util.Map;
 /**
  * Data class containing all the ratings data for a specific show.
  */
-public final class ShowRatings {
+public final class EpisodeRatings {
 
     private final Show show;
     private final Map<Integer, Map<Integer, Episode>> allEpisodeRatings;
 
     /**
-     * Constructor to initialize {@link ShowRatings} object.
+     * Constructor to initialize {@link EpisodeRatings} object.
      * @param show Show object which holds basic information about the show along with its rating.
      * @param allEpisodeRatings A list containing every episode rating for a show.
      */
-    ShowRatings(Show show, List<Episode> allEpisodeRatings) {
+    EpisodeRatings(Show show, List<Episode> allEpisodeRatings) {
         this.show = show;
         this.allEpisodeRatings = toMap(allEpisodeRatings);
     }
 
     /**
-     * Returns a #{@link Show} object which contains information about the show for each {@link ShowRatings} object.
+     * Returns a #{@link Show} object which contains information about the show for each {@link EpisodeRatings} object.
      * @return #{@link Show} The show object
      */
     public Show getShow() {
@@ -41,11 +41,11 @@ public final class ShowRatings {
 
     /**
      * Returns ratings information for a specific episode of a show
-     * @param episode The episode number
      * @param season The season number
+     * @param episode The episode number
      * @return {@link Episode} object containing ratings information
      */
-    public Episode getEpisode(int episode, int season) {
+    public Episode getEpisode(int season, int episode) {
         if (allEpisodeRatings.containsKey(season)) {
             Map<Integer, Episode> seasonRatings = allEpisodeRatings.get(season);
             if (seasonRatings.containsKey(episode)) {
