@@ -32,7 +32,7 @@ public class ImdbScrapper {
         this.jobLauncher = jobLauncher;
     }
 
-    @Scheduled(cron = "0 0 1 * * ?")
+    @Scheduled(cron = "0 0 8 * * ?")
     public void launchJob() {
         try {
             JobParameters params = new JobParametersBuilder()
