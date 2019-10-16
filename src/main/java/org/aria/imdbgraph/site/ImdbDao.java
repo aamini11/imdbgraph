@@ -40,19 +40,18 @@ public class ImdbDao {
         }
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("showId", showId);
-        final String sql =
-                "WITH rankings AS (\n" +
-                "    SELECT episode_id, season_num, episode_num, imdb_rating, num_votes\n" +
-                "    FROM imdb.episode\n" +
-                "             LEFT JOIN imdb.rating ON (episode_id = imdb_id)\n" +
-                "    WHERE show_id = :showId)\n" +
-                "SELECT rankings.*,\n" +
-                "       COALESCE(primary_title, 'No title was found') AS primary_title\n" +
-                "FROM rankings LEFT JOIN imdb.title ON (imdb_id = episode_id)\n" +
-                "WHERE title_type = 'tvEpisode' AND episode_num > 0 AND season_num > 0\n" +
-                "ORDER BY season_num, episode_num ASC;";
+        final String sql = "" +
+                "SELECT episode_title,\n" +
+                "       season_num,\n" +
+                "       episode_num,\n" +
+                "       imdb_rating,\n" +
+                "       num_votes,\n" +
+                "       COALESCE(episode_title, 'No title was found') AS primary_title\n" +
+                "FROM imdb.episode JOIN imdb.rateable_title ON (episode_id = imdb_id)\n" +
+                "WHERE show_id = :showId AND episode_num > 0 AND season_num > 0\n" +
+                "ORDER BY season_num, episode_num;";
         List<Episode> allEpisodeRatings = jdbc.query(sql, params, (rs, rowNum) -> {
-            String title = rs.getString("primary_title");
+            String title = rs.getString("episode_title");
             int season = rs.getInt("season_num");
             int episode = rs.getInt("episode_num");
             double imdbRating = rs.getDouble("imdb_rating");
@@ -72,28 +71,15 @@ public class ImdbDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("searchTerm", searchTerm);
         String sql = "" +
-                "WITH query_result AS (\n" +
-                "    SELECT *, ts_rank(title_vec, title_query) as q_rank\n" +
-                "    FROM (SELECT *,\n" +
-                "                 to_tsvector('english', primary_title) as title_vec,\n" +
-                "                 plainto_tsquery('english', :searchTerm)    as title_query\n" +
-                "          FROM imdb.title) as query_ranking\n" +
-                "             JOIN imdb.rating USING (imdb_id)\n" +
-                "    WHERE title_type = 'tvSeries'\n" +
-                "      AND title_vec @@ title_query\n" +
-                "    ORDER BY num_votes DESC\n" +
-                ")\n" +
                 "SELECT imdb_id,\n" +
                 "       primary_title,\n" +
                 "       start_year,\n" +
                 "       end_year,\n" +
                 "       imdb_rating,\n" +
-                "       num_votes,\n" +
-                "       q_rank\n" +
-                "FROM query_result\n" +
-                "WHERE imdb_id IN (SELECT imdb_id\n" +
-                "                      FROM imdb.ratings_count\n" +
-                "                      WHERE num_votes > 0)\n" +
+                "       num_votes\n" +
+                "FROM imdb.show JOIN imdb.rateable_title USING (imdb_id)\n" +
+                "WHERE to_tsvector('english', primary_title) @@ plainto_tsquery('english', :searchTerm)" +
+                "ORDER BY num_votes DESC\n" +
                 "LIMIT 50;";
         return jdbc.query(sql, params, (rs, rowNum) -> mapToShow(rs));
     }
@@ -107,9 +93,9 @@ public class ImdbDao {
                 "  primary_title, " +
                 "  start_year," +
                 "  end_year, " +
-                "  COALESCE(imdb_rating, 0) as imdb_rating, " +
-                "  COALESCE(num_votes, 0) as num_votes\n" +
-                "FROM imdb.title LEFT JOIN imdb.rating USING (imdb_id) " +
+                "  imdb_rating as imdb_rating, " +
+                "  num_votes as num_votes\n" +
+                "FROM imdb.show JOIN imdb.rateable_title USING (imdb_id) " +
                 "WHERE imdb_id = :showId";
         try {
             Show show = jdbc.queryForObject(sql, params, (rs, rowNum) -> mapToShow(rs));

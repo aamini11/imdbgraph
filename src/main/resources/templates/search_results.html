@@ -37,6 +37,10 @@
         <h1>No shows found</h1>
     </div>
 </div>
+<div id="into" th:if="${param.q == null}">
+    <h1>Welcome to IMDB graph</h1>
+    <p>Search for any TV show to see their episode ratings visualized</p>
+</div>
 
 </body>
 </html>

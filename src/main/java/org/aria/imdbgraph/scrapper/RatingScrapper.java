@@ -44,13 +44,10 @@ class RatingScrapper extends Scrapper<RatingRecord> {
     @Override
     void saveRecords(List<? extends RatingRecord> records) {
         final String updateSql = "" +
-                "INSERT INTO imdb.rating(imdb_id, imdb_rating, num_votes)\n" +
-                "SELECT vals.imdb_id, vals.imdb_rating, vals.num_votes\n" +
-                "FROM (VALUES (:imdbId, :imdbRating, :numVotes)) vals(imdb_id, imdb_rating, num_votes)\n" +
-                "         LEFT JOIN imdb.title USING (imdb_id)\n" +
-                "ON CONFLICT (imdb_id) DO UPDATE\n" +
-                "    SET imdb_rating = EXCLUDED.imdb_rating,\n" +
-                "        num_votes   = EXCLUDED.num_votes;";
+                "UPDATE imdb.rateable_title\n" +
+                "SET imdb_rating = :imdbRating,\n" +
+                "    num_votes = :numVotes\n" +
+                "WHERE imdb_id = :imdbId";
         SqlParameterSource[] params = records.stream()
                 .map(record -> new MapSqlParameterSource()
                         .addValue("imdbId", record.imdbId)

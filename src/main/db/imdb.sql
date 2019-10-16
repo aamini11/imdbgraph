@@ -1,53 +1,36 @@
-create table if not exists imdb.title
+CREATE TABLE imdb.rateable_title
 (
-    imdb_id varchar(10) not null
-        constraint title_pk
-            primary key,
-    primary_title text,
-    title_type text,
-    start_year char(4),
-    end_year char(4)
+    imdb_id     VARCHAR(10) PRIMARY KEY,
+    imdb_rating DOUBLE PRECISION DEFAULT 0.0,
+    num_votes   INTEGER          DEFAULT 0
 );
 
-create table if not exists imdb.episode
+CREATE TABLE imdb.show
 (
-    show_id varchar(10) not null
-        constraint episode_title_imdb_id_fk
-            references imdb.title,
-    episode_id varchar(10) not null
-        constraint episode_pk
-            primary key,
-    season_num integer,
-    episode_num integer
+    imdb_id       VARCHAR(10) PRIMARY KEY REFERENCES imdb.rateable_title,
+    primary_title TEXT,
+    start_year    CHAR(4),
+    end_year      CHAR(4)
 );
 
-create index if not exists episode_show_id_index
-    on imdb.episode (show_id);
-
-create table if not exists imdb.rating
+CREATE TABLE imdb.episode
 (
-    imdb_id varchar(10) not null
-        constraint rating_pk
-            primary key
-        constraint rating_title_imdb_id_fk
-            references imdb.title,
-    imdb_rating double precision,
-    num_votes integer
+    show_id       VARCHAR(10) REFERENCES imdb.show,
+    episode_id    VARCHAR(10) PRIMARY KEY REFERENCES imdb.rateable_title,
+    episode_title TEXT,
+    season_num    INTEGER,
+    episode_num   INTEGER
 );
 
-create index if not exists rating_num_votes_index
-    on imdb.rating (num_votes desc);
+CREATE INDEX episode_show_id_index
+    ON imdb.episode (show_id);
 
-create index if not exists title_title_type_index
-    on imdb.title (title_type)
-    where (title_type = 'tvSeries'::text OR title_type = 'tvEpisode');
-
-create index if not exists title_primary_title_index
-    on imdb.title (to_tsvector('english', primary_title));
+CREATE INDEX title_primary_title_index
+    ON imdb.show USING gin (to_tsvector('english', primary_title));
 
 CREATE MATERIALIZED VIEW imdb.ratings_count AS
-SELECT show_id, COUNT(episode_id) AS num_episodes, SUM(COALESCE(num_votes, 0)) AS num_votes
-FROM imdb.title
-         JOIN imdb.episode ON (imdb_id = show_id)
-         LEFT JOIN imdb.rating ON (episode_id = rating.imdb_id)
-GROUP BY show_id;
+SELECT show_id, SUM(rateable_title.num_votes)
+FROM imdb.episode
+         JOIN imdb.rateable_title ON (episode_id = rateable_title.imdb_id)
+GROUP BY show_id
+HAVING SUM(rateable_title.num_votes) > 0
