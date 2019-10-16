@@ -39,7 +39,7 @@ class EpisodeScrapper extends Scrapper<EpisodeRecord> {
     @Override
     void saveRecords(List<? extends EpisodeRecord> episodes) {
         String updateSql = "" +
-                "INSERT INTO imdb.episode\n" +
+                "INSERT INTO imdb.episode(show_id, episode_id, season_num, episode_num)\n" +
                 "SELECT val.show_id, val.episode_id, val.season, val.episode\n" +
                 "FROM (VALUES (:showId, :episodeId, :season, :episode)) val(show_id, episode_id, season, episode)\n" +
                 "         JOIN imdb.rateable_title ON (episode_id = rateable_title.imdb_id)\n" +
