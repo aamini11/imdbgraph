@@ -29,8 +29,7 @@ CREATE INDEX title_primary_title_index
     ON imdb.show USING gin (to_tsvector('english', primary_title));
 
 CREATE MATERIALIZED VIEW imdb.ratings_count AS
-SELECT show_id, SUM(rateable_title.num_votes)
+SELECT show_id, SUM(rateable_title.num_votes) as vote_total
 FROM imdb.episode
          JOIN imdb.rateable_title ON (episode_id = rateable_title.imdb_id)
-GROUP BY show_id
-HAVING SUM(rateable_title.num_votes) > 0
+GROUP BY show_id;
