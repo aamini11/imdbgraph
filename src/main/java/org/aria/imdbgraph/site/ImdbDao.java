@@ -80,7 +80,7 @@ public class ImdbDao {
                 "FROM imdb.show\n" +
                 "         JOIN imdb.rateable_title USING (imdb_id)\n" +
                 "WHERE to_tsvector('english', primary_title) @@ plainto_tsquery('english', :searchTerm)\n" +
-                "  AND imdb_id IN (SELECT show_id FROM imdb.ratings_count WHERE vote_total > 0)\n" +
+                "  AND imdb_id IN (SELECT show_id FROM imdb.ratings_count)\n" +
                 "ORDER BY num_votes DESC\n" +
                 "LIMIT 50;";
         return jdbc.query(sql, params, (rs, rowNum) -> mapToShow(rs));
