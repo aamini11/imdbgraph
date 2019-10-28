@@ -12,11 +12,11 @@ import java.util.List;
 @Controller
 public class ImdbController {
 
-    private final ImdbDao imdbService;
+    private final ImdbRatingsService imdbRatingsService;
 
     @Autowired
-    public ImdbController(ImdbDao imdbService) {
-        this.imdbService = imdbService;
+    public ImdbController(ImdbRatingsService imdbRatingsService) {
+        this.imdbRatingsService = imdbRatingsService;
     }
 
     @GetMapping(value = "/")
@@ -26,13 +26,13 @@ public class ImdbController {
 
     @GetMapping(value = "/ratings/{showId}")
     public String getRating(@PathVariable(value = "showId") String showId, Model model) {
-        model.addAttribute("ratingsData", imdbService.getAllShowRatings(showId));
+        model.addAttribute("ratingsData", imdbRatingsService.getAllShowRatings(showId));
         return "rating_page.html";
     }
 
     @GetMapping(value = "/search")
     public String search(@RequestParam(value="q") String searchTerm, Model model) {
-        List<Show> shows = imdbService.searchShows(searchTerm);
+        List<Show> shows = imdbRatingsService.searchShows(searchTerm);
         model.addAttribute("results", shows);
         return "search_results.html";
     }
