@@ -15,6 +15,7 @@ public final class Show {
 
     /**
      * Constructor used to initialize show information.
+     *
      * @param imdbId The IMDB id of the show.
      * @param title Title of the show
      * @param startYear Year show began

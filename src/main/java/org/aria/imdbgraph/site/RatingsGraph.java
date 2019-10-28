@@ -8,23 +8,28 @@ import java.util.Map;
 /**
  * Data class containing all the ratings data for a specific show.
  */
-public final class EpisodeRatings {
+public final class RatingsGraph {
 
     private final Show show;
     private final Map<Integer, Map<Integer, Episode>> allEpisodeRatings;
 
     /**
-     * Constructor to initialize {@link EpisodeRatings} object.
-     * @param show Show object which holds basic information about the show along with its rating.
-     * @param allEpisodeRatings A list containing every episode rating for a show.
+     * Constructor to initialize {@link RatingsGraph} object.
+     *
+     * @param show              Show object which holds basic information about
+     *                          the show along with its rating.
+     * @param allEpisodeRatings A list containing every episode rating for a
+     *                          show.
      */
-    EpisodeRatings(Show show, List<Episode> allEpisodeRatings) {
+    RatingsGraph(Show show, List<Episode> allEpisodeRatings) {
         this.show = show;
         this.allEpisodeRatings = toMap(allEpisodeRatings);
     }
 
     /**
-     * Returns a #{@link Show} object which contains information about the show for each {@link EpisodeRatings} object.
+     * Returns a #{@link Show} object which contains information about the
+     * show for each {@link RatingsGraph} object.
+     *
      * @return #{@link Show} The show object
      */
     public Show getShow() {
@@ -32,7 +37,9 @@ public final class EpisodeRatings {
     }
 
     /**
-     * Returns ratings information for a show as a 2D map where (season number, episode number) -> episode rating.
+     * Returns ratings information for a show as a 2D map where
+     * (season number, episode number) -> episode rating.
+     *
      * @return The episode to rating map.
      */
     public Map<Integer, Map<Integer, Episode>> getAllEpisodeRatings() {
@@ -41,7 +48,8 @@ public final class EpisodeRatings {
 
     /**
      * Returns ratings information for a specific episode of a show
-     * @param season The season number
+     *
+     * @param season  The season number
      * @param episode The episode number
      * @return {@link Episode} object containing ratings information
      */

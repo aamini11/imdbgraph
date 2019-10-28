@@ -16,12 +16,12 @@ import java.util.*;
  * Service class that supports basic IMDB operations like getting ratings for a show.
  */
 @Repository
-public class ImdbDao {
+public class ImdbRatingsService {
 
     private final NamedParameterJdbcOperations jdbc;
 
     @Autowired
-    public ImdbDao(NamedParameterJdbcOperations jdbc) {
+    public ImdbRatingsService(NamedParameterJdbcOperations jdbc) {
         this.jdbc = jdbc;
     }
 
@@ -33,7 +33,7 @@ public class ImdbDao {
      * @return POJO containing the basic show info and ratings
      */
     @SuppressWarnings("SimplifyOptionalCallChains")
-    public EpisodeRatings getAllShowRatings(String showId) {
+    public RatingsGraph getAllShowRatings(String showId) {
         Optional<Show> showInfo = getShow(showId);
         if (!showInfo.isPresent()) {
             throw new InvalidParameterException("Invalid show ID");
@@ -58,7 +58,7 @@ public class ImdbDao {
             int numVotes = rs.getInt("num_votes");
             return new Episode(title, season, episode, imdbRating, numVotes);
         });
-        return new EpisodeRatings(showInfo.get(), allEpisodeRatings);
+        return new RatingsGraph(showInfo.get(), allEpisodeRatings);
     }
 
     /**
