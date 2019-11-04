@@ -5,15 +5,17 @@ import org.postgresql.core.BaseConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
-import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,8 +36,7 @@ public class DatabaseUpdater {
 
     private final DataSource dataSource;
     private final FileDownloader fileDownloader;
-    private BaseConnection connection;
-    private Statement statement;
+    private final JdbcTemplate jdbcTemplate;
 
     /**
      * Constructor to initialize the {@code DatabaseUpdater} with all its
@@ -56,25 +57,19 @@ public class DatabaseUpdater {
                            FileDownloader fileDownloader) {
         this.dataSource = dataSource;
         this.fileDownloader = fileDownloader;
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
     /**
      * Method that will begin downloading the latest IMDB files and updating the
      * database with that data.
      */
+    @Transactional
     public void loadAllFiles() {
-        try (BaseConnection conn = dataSource.getConnection().unwrap(BaseConnection.class);
-             Statement s = conn.createStatement()) {
-            this.connection = conn;
-            this.statement = s;
-            this.connection.setAutoCommit(false);
-
+        try {
             copyFiles();
-            loadTitles();
+            loadShows();
             loadEpisodes();
-            loadRatings();
-
-            this.connection.commit();
         } catch (SQLException e) {
             throw new FileLoadingError(e);
         }
@@ -87,7 +82,7 @@ public class DatabaseUpdater {
      * into the real tables.
      */
     private void copyFiles() throws SQLException {
-        statement.execute("" +
+        jdbcTemplate.execute("" +
                 "CREATE TEMPORARY TABLE temp_title\n" +
                 "(\n" +
                 "    imdb_id         VARCHAR(10) PRIMARY KEY,\n" +
@@ -99,22 +94,22 @@ public class DatabaseUpdater {
                 "    end_year        CHAR(4),\n" +
                 "    runtime_minutes INT,\n" +
                 "    genres          TEXT\n" +
-                ") ON COMMIT DROP;\n" +
-                "" +
+                ") ON COMMIT DROP;\n " +
+
                 "CREATE TEMPORARY TABLE temp_episode\n" +
                 "(\n" +
                 "    episode_id  VARCHAR(10) PRIMARY KEY,\n" +
                 "    show_id     VARCHAR(10),\n" +
                 "    season_num  INT,\n" +
                 "    episode_num INT\n" +
-                ") ON COMMIT DROP;\n " +
-                "" +
+                ") ON COMMIT DROP;\n" +
+
                 "CREATE TEMPORARY TABLE temp_ratings\n" +
                 "(\n" +
                 "    imdb_id     VARCHAR(10),\n" +
                 "    imdb_rating DOUBLE PRECISION,\n" +
                 "    num_votes   INT\n" +
-                ") ON COMMIT DROP;\n ");
+                ") ON COMMIT DROP;");
 
         Map<ImdbFile, String> fileToTableName = Map.ofEntries(
                 entry(TITLES_FILE, "temp_title"),
@@ -122,73 +117,64 @@ public class DatabaseUpdater {
                 entry(RATINGS_FILE, "temp_ratings")
         );
 
+        BaseConnection postgresConnection = DataSourceUtils.getConnection(dataSource)
+                .unwrap(BaseConnection.class);
+
         Set<ImdbFile> filesToDownload = fileToTableName.keySet();
         Map<ImdbFile, Path> filePaths = fileDownloader.download(filesToDownload);
         for (Map.Entry<ImdbFile, String> e : fileToTableName.entrySet()) {
             ImdbFile fileToLoad = e.getKey();
             String tableName = e.getValue();
-            try (BufferedReader fileReader = Files.newBufferedReader(filePaths.get(fileToLoad))) {
-                CopyManager copier = new CopyManager(connection);
+            Path pathOfFileToLoad = filePaths.get(fileToLoad);
+            try (Reader fileReader = Files.newBufferedReader(pathOfFileToLoad)) {
+                CopyManager copier = new CopyManager(postgresConnection);
                 //language=SQL
                 String command = "" +
                         "COPY %s\n" +
                         "FROM STDIN\n" +
-                        "WITH (DELIMITER '\t');\n";
+                        "WITH (DELIMITER '\t');";
                 copier.copyIn(String.format(command, tableName), fileReader);
-                logger.info("{} successfully transferred to table {}", fileToLoad.getDownloadUrl(), tableName);
+
+                logger.info("{} successfully transferred to table {}",
+                        fileToLoad.getDownloadUrl(),
+                        tableName);
             } catch (SQLException | IOException exception) {
                 throw new FileLoadingError(exception);
             }
         }
     }
 
-    private void loadTitles() throws SQLException {
-        statement.execute("" +
-                "INSERT INTO imdb.rateable_title(imdb_id)\n" +
-                "SELECT imdb_id\n" +
-                "FROM temp_title\n " +
-                "WHERE title_type = 'tvSeries' OR title_type = 'tvEpisode'\n" +
-                "ON CONFLICT DO NOTHING;\n" +
-                "\n" +
-                "INSERT INTO imdb.show(imdb_id, primary_title, start_year, end_year)\n" +
-                "SELECT imdb_id, primary_title, start_year, end_year\n" +
-                "FROM temp_title\n" +
+    private void loadShows() {
+        jdbcTemplate.execute("" +
+                "INSERT INTO imdb.show(imdb_id, primary_title, start_year, end_year, imdb_rating, num_votes)\n" +
+                "SELECT imdb_id, primary_title, start_year, end_year, COALESCE(imdb_rating, 0.0), COALESCE(num_votes, 0)\n" +
+                "FROM temp_title LEFT JOIN temp_ratings USING (imdb_id)\n" +
                 "WHERE title_type = 'tvSeries'\n" +
                 "ON CONFLICT (imdb_id) DO UPDATE\n" +
-                "SET primary_title = EXCLUDED.primary_title,\n" +
-                "    start_year    = EXCLUDED.start_year,\n" +
-                "    end_year      = EXCLUDED.end_year;\n" +
-                "\n" +
-                "INSERT INTO imdb.episode(episode_id, episode_title)\n" +
-                "SELECT imdb_id, primary_title\n" +
-                "FROM temp_title\n" +
-                "WHERE title_type = 'tvEpisode'" +
+                "    SET primary_title = excluded.primary_title,\n" +
+                "        start_year    = excluded.start_year,\n" +
+                "        end_year      = excluded.end_year," +
+                "        imdb_rating   = excluded.imdb_rating," +
+                "        num_votes     = excluded.num_votes;");
+        logger.info("Shows successfully transferred from temp table to real table");
+    }
+
+    private void loadEpisodes() {
+        jdbcTemplate.execute("" +
+                "INSERT INTO imdb.episode(show_id, episode_id, episode_title, season_num, episode_num, imdb_rating, num_votes)\n" +
+                "SELECT show_id, episode_id, primary_title, season_num, episode_num, COALESCE(imdb_rating, 0.0), COALESCE(num_votes, 0)\n" +
+                "FROM temp_episode\n" +
+                "         JOIN temp_title ON (episode_id = imdb_id)" +
+                "         LEFT JOIN temp_ratings USING (imdb_id)\n" +
+                "WHERE show_id IN (SELECT imdb_id FROM imdb.show)\n" +
                 "ON CONFLICT (episode_id) DO UPDATE\n" +
-                "SET episode_title = EXCLUDED.episode_title;");
-        logger.info("Titles successfully loaded");
-    }
-
-    private void loadRatings() throws SQLException {
-        statement.execute("" +
-                "UPDATE imdb.rateable_title r\n" +
-                "SET imdb_rating = temp.imdb_rating,\n" +
-                "    num_votes = temp.num_votes\n" +
-                "FROM temp_ratings temp\n" +
-                "WHERE r.imdb_id = temp.imdb_id;\n");
-        logger.info("Ratings successfully loaded");
-    }
-
-    private void loadEpisodes() throws SQLException {
-        statement.execute("" +
-                "INSERT INTO imdb.episode(show_id, episode_id, season_num, episode_num) " +
-                "SELECT show_id, episode_id, season_num, episode_num " +
-                "FROM temp_episode " +
-                "WHERE show_id IN (SELECT imdb_id FROM imdb.show) " +
-                "ON CONFLICT (episode_id) DO UPDATE " +
-                "SET show_id       = EXCLUDED.show_id," +
-                "    season_num    = EXCLUDED.season_num," +
-                "    episode_num   = EXCLUDED.episode_num;");
-        logger.info("Episodes successfully loaded");
+                "    SET show_id       = excluded.show_id,\n" +
+                "        episode_title = excluded.episode_title,\n" +
+                "        season_num    = excluded.season_num,\n" +
+                "        episode_num   = excluded.episode_num,\n" +
+                "        imdb_rating   = excluded.imdb_rating," +
+                "        num_votes     = excluded.num_votes;");
+        logger.info("Episodes successfully transferred from temp table to real table");
     }
 
     private static class FileLoadingError extends RuntimeException {

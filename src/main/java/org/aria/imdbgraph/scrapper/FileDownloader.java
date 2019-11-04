@@ -78,16 +78,16 @@ public class FileDownloader {
     /**
      * Downloads all the files from IMDB which contain the data needed to be
      * parsed and loaded into the database.
-     *
-     * NOTE: This method also unzips the file and removes its first line (header).
+     * <p>
+     * NOTE: This method also unzips the file and removes its first line
+     * (header).
      *
      * @param filesToDownload The download method accepts a set of
      *                        {@code ImdbFile} which represents all the IMDB
      *                        files you want this method to download.
-     *
      * @return If the method was able to download the files successfully, it
-     * returns a map where each {@code ImdbFile} points to the path
-     * where that file was downloaded.
+     * returns a map where each {@code ImdbFile} points to the path where that
+     * file was downloaded.
      */
     public Map<ImdbFile, Path> download(Set<ImdbFile> filesToDownload) {
         Map<ImdbFile, Path> downloadedFiles = new EnumMap<>(ImdbFile.class);

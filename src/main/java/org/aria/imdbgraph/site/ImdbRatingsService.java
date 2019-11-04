@@ -32,10 +32,9 @@ public class ImdbRatingsService {
      * @param showId The Imdb ID of the show to fetch ratings for.
      * @return POJO containing the basic show info and ratings
      */
-    @SuppressWarnings("SimplifyOptionalCallChains")
     public RatingsGraph getAllShowRatings(String showId) {
-        Optional<Show> showInfo = getShow(showId);
-        if (!showInfo.isPresent()) {
+        Optional<Show> show = getShow(showId);
+        if (show.isEmpty()) {
             throw new InvalidParameterException("Invalid show ID");
         }
         SqlParameterSource params = new MapSqlParameterSource()
@@ -47,7 +46,7 @@ public class ImdbRatingsService {
                 "       imdb_rating,\n" +
                 "       num_votes,\n" +
                 "       COALESCE(episode_title, 'No title was found') AS primary_title\n" +
-                "FROM imdb.episode JOIN imdb.rateable_title ON (episode_id = imdb_id)\n" +
+                "FROM imdb.episode\n" +
                 "WHERE show_id = :showId AND episode_num > 0 AND season_num > 0\n" +
                 "ORDER BY season_num, episode_num;";
         List<Episode> allEpisodeRatings = jdbc.query(sql, params, (rs, rowNum) -> {
@@ -58,7 +57,7 @@ public class ImdbRatingsService {
             int numVotes = rs.getInt("num_votes");
             return new Episode(title, season, episode, imdbRating, numVotes);
         });
-        return new RatingsGraph(showInfo.get(), allEpisodeRatings);
+        return new RatingsGraph(show.get(), allEpisodeRatings);
     }
 
     /**
@@ -78,15 +77,16 @@ public class ImdbRatingsService {
                 "       imdb_rating,\n" +
                 "       num_votes\n" +
                 "FROM imdb.show\n" +
-                "         JOIN imdb.rateable_title USING (imdb_id)\n" +
                 "WHERE to_tsvector('english', primary_title) @@ plainto_tsquery('english', :searchTerm)\n" +
-                "  AND imdb_id IN (SELECT show_id FROM imdb.ratings_count)\n" +
+                "  AND EXISTS(SELECT * " +
+                "             FROM imdb.show JOIN imdb.episode ON (imdb_id = show_id) " +
+                "             WHERE episode.num_votes > 0)\n" +
                 "ORDER BY num_votes DESC\n" +
                 "LIMIT 50;";
         return jdbc.query(sql, params, (rs, rowNum) -> mapToShow(rs));
     }
 
-    public Optional<Show> getShow(String showId) {
+    private Optional<Show> getShow(String showId) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("showId", showId);
         final String sql =
@@ -97,7 +97,7 @@ public class ImdbRatingsService {
                 "  end_year, " +
                 "  imdb_rating as imdb_rating, " +
                 "  num_votes as num_votes\n" +
-                "FROM imdb.show JOIN imdb.rateable_title USING (imdb_id) " +
+                "FROM imdb.show\n" +
                 "WHERE imdb_id = :showId";
         try {
             Show show = jdbc.queryForObject(sql, params, (rs, rowNum) -> mapToShow(rs));

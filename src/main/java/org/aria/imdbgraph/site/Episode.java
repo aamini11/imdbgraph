@@ -4,6 +4,7 @@ package org.aria.imdbgraph.site;
  * Data class to hold information about a specific episode of a show include the
  * IMDB ratings for that episode.
  */
+@SuppressWarnings("WeakerAccess")
 public final class Episode {
 
     private final String episodeTitle;
