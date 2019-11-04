@@ -16,7 +16,7 @@ public class DailyUpdateScheduler {
         this.databaseUpdater = databaseUpdater;
     }
 
-    @Scheduled(cron = "0 0 8 * * ?")
+    @Scheduled(cron = "0 0 8 * * *")
     public void launchJob() {
         databaseUpdater.loadAllFiles();
     }

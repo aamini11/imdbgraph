@@ -13,7 +13,8 @@ import java.sql.SQLException;
 import java.util.*;
 
 /**
- * Service class that supports basic IMDB operations like getting ratings for a show.
+ * Service class that supports basic IMDB operations like searching for shows
+ * and getting episode ratings for TV shows.
  */
 @Repository
 public class ImdbRatingsService {
@@ -77,10 +78,9 @@ public class ImdbRatingsService {
                 "       imdb_rating,\n" +
                 "       num_votes\n" +
                 "FROM imdb.show\n" +
-                "WHERE to_tsvector('english', primary_title) @@ plainto_tsquery('english', :searchTerm)\n" +
-                "  AND EXISTS(SELECT * " +
-                "             FROM imdb.show JOIN imdb.episode ON (imdb_id = show_id) " +
-                "             WHERE episode.num_votes > 0)\n" +
+                "WHERE to_tsvector('english', primary_title) @@ " +
+                "      plainto_tsquery('english', :searchTerm)\n" +
+                "  AND imdb_id IN (SELECT show_id FROM imdb.valid_show)\n" +
                 "ORDER BY num_votes DESC\n" +
                 "LIMIT 50;";
         return jdbc.query(sql, params, (rs, rowNum) -> mapToShow(rs));
@@ -95,8 +95,8 @@ public class ImdbRatingsService {
                 "  primary_title, " +
                 "  start_year," +
                 "  end_year, " +
-                "  imdb_rating as imdb_rating, " +
-                "  num_votes as num_votes\n" +
+                "  imdb_rating, " +
+                "  num_votes\n" +
                 "FROM imdb.show\n" +
                 "WHERE imdb_id = :showId";
         try {

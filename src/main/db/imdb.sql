@@ -24,3 +24,8 @@ CREATE INDEX episode_show_id_index
 
 CREATE INDEX title_primary_title_index
     ON imdb.show USING gin (to_tsvector('english', primary_title));
+
+CREATE MATERIALIZED VIEW imdb.valid_show AS
+SELECT DISTINCT show_id
+FROM imdb.episode
+WHERE num_votes > 0;
