@@ -1,3 +1,5 @@
+CREATE EXTENSION pg_trgm;
+
 CREATE TABLE imdb.show
 (
     imdb_id       VARCHAR(10) PRIMARY KEY,
@@ -22,8 +24,7 @@ CREATE TABLE imdb.episode
 CREATE INDEX episode_show_id_index
     ON imdb.episode (show_id);
 
-CREATE INDEX title_primary_title_index
-    ON imdb.show USING gin (to_tsvector('english', primary_title));
+CREATE INDEX trigram_index ON imdb.show USING GIN (primary_title gin_trgm_ops);
 
 CREATE MATERIALIZED VIEW imdb.valid_show AS
 SELECT DISTINCT show_id

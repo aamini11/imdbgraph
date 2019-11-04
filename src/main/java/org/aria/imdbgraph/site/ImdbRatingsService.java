@@ -78,8 +78,7 @@ public class ImdbRatingsService {
                 "       imdb_rating,\n" +
                 "       num_votes\n" +
                 "FROM imdb.show\n" +
-                "WHERE to_tsvector('english', primary_title) @@ " +
-                "      plainto_tsquery('english', :searchTerm)\n" +
+                "WHERE primary_title % :searchTerm\n" +
                 "  AND imdb_id IN (SELECT show_id FROM imdb.valid_show)\n" +
                 "ORDER BY num_votes DESC\n" +
                 "LIMIT 50;";
