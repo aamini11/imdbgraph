@@ -146,35 +146,60 @@ public class DatabaseUpdater {
 
     private void loadShows() {
         jdbcTemplate.execute("" +
-                "INSERT INTO imdb.show(imdb_id, primary_title, start_year, end_year, imdb_rating, num_votes)\n" +
-                "SELECT imdb_id, primary_title, start_year, end_year, COALESCE(imdb_rating, 0.0), COALESCE(num_votes, 0)\n" +
-                "FROM temp_title LEFT JOIN temp_ratings USING (imdb_id)\n" +
+                "INSERT INTO imdb.show(imdb_id,\n" +
+                "                      primary_title,\n" +
+                "                      start_year,\n" +
+                "                      end_year,\n" +
+                "                      imdb_rating,\n" +
+                "                      num_votes)\n" +
+                "SELECT imdb_id,\n" +
+                "       primary_title,\n" +
+                "       start_year,\n" +
+                "       end_year,\n" +
+                "       COALESCE(imdb_rating, 0.0), \n" +
+                "       COALESCE(num_votes, 0)\n" +
+                "FROM temp_title\n" +
+                "         LEFT JOIN temp_ratings USING (imdb_id)\n" +
                 "WHERE title_type = 'tvSeries'\n" +
                 "ON CONFLICT (imdb_id) DO UPDATE\n" +
                 "    SET primary_title = excluded.primary_title,\n" +
                 "        start_year    = excluded.start_year,\n" +
-                "        end_year      = excluded.end_year," +
-                "        imdb_rating   = excluded.imdb_rating," +
+                "        end_year      = excluded.end_year,\n" +
+                "        imdb_rating   = excluded.imdb_rating,\n" +
                 "        num_votes     = excluded.num_votes;");
-        logger.info("Shows successfully transferred from temp table to real table");
+        logger.info("Shows successfully updated");
     }
 
     private void loadEpisodes() {
         jdbcTemplate.execute("" +
-                "INSERT INTO imdb.episode(show_id, episode_id, episode_title, season_num, episode_num, imdb_rating, num_votes)\n" +
-                "SELECT show_id, episode_id, primary_title, season_num, episode_num, COALESCE(imdb_rating, 0.0), COALESCE(num_votes, 0)\n" +
+                "INSERT INTO imdb.episode(show_id,\n" +
+                "                         episode_id,\n" +
+                "                         episode_title,\n" +
+                "                         season_num,\n" +
+                "                         episode_num,\n" +
+                "                         imdb_rating,\n" +
+                "                         num_votes)\n" +
+                "SELECT show_id,\n" +
+                "       episode_id,\n" +
+                "       primary_title,\n" +
+                "       season_num,\n" +
+                "       episode_num,\n" +
+                "       COALESCE(imdb_rating, 0.0),\n" +
+                "       COALESCE(num_votes, 0)\n" +
                 "FROM temp_episode\n" +
-                "         JOIN temp_title ON (episode_id = imdb_id)" +
+                "         JOIN temp_title ON (episode_id = imdb_id)\n" +
                 "         LEFT JOIN temp_ratings USING (imdb_id)\n" +
                 "WHERE show_id IN (SELECT imdb_id FROM imdb.show)\n" +
+                "  AND season_num > 0\n" +
+                "  AND episode_num > 0\n" +
                 "ON CONFLICT (episode_id) DO UPDATE\n" +
                 "    SET show_id       = excluded.show_id,\n" +
                 "        episode_title = excluded.episode_title,\n" +
                 "        season_num    = excluded.season_num,\n" +
                 "        episode_num   = excluded.episode_num,\n" +
-                "        imdb_rating   = excluded.imdb_rating," +
+                "        imdb_rating   = excluded.imdb_rating,\n" +
                 "        num_votes     = excluded.num_votes;");
-        logger.info("Episodes successfully transferred from temp table to real table");
+        logger.info("Episodes successfully updated");
     }
 
     private static class FileLoadingError extends RuntimeException {
