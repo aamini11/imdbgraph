@@ -70,6 +70,9 @@ public class DatabaseUpdater {
             copyFiles();
             loadShows();
             loadEpisodes();
+            // Refresh cache which contains all the shows with at least one
+            // episode rating
+            jdbcTemplate.execute("REFRESH MATERIALIZED VIEW imdb.valid_show;");
         } catch (SQLException e) {
             throw new FileLoadingError(e);
         }

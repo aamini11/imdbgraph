@@ -48,7 +48,7 @@ public class ImdbRatingsService {
                 "       num_votes,\n" +
                 "       COALESCE(episode_title, 'No title was found') AS primary_title\n" +
                 "FROM imdb.episode\n" +
-                "WHERE show_id = :showId AND episode_num > 0 AND season_num > 0\n" +
+                "WHERE show_id = :showId\n" +
                 "ORDER BY season_num, episode_num;";
         List<Episode> allEpisodeRatings = jdbc.query(sql, params, (rs, rowNum) -> {
             String title = rs.getString("episode_title");
@@ -78,7 +78,7 @@ public class ImdbRatingsService {
                 "       imdb_rating,\n" +
                 "       num_votes\n" +
                 "FROM imdb.show\n" +
-                "WHERE primary_title % :searchTerm\n" +
+                "WHERE :searchTerm <% primary_title\n" +
                 "  AND imdb_id IN (SELECT show_id FROM imdb.valid_show)\n" +
                 "ORDER BY num_votes DESC\n" +
                 "LIMIT 50;";
