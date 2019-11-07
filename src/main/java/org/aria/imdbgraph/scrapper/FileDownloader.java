@@ -9,13 +9,14 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.*;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
-
-import static java.nio.file.StandardOpenOption.*;
 
 /**
  * Utility class whose responsibility is to download and formats files provided
@@ -79,8 +80,7 @@ public class FileDownloader {
      * Downloads all the files from IMDB which contain the data needed to be
      * parsed and loaded into the database.
      * <p>
-     * NOTE: This method also unzips the file and removes its first line
-     * (header).
+     * NOTE: This method also unzips the file.
      *
      * @param filesToDownload The download method accepts a set of
      *                        {@code ImdbFile} which represents all the IMDB
@@ -92,12 +92,12 @@ public class FileDownloader {
     public Map<ImdbFile, Path> download(Set<ImdbFile> filesToDownload) {
         Map<ImdbFile, Path> downloadedFiles = new EnumMap<>(ImdbFile.class);
         for (ImdbFile f : filesToDownload) {
-            Path downloadLocation = baseDir.resolve(f.getUnzippedFileName());
             URL downloadURL = f.getDownloadUrl();
-            try (InputStream downloadStream = new GZIPInputStream(downloadURL.openStream()); // unzips files as well.
-                 BufferedReader reader = new BufferedReader(new InputStreamReader(downloadStream));
-                 BufferedWriter writer = Files.newBufferedWriter(downloadLocation, TRUNCATE_EXISTING)) {
-                File outputFile = downloadLocation.toFile();
+            File outputFile = baseDir.resolve(f.getUnzippedFileName()).toFile();
+            // unzips files as well.
+            try (InputStream unzippedStream = new GZIPInputStream(downloadURL.openStream());
+                 ReadableByteChannel rbc = Channels.newChannel(unzippedStream);
+                 FileOutputStream fos = new FileOutputStream(outputFile)) {
                 if (outputFile.getParentFile().mkdirs()) {
                     logger.info("Creating path: {}", outputFile.getParentFile());
                 }
@@ -105,18 +105,11 @@ public class FileDownloader {
                     logger.info("Creating new file: {}", outputFile.getName());
                 }
 
-                String line;
-                for (int i = 0; (line = reader.readLine()) != null; i++) {
-                    // Skip first line since it's a header and messes with
-                    // posgresql's COPY command.
-                    if (i == 0) continue;
-                    writer.write(line);
-                    writer.newLine();
-                }
-                logger.info("Downloaded file: {}", downloadURL);
-                downloadedFiles.put(f, downloadLocation);
+                fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+                logger.info("Downloaded file: {} to {}", downloadURL, outputFile);
+                downloadedFiles.put(f, outputFile.toPath());
             } catch (IOException e) {
-                throw new UncheckedIOException(e);
+                throw new DatabaseUpdater.FileLoadingError(e);
             }
         }
 

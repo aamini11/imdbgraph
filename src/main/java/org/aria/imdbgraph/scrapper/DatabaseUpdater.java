@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
@@ -63,6 +63,10 @@ public class DatabaseUpdater {
     /**
      * Method that will begin downloading the latest IMDB files and updating the
      * database with that data.
+     *
+     * @throws FileLoadingError If the class is unable to read the files and
+     * load them into the database successfully, a file loading error will be
+     * thrown.
      */
     @Transactional
     public void loadAllFiles() {
@@ -129,14 +133,17 @@ public class DatabaseUpdater {
             ImdbFile fileToLoad = e.getKey();
             String tableName = e.getValue();
             Path pathOfFileToLoad = filePaths.get(fileToLoad);
-            try (Reader fileReader = Files.newBufferedReader(pathOfFileToLoad)) {
+            try (BufferedReader br = Files.newBufferedReader(pathOfFileToLoad)) {
                 CopyManager copier = new CopyManager(postgresConnection);
                 //language=SQL
                 String command = "" +
                         "COPY %s\n" +
                         "FROM STDIN\n" +
                         "WITH (DELIMITER '\t');";
-                copier.copyIn(String.format(command, tableName), fileReader);
+
+                String header = br.readLine();
+                if (header == null) throw new FileLoadingError("Empty file received");
+                copier.copyIn(String.format(command, tableName), br);
 
                 logger.info("{} successfully transferred to table {}",
                         fileToLoad.getDownloadUrl(),
@@ -205,8 +212,12 @@ public class DatabaseUpdater {
         logger.info("Episodes successfully updated");
     }
 
-    private static class FileLoadingError extends RuntimeException {
-        private FileLoadingError(Throwable cause) {
+    static class FileLoadingError extends RuntimeException {
+        FileLoadingError(String message) {
+            super(message);
+        }
+
+        FileLoadingError(Throwable cause) {
             super(cause);
         }
     }

@@ -1,4 +1,4 @@
-package org.aria.imdbgraph.site;
+package org.aria.imdbgraph.ratings;
 
 import java.security.InvalidParameterException;
 import java.util.LinkedHashMap;

@@ -1,4 +1,4 @@
-package org.aria.imdbgraph.site;
+package org.aria.imdbgraph.ratings;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @Controller
-public class ImdbController {
+public class RatingsController {
 
     private final ImdbRatingsService imdbRatingsService;
 
     @Autowired
-    public ImdbController(ImdbRatingsService imdbRatingsService) {
+    public RatingsController(ImdbRatingsService imdbRatingsService) {
         this.imdbRatingsService = imdbRatingsService;
     }
 

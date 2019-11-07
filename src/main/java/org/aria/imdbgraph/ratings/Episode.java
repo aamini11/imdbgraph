@@ -1,4 +1,4 @@
-package org.aria.imdbgraph.site;
+package org.aria.imdbgraph.ratings;
 
 /**
  * Data class to hold information about a specific episode of a show include the

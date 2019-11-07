@@ -14,7 +14,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.EnumMap;
 import java.util.Map;
@@ -39,7 +38,7 @@ public class DatabaseLoaderUnitTests {
     private FileDownloader fileDownloader;
 
     @Test
-    public void testSampleFiles() throws IOException {
+    public void testSampleFiles() {
         Path root = Path.of("src/test/resources/data");
 
         Map<ImdbFile, Path> filePaths = new EnumMap<>(ImdbFile.class);
@@ -52,6 +51,6 @@ public class DatabaseLoaderUnitTests {
         int epCount = JdbcTestUtils.countRowsInTable(jdbc, "imdb.episode");
         int showCount = JdbcTestUtils.countRowsInTable(jdbc, "imdb.show");
         Assert.assertEquals(3, showCount);
-        Assert.assertEquals(139, epCount);
+        Assert.assertEquals(134, epCount);
     }
 }
