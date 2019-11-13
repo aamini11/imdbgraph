@@ -27,14 +27,14 @@ import java.util.zip.GZIPInputStream;
  * https://www.imdb.com/interfaces/
  */
 @Service
-public class FileDownloader {
+class FileDownloader {
 
     private static final Logger logger = LoggerFactory.getLogger(FileDownloader.class);
     private static final String BASE_DOWNLOAD_URL = "https://datasets.imdbws.com";
 
     private final Path baseDir;
 
-    public FileDownloader(@Value("${imdbgraph.data.directory}") String baseDir) {
+    FileDownloader(@Value("${imdbgraph.data.directory}") String baseDir) {
         this.baseDir = Paths.get(baseDir);
     }
 
@@ -42,7 +42,7 @@ public class FileDownloader {
      * Enum to represent all the flat files provided by IMDB that need to be
      * parsed and downloaded into the database.
      */
-    public enum ImdbFile {
+    enum ImdbFile {
         TITLES_FILE("title.basics.tsv.gz"),
         EPISODES_FILE("title.episode.tsv.gz"),
         RATINGS_FILE("title.ratings.tsv.gz");
@@ -89,7 +89,7 @@ public class FileDownloader {
      * returns a map where each {@code ImdbFile} points to the path where that
      * file was downloaded.
      */
-    public Map<ImdbFile, Path> download(Set<ImdbFile> filesToDownload) {
+    Map<ImdbFile, Path> download(Set<ImdbFile> filesToDownload) {
         Map<ImdbFile, Path> downloadedFiles = new EnumMap<>(ImdbFile.class);
         for (ImdbFile f : filesToDownload) {
             URL downloadURL = f.getDownloadUrl();

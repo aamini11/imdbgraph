@@ -1,6 +1,5 @@
-package org.aria.imdbgraph;
+package org.aria.imdbgraph.scrapper;
 
-import org.aria.imdbgraph.scrapper.FileDownloader;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
