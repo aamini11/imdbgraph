@@ -53,7 +53,7 @@ public class DatabaseUpdater {
      *                       every time you test this class.
      */
     @Autowired
-    public DatabaseUpdater(DataSource dataSource,
+    DatabaseUpdater(DataSource dataSource,
                            FileDownloader fileDownloader) {
         this.dataSource = dataSource;
         this.fileDownloader = fileDownloader;
@@ -191,17 +191,17 @@ public class DatabaseUpdater {
                 "                         num_votes)\n" +
                 "SELECT show_id,\n" +
                 "       episode_id,\n" +
-                "       primary_title,\n" +
+                "       COALESCE(primary_title, 'No title found'),\n" +
                 "       season_num,\n" +
                 "       episode_num,\n" +
                 "       COALESCE(imdb_rating, 0.0),\n" +
                 "       COALESCE(num_votes, 0)\n" +
                 "FROM temp_episode\n" +
-                "         JOIN temp_title ON (episode_id = imdb_id)\n" +
+                "         LEFT JOIN temp_title ON (episode_id = imdb_id)\n" +
                 "         LEFT JOIN temp_ratings USING (imdb_id)\n" +
                 "WHERE show_id IN (SELECT imdb_id FROM imdb.show)\n" +
-                "  AND season_num > 0\n" +
-                "  AND episode_num > 0\n" +
+                "  AND season_num >= 0\n" +
+                "  AND episode_num >= 0\n" +
                 "ON CONFLICT (episode_id) DO UPDATE\n" +
                 "    SET show_id       = excluded.show_id,\n" +
                 "        episode_title = excluded.episode_title,\n" +
