@@ -13,8 +13,8 @@ import java.sql.SQLException;
 import java.util.*;
 
 /**
- * Service class that supports basic IMDB operations like searching for shows
- * and getting episode ratings for TV shows.
+ * Service class that supports basic IMDB operations involving ratings data.
+ * Operations like searching for shows and getting episode ratings for TV shows.
  */
 @Repository
 public class ImdbRatingsService {
@@ -27,11 +27,11 @@ public class ImdbRatingsService {
     }
 
     /**
-     * Returns every ratings for a show along with some basic information about
-     * that show (title, year, etc...).
+     * Method that returns all ratings data for a specific show.
      *
      * @param showId The Imdb ID of the show to fetch ratings for.
-     * @return POJO containing the basic show info and ratings
+     * @return A {@code RatingsGraph} object containing all the show information
+     * and episode ratings.
      */
     public RatingsGraph getAllShowRatings(String showId) {
         Optional<Show> show = getShow(showId);
@@ -62,14 +62,14 @@ public class ImdbRatingsService {
     }
 
     /**
-     * Method to search for a show using a search term provided by a user.
+     * Search method used by users to look for TV shows.
      *
-     * @param searchTerm The search term to use
-     * @return List of shows that match the search term
+     * @param searchQuery The search query provided by the user.
+     * @return List of possible shows that match the search query.
      */
-    public List<Show> searchShows(String searchTerm) {
+    public List<Show> searchShows(String searchQuery) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("searchTerm", searchTerm);
+                .addValue("searchTerm", searchQuery);
         String sql = "" +
                 "SELECT imdb_id,\n" +
                 "       primary_title,\n" +

@@ -1,10 +1,11 @@
 package org.aria.imdbgraph.ratings;
 
 /**
- * Data class to hold information about a specific episode of a show include the
- * IMDB ratings for that episode.
+ * Immutable data class containing all the meta-data and ratings information
+ * about a specific episode of a TV show.
+ *
+ * Note: This class will also be serialized as a JSON object
  */
-@SuppressWarnings("WeakerAccess")
 public final class Episode {
 
     private final String episodeTitle;

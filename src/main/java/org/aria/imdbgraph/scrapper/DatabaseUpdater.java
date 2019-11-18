@@ -154,6 +154,9 @@ public class DatabaseUpdater {
         }
     }
 
+    /**
+     * Load data from temp tables to show table.
+     */
     private void loadShows() {
         jdbcTemplate.execute("" +
                 "INSERT INTO imdb.show(imdb_id,\n" +
@@ -180,6 +183,9 @@ public class DatabaseUpdater {
         logger.info("Shows successfully updated");
     }
 
+    /**
+     * Load data from temp tables to episode table.
+     */
     private void loadEpisodes() {
         jdbcTemplate.execute("" +
                 "INSERT INTO imdb.episode(show_id,\n" +
