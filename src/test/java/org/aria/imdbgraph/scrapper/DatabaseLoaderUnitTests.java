@@ -49,6 +49,6 @@ public class DatabaseLoaderUnitTests {
         int epCount = JdbcTestUtils.countRowsInTable(jdbc, "imdb.episode");
         int showCount = JdbcTestUtils.countRowsInTable(jdbc, "imdb.show");
         Assert.assertEquals(3, showCount);
-        Assert.assertEquals(134, epCount);
+        Assert.assertEquals(135, epCount);
     }
 }
