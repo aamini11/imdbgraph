@@ -72,8 +72,8 @@
                 if (episodeRating.numVotes > 0) { // ignore episodes without ratings
                     episodeRating.x = i;
                     filteredData.push(episodeRating);
+                    i++;
                 }
-                i++;
             }
             if (filteredData.length > 0) {
                 let filtered = {...s};
