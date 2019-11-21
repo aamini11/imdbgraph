@@ -41,7 +41,7 @@ public final class RatingsGraph {
      *
      * @return 2D map where (season number, episode number) points to (episode rating).
      */
-    @JsonProperty("episodeRatings")
+    @JsonProperty("allEpisodeRatings")
     public Map<Integer, Map<Integer, Episode>> getAllEpisodeRatings() {
         return allEpisodeRatings;
     }
