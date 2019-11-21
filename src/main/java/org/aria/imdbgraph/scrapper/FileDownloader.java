@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
+import static org.aria.imdbgraph.scrapper.DatabaseUpdater.*;
+
 /**
  * Utility class whose responsibility is to download and formats files provided
  * by IMDB which contain all the data needed for this application. This includes
@@ -71,7 +73,7 @@ class FileDownloader {
             try {
                 return new URL(downloadURL);
             } catch (MalformedURLException e) {
-                throw new UncheckedIOException(e);
+                throw new FileLoadingError(e);
             }
         }
     }
@@ -88,6 +90,10 @@ class FileDownloader {
      * @return If the method was able to download the files successfully, it
      * returns a map where each {@code ImdbFile} points to the path where that
      * file was downloaded.
+     *
+     * @throws FileLoadingError If the download method encountered any IO
+     * errors and wasn't able to properly download all the files, a file loading
+     * error will be thrown.
      */
     Map<ImdbFile, Path> download(Set<ImdbFile> filesToDownload) {
         Map<ImdbFile, Path> downloadedFiles = new EnumMap<>(ImdbFile.class);
@@ -109,7 +115,7 @@ class FileDownloader {
                 logger.info("Downloaded file: {} to {}", downloadURL, outputFile);
                 downloadedFiles.put(f, outputFile.toPath());
             } catch (IOException e) {
-                throw new DatabaseUpdater.FileLoadingError(e);
+                throw new FileLoadingError(e);
             }
         }
 
