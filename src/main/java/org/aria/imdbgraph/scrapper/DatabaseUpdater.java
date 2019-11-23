@@ -173,7 +173,7 @@ public class DatabaseUpdater {
                 "       COALESCE(num_votes, 0)\n" +
                 "FROM temp_title\n" +
                 "         LEFT JOIN temp_ratings USING (imdb_id)\n" +
-                "WHERE title_type = 'tvSeries'\n" +
+                "WHERE title_type IN ('tvSeries', 'tvShort', 'tvSpecial', 'tvMiniSeries')\n" +
                 "ON CONFLICT (imdb_id) DO UPDATE\n" +
                 "    SET primary_title = excluded.primary_title,\n" +
                 "        start_year    = excluded.start_year,\n" +
@@ -197,7 +197,7 @@ public class DatabaseUpdater {
                 "                         num_votes)\n" +
                 "SELECT show_id,\n" +
                 "       episode_id,\n" +
-                "       COALESCE(primary_title, 'No title found'),\n" +
+                "       primary_title,\n" +
                 "       season_num,\n" +
                 "       episode_num,\n" +
                 "       COALESCE(imdb_rating, 0.0),\n" +
