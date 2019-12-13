@@ -25,7 +25,7 @@ public final class RatingsGraph {
     }
 
     /**
-     * Getter method which returns which show this {@code RatingsObject} object
+     * Getter method which returns the show this {@code RatingsObject} object
      * is supposed to hold episode ratings for.
      *
      * @return A {@link Show} object containing all meta-data and ratings
@@ -37,9 +37,9 @@ public final class RatingsGraph {
     }
 
     /**
-     * Getter method that returns all episode ratings data as a map.
+     * Getter method that returns all episode ratings data.
      *
-     * @return 2D map where (season number, episode number) points to (episode rating).
+     * @return 2D map where (season number, episode number) -&gt; (episode rating).
      */
     @JsonProperty("allEpisodeRatings")
     public Map<Integer, Map<Integer, Episode>> getAllEpisodeRatings() {
@@ -47,12 +47,14 @@ public final class RatingsGraph {
     }
 
     /**
-     * Utility method that retuns ratings information for a specific episode
-     * of a show
+     * Utility method to retrieve episode information about a specific episode
+     * within the ratings graph.
      *
-     * @param season  The season number
-     * @param episode The episode number
-     * @return {@link Episode} object containing the ratings data.
+     * @param season  The season number of the episode you want to retrieve.
+     * @param episode The episode number of the episode you want to retrieve.
+     *
+     * @return An {@link Episode} object containing all information about the
+     * episode you retrieved, including the episode's rating data.
      */
     public Episode getEpisode(int season, int episode) {
         if (allEpisodeRatings.containsKey(season)) {

@@ -1,21 +1,24 @@
 package org.aria.imdbgraph.ratings;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
-public class RatingsController {
+class RatingsController {
 
     private final ImdbRatingsService imdbRatingsService;
 
     @Autowired
-    public RatingsController(ImdbRatingsService imdbRatingsService) {
+    RatingsController(ImdbRatingsService imdbRatingsService) {
         this.imdbRatingsService = imdbRatingsService;
     }
 
@@ -26,7 +29,11 @@ public class RatingsController {
 
     @GetMapping(value = "/ratings/{showId}")
     public String getRating(@PathVariable(value = "showId") String showId, Model model) {
-        model.addAttribute("ratingsData", imdbRatingsService.getAllShowRatings(showId));
+        Optional<RatingsGraph> ratings = imdbRatingsService.getAllShowRatings(showId);
+        if (ratings.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Show not found");
+        }
+        model.addAttribute("ratingsData", ratings.get());
         return "rating_page.html";
     }
 

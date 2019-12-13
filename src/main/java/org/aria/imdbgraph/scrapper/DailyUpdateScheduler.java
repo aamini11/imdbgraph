@@ -21,7 +21,7 @@ public class DailyUpdateScheduler {
     }
 
     /**
-     * The method that is scheduled to run. The cron expression is currently set
+     * The method that is scheduled to run, the cron expression is currently set
      * to run everyday at 8:00 AM UTC.
      */
     @Scheduled(cron = "0 0 8 * * *")

@@ -25,43 +25,43 @@ public final class Show {
     }
 
     /**
-     * @return A unique ID which IMDB assigns to every TV show, Movie, Episode, etc...
+     * A unique ID which IMDB assigns to every TV show, Movie, Episode, etc...
      */
     public String getImdbId() {
         return imdbId;
     }
 
     /**
-     * @return The title of the TV show.
+     * The title of the TV show.
      */
     public String getTitle() {
         return title;
     }
 
     /**
-     * @return The year the TV show started.
+     * The year the TV show started.
      */
     public String getStartYear() {
         return startYear;
     }
 
     /**
-     * @return The year the TV show ended (Can be null if it hasn't ended yet)
+     * The year the TV show ended (Can be null if it hasn't ended yet)
      */
     public String getEndYear() {
         return endYear;
     }
 
     /**
-     * @return The average rating of the TV show from a scale of (0.0 - 10.0)
+     * The average rating of the TV show from a scale of (0.0 - 10.0)
      */
     public double getShowRating() {
         return showRating;
     }
 
     /**
-     * @return The number of people that voted on the show's rating. Can be 0
-     * if nobody has voted on the TV show.
+     *  The number of people that voted on the show's rating. Can be 0 if nobody
+     *  has voted on the TV show.
      */
     public int getNumVotes() {
         return numVotes;

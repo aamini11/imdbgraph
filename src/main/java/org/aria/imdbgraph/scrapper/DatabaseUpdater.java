@@ -54,7 +54,7 @@ public class DatabaseUpdater {
      */
     @Autowired
     DatabaseUpdater(DataSource dataSource,
-                           FileDownloader fileDownloader) {
+                    FileDownloader fileDownloader) {
         this.dataSource = dataSource;
         this.fileDownloader = fileDownloader;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -64,9 +64,9 @@ public class DatabaseUpdater {
      * Method that will begin downloading the latest IMDB files and updating the
      * database with that data.
      *
-     * @throws FileLoadingError If the class is unable to read the files and
-     * load them into the database successfully, a file loading error will be
-     * thrown.
+     * @throws FileLoadingError This method will throw a file loading error
+     * if it encounters and IO/SQL errors that prevent it from fully loading
+     * every file into the database.
      */
     @Transactional
     public void loadAllFiles() {

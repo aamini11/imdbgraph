@@ -2,7 +2,7 @@ package org.aria.imdbgraph.ratings;
 
 /**
  * Immutable data class containing all the meta-data and ratings information
- * about a specific episode of a TV show.
+ * about a specific TV episode.
  *
  * Note: This class will also be serialized as a JSON object
  */
@@ -14,14 +14,6 @@ public final class Episode {
     private final double imdbRating;
     private final int numVotes;
 
-    /**
-     * Constructor used to initialize episode information
-     * @param episodeTitle Title of the episode
-     * @param season Season number of episode
-     * @param episodeNumber Episode number of episode
-     * @param imdbRating The average IMDB rating of the episode (0.0 - 10.0)
-     * @param numVotes Total number of votes for the episode (> 0)
-     */
     Episode(String episodeTitle, int season, int episodeNumber, double imdbRating, int numVotes) {
         this.episodeTitle = episodeTitle;
         this.season = season;
@@ -30,22 +22,37 @@ public final class Episode {
         this.numVotes = numVotes;
     }
 
+    /**
+     * Title of the episode
+     */
     public String getEpisodeTitle() {
         return episodeTitle;
     }
 
+    /**
+     * Season number of episode
+     */
     public int getSeason() {
         return season;
     }
 
+    /**
+     * Returns episode number
+     */
     public int getEpisodeNumber() {
         return episodeNumber;
     }
 
+    /**
+     * The average IMDB rating of the episode (0.0 - 10.0)
+     */
     public double getImdbRating() {
         return imdbRating;
     }
 
+    /**
+     * Total number of votes for the episode (&gt; 0)
+     */
     public int getNumVotes() {
         return numVotes;
     }

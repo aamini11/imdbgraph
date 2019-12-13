@@ -7,14 +7,13 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import java.security.InvalidParameterException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 /**
- * Service class that supports basic IMDB operations involving ratings data.
- * Operations like searching for shows and getting episode ratings for TV shows.
+ * Service class that supports search/query operations involving data from IMDB.
  */
 @Repository
 public class ImdbRatingsService {
@@ -27,20 +26,22 @@ public class ImdbRatingsService {
     }
 
     /**
-     * Method that returns all ratings data for a specific show.
+     * Method that returns all ratings data for a specific show. If in invalid
+     * ID is passed to the method, an empty {@code Optional} is returned.
      *
      * @param showId The Imdb ID of the show to fetch ratings for.
-     * @return A {@code RatingsGraph} object containing all the show information
+     *
+     * @return A {@link RatingsGraph} object containing all the show information
      * and episode ratings.
      */
-    public RatingsGraph getAllShowRatings(String showId) {
+    public Optional<RatingsGraph> getAllShowRatings(String showId) {
         Optional<Show> show = getShow(showId);
         if (show.isEmpty()) {
-            throw new InvalidParameterException("Invalid show ID");
+            return Optional.empty();
         }
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("showId", showId);
-        final String sql = "" +
+        String getEpisodesSQL = "" +
                 "SELECT episode_title,\n" +
                 "       season_num,\n" +
                 "       episode_num,\n" +
@@ -50,7 +51,7 @@ public class ImdbRatingsService {
                 "FROM imdb.episode\n" +
                 "WHERE show_id = :showId\n" +
                 "ORDER BY season_num, episode_num;";
-        List<Episode> allEpisodeRatings = jdbc.query(sql, params, (rs, rowNum) -> {
+        List<Episode> allEpisodeRatings = jdbc.query(getEpisodesSQL, params, (rs, rowNum) -> {
             String title = rs.getString("episode_title");
             int season = rs.getInt("season_num");
             int episode = rs.getInt("episode_num");
@@ -58,7 +59,7 @@ public class ImdbRatingsService {
             int numVotes = rs.getInt("num_votes");
             return new Episode(title, season, episode, imdbRating, numVotes);
         });
-        return new RatingsGraph(show.get(), allEpisodeRatings);
+        return Optional.of(new RatingsGraph(show.get(), allEpisodeRatings));
     }
 
     /**
