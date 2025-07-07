@@ -1,9 +1,7 @@
 # Welcome to IMDB Graph's frontend
 
-This Repo contains all the code for the frontend of [https://www.imdbgraph.org](https://www.imdbgraph.org). The website
-is written in React/Typescript and uses Next.js as the frontend framework.
-
-The backend code responsible for scraping data from IMDb is available [here](https://github.com/aamini11/imdbgraph-api)
+This Repo contains all the code for [https://www.imdbgraph.org](https://www.imdbgraph.org). The website
+is written in React/Typescript and uses Next.js as the main framework.
 
 ## How to run locally
 

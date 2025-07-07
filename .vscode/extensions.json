@@ -1,12 +1,15 @@
 {
   "recommendations": [
-    "eamodio.gitlens",
+    // General
+    "editorconfig.editorconfig",
     "github.vscode-github-actions",
-    "github.copilot",
-
+    "mikestead.dotenv",
     // JavaScript
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
-    "bradlc.vscode-tailwindcss"
+    "bradlc.vscode-tailwindcss",
+    "vitest.explorer",
+    "ms-playwright.playwright",
+    "xabikos.javascriptsnippets"
   ]
 }

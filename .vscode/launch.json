@@ -5,7 +5,7 @@
       "name": "Next.js: debug server-side",
       "type": "node-terminal",
       "request": "launch",
-      "command": "npm run dev"
+      "command": "pnpm run dev"
     },
     {
       "name": "Next.js: debug client-side",
@@ -23,7 +23,7 @@
       "serverReadyAction": {
         "action": "debugWithChrome",
         "killOnServerStop": true,
-        "pattern": "- Local:.+(https?://.+)",
+        "pattern": "- Local:.+(https?://.+)"
       }
     }
   ]

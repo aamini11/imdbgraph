@@ -1,13 +1,12 @@
-import "./global.css";
+import "@/app/global.css";
+import Providers from "@/app/providers";
 import { ThemeButton } from "@/components/theme/theme-button";
-import { ThemedPage } from "@/components/theme/themed-page";
 import { cn } from "@/lib/utils";
-import { HeroUIProvider } from "@heroui/system";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Metadata } from "next";
-import { Inter } from "next/font/google";
-import React from "react";
+import { Geist } from "next/font/google";
+import { ReactNode } from "react";
 
 export const metadata: Metadata = {
   title: "IMDB Graph",
@@ -29,64 +28,62 @@ export const metadata: Metadata = {
   icons: "/favicon.ico",
 };
 
-const inter = Inter({
+const geistSans = Geist({
   subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
+  variable: "--font-geist-sans",
 });
 
-export default function RootLayout(props: { children: React.ReactNode }) {
+export default function RootLayout(props: { children: ReactNode }) {
   return (
-    // SuppressHydrationWarning is necessary because it is impossible for the server to know what the default
-    // theme is. So it will complain about mismatching class="dark" attribute. This only suppresses warnings for
-    // the html element and not children. (Only 1 level deep)
+    /**
+     * SuppressHydrationWarning is necessary because it is impossible for the
+     * server to know what the default theme is. So it will complain about
+     * mismatching class="dark" attribute. This only suppresses warnings for the
+     * html element and not children. (Only 1 level deep)
+     */
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          "min-h-dvh min-w-80 bg-background antialiased",
-          inter.variable,
+          "bg-background min-h-dvh min-w-80 font-sans antialiased",
+          geistSans.variable,
         )}
       >
-        <HeroUIProvider>
-          <ThemedPage>
-            <div className="flex flex-col min-h-dvh">
-              {/* Header */}
-              <div className="ml-auto p-3">
-                <ThemeButton />
-              </div>
-              {/* Main content */}
-              <div className="w-full flex flex-col flex-1">
-                {props.children}
-              </div>
-              {/* Footer */}
-              <footer className="py-6 px-6 w-full">
-                <div className="flex flex-col items-center justify-between gap-4">
-                  <p className="text-balance text-center text-sm leading-loose text-muted-foreground">
-                    Built by{" "}
-                    <a
-                      href="https://www.linkedin.com/in/aria-amini/"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="font-medium underline underline-offset-4"
-                    >
-                      Aria
-                    </a>
-                    . The source code is available on{" "}
-                    <a
-                      href="https://github.com/aamini11?tab=repositories"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="font-medium underline underline-offset-4"
-                    >
-                      GitHub
-                    </a>
-                    .
-                  </p>
-                </div>
-              </footer>
+        <Providers>
+          <div className="flex min-h-dvh flex-col">
+            {/* Header with theme button in top right corner */}
+            <div className="ml-auto p-3">
+              <ThemeButton />
             </div>
-          </ThemedPage>
-        </HeroUIProvider>
+            {/* Main content */}
+            <div className="flex w-full flex-1 flex-col">{props.children}</div>
+            {/* Footer */}
+            <footer className="w-full px-6 py-6">
+              <div className="flex flex-col items-center justify-between gap-4">
+                <p className="text-muted-foreground text-center text-sm leading-loose text-balance">
+                  Built by{" "}
+                  <a
+                    href="https://www.linkedin.com/in/aria-amini/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-medium underline underline-offset-4"
+                  >
+                    Aria
+                  </a>
+                  . The source code is available on{" "}
+                  <a
+                    href="https://github.com/aamini11?tab=repositories"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-medium underline underline-offset-4"
+                  >
+                    GitHub
+                  </a>
+                  .
+                </p>
+              </div>
+            </footer>
+          </div>
+        </Providers>
         <Analytics />
         <SpeedInsights />
       </body>

@@ -1,0 +1,1 @@
+CREATE INDEX "trigram_index" ON "show" USING gin ("title" gin_trgm_ops);

@@ -1,6 +1,0 @@
-# https://nextui.org/docs/guide/installation#setup-pnpm-optional-1
-# https://github.com/pnpm/pnpm/issues/5447#issuecomment-1696215117
-# https://github.com/pnpm/pnpm/issues/8878#issuecomment-2546442011
-publicHoistPattern:
-  - "*@heroui/*"
-  - "*eslint*"

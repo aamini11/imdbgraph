@@ -4,6 +4,21 @@ test.beforeEach(async ({ page }) => {
   await page.goto("/");
 });
 
+test("Screenshot Homepage", async ({ page }) => {
+  await page.getByRole("combobox").blur();
+  await expect(page).toHaveScreenshot();
+});
+
+test("Screenshot Searchbar", async ({ page }) => {
+  await page.goto("http://localhost:3000/");
+  const searchBar = page.getByRole("combobox", { name: "Search for TV shows" });
+  await searchBar.click();
+  await searchBar.fill("Avatar");
+  const dropdown = page.getByRole("listbox");
+  await expect(dropdown).toBeInViewport();
+  await expect(page).toHaveScreenshot();
+});
+
 test("Title works", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: /Welcome to IMDB Graph/i }),
@@ -11,7 +26,7 @@ test("Title works", async ({ page }) => {
 });
 
 test("Search bar click navigation works", async ({ page }) => {
-  const searchBar = page.getByPlaceholder("Search for any TV show...");
+  const searchBar = page.getByRole("combobox");
   await searchBar.click();
   await searchBar.fill("Avatar");
   const avatarDropdownOption = page.getByText(
@@ -23,7 +38,7 @@ test("Search bar click navigation works", async ({ page }) => {
 });
 
 test("Search bar keyboard navigation works", async ({ page }) => {
-  const searchBar = page.getByPlaceholder("Search for any TV show...");
+  const searchBar = page.getByRole("combobox");
   await searchBar.click();
   await searchBar.fill("Avatar");
   await expect(

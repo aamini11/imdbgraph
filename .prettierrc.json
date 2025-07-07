@@ -2,6 +2,17 @@
   "tabWidth": 2,
   "printWidth": 80,
   "endOfLine": "auto",
-  "plugins": ["@trivago/prettier-plugin-sort-imports", "prettier-plugin-jsdoc"],
-  "jsdocCommentLineStrategy": "keep"
+  "plugins": [
+    "@trivago/prettier-plugin-sort-imports",
+    "prettier-plugin-tailwindcss"
+  ],
+  "overrides": [
+    {
+      "files": ["*.json5"],
+      "options": {
+        "quoteProps": "preserve",
+        "trailingComma": "none"
+      }
+    }
+  ]
 }

@@ -1,20 +1,19 @@
 "use client";
 
-import { Theme, useTheme } from "@/components/theme/themed-page";
-import { Episode } from "@/lib/data/episode";
-import { RatingsData } from "@/lib/data/ratings";
+import { Theme, useTheme } from "@/components/theme/theme-provider";
+import { Episode, Ratings } from "@/lib/data/types";
 import { HighchartsReact } from "highcharts-react-official";
 import Highcharts from "highcharts/esm/highcharts";
 import "highcharts/esm/modules/accessibility";
-import { isArray, mergeWith } from "lodash";
+import { mergeWith } from "lodash";
 
-export function Graph({ ratings }: { ratings: RatingsData }) {
+export function Graph({ ratings }: { ratings: Ratings }) {
   const { theme } = useTheme();
   const themeSpecificOptions =
     theme === Theme.LIGHT ? lightThemeOptions : darkThemeOptions;
 
   return (
-    <div className="flex flex-1 relative max-h-[400px] min-h-[250px]">
+    <div className="relative flex max-h-[400px] min-h-[250px] flex-1">
       <HighchartsReact
         highcharts={Highcharts}
         containerProps={{ style: { height: "100%", width: "100%" } }}
@@ -31,16 +30,16 @@ export function Graph({ ratings }: { ratings: RatingsData }) {
   );
 }
 
-type Point = {
+interface Point {
   x: number;
   y?: number;
   custom?: { episode: Episode };
-};
+}
 
 /**
  * Transform data into a format that Highcharts understands.
  */
-function parseRatings(ratings: RatingsData): Highcharts.SeriesSplineOptions[] {
+function parseRatings(ratings: Ratings): Highcharts.SeriesSplineOptions[] {
   let i = 1;
   const allSeries: Highcharts.SeriesSplineOptions[] = [];
   for (const [seasonNumber, seasonRatings] of Object.entries(
@@ -55,7 +54,7 @@ function parseRatings(ratings: RatingsData): Highcharts.SeriesSplineOptions[] {
 
       data.push({
         x: i,
-        y: episode.imdbRating,
+        y: episode.rating,
         custom: {
           episode: episode,
         },
@@ -97,6 +96,7 @@ const commonOptions: Highcharts.Options = {
 
   plotOptions: {
     spline: {
+      animation: false,
       dataLabels: {
         enabled: true,
       },
@@ -123,12 +123,12 @@ const commonOptions: Highcharts.Options = {
     valueDecimals: 2,
     // CAN NOT BE AN ARROW FUNCTION BECAUSE OF 'THIS' KEYWORD
     pointFormatter: function (this: Point) {
-      const episode = this?.custom?.episode;
+      const episode = this.custom?.episode;
       if (episode) {
         return `
-                    ${episode.episodeTitle} (s${episode.season}e${episode.episodeNumber})
+                    ${episode.title} (s${episode.seasonNum.toString()}e${episode.episodeNum.toString()})
                     <br><br>
-                    Rating: ${episode.imdbRating.toFixed(1)} (${episode.numVotes.toLocaleString()} votes)
+                    Rating: ${episode.rating.toFixed(1)} (${episode.numVotes.toLocaleString()} votes)
                 `;
       } else {
         return "Error: Missing Data";
@@ -199,7 +199,6 @@ const darkThemeOptions: Highcharts.Options = {
   legend: {
     itemStyle: {
       color: "#d4d4d4",
-      fontFamily: "var(--font-inter)",
     },
     itemHoverStyle: {
       color: "#fafafa",
@@ -224,7 +223,7 @@ function mergeOptions<T>(...options: [T, T, T]): Highcharts.Options {
       obj: Highcharts.Options,
       src: Highcharts.Options,
     ): Highcharts.Options | undefined => {
-      if (isArray(obj) && isArray(src)) {
+      if (Array.isArray(obj) && Array.isArray(src)) {
         return src;
       } else {
         return undefined;

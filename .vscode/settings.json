@@ -1,10 +1,24 @@
 {
+  // General
+  "git.autofetch": true,
   "files.autoSave": "afterDelay",
   "files.exclude": {
     "node_modules/": true,
     ".next/": true
   },
+  "files.associations": {
+    "*.css": "tailwindcss",
+    "*.json5": "jsonc"
+  },
+  // Formatting
+  "editor.formatOnPaste": true,
   "editor.formatOnSave": true,
   "editor.rulers": [80, 120],
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[markdown]": {
+    "editor.wordWrap": "on"
+  },
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  // Tailwind CSS
+  "tailwindCSS.classFunctions": ["tw", "clsx", "cn"]
 }
