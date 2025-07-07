@@ -1,5 +1,8 @@
+import { loadEnvConfig } from "@next/env";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
+
+loadEnvConfig(process.cwd());
 
 export default defineConfig({
   plugins: [tsconfigPaths()],
@@ -26,11 +29,6 @@ export default defineConfig({
           globalSetup: ["tests/utils/db-setup.ts"],
           testTimeout: 30000, // Extra time for slower database tests
           environment: "node",
-          env: {
-            // This password is NOT sensitive. Only used to connect to local db.
-            DATABASE_URL:
-              "postgresql://localhost:5432/postgres?user=postgres&password=postgres",
-          },
         },
       },
     ],

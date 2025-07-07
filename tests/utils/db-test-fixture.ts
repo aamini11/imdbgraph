@@ -26,6 +26,22 @@ export const test = baseTest.extend<{ db: Database }>({
   },
 });
 
+export const testWithStagingDb = baseTest.extend<{ db: Database }>({
+  db: [
+    async ({}, use) => {
+      const url = process.env.DATABASE_URL;
+      const db = drizzle({
+        client: new Pool({ connectionString: url }),
+      });
+
+      await use(db);
+      // Clean up
+      await db.$client.end();
+    },
+    { scope: "worker" },
+  ],
+});
+
 /**
  * Run SQL schema migration files.
  */
