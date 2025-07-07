@@ -99,7 +99,10 @@ export function SearchBar({ autoFocus = false }: { autoFocus?: boolean }) {
       </search>
 
       {error && (
-        <div aria-live="polite" className="text-destructive px-2 py-1.5 text-center">
+        <div
+          aria-live="polite"
+          className="text-destructive px-2 py-1.5 text-center"
+        >
           Something went wrong. Please try again.
         </div>
       )}
