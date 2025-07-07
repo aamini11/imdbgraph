@@ -1,30 +1,29 @@
 import { fetchSuggestions } from "@/lib/data/suggestions";
-import { testWithStagingDb } from "@/tests/utils/db-test-fixture";
-import { describe, expect } from "vitest";
+import { describe, expect, test } from "vitest";
 
 // =============================================================================
 // Tests
 // =============================================================================
 describe("Test Search functionality", () => {
-  testWithStagingDb("Searching: Avatar", async ({ db }) => {
-    const results = await fetchSuggestions(db, "Av");
+  test("Searching: Avatar", async () => {
+    const results = await fetchSuggestions("Av");
     expect(results?.map((show) => show.title)).toEqual([
       "Avatar: The Last Airbender",
       "Avatar: The Last Airbender",
       "Avenue 5",
       "Avrupa Yakasi",
-      "What If... Captain Carter Were the First Avenger?",
+      "Avengers Assemble",
     ]);
   });
 
-  testWithStagingDb("Searching: King of The Hill", async ({ db }) => {
-    const results = await fetchSuggestions(db, "King");
+  test("Searching: King of The Hill", async () => {
+    const results = await fetchSuggestions("King of");
     expect(results?.map((show) => show.title)).toEqual([
-      "Breaking Bad",
-      "The Walking Dead",
-      "The Last Kingdom",
-      "Fear the Walking Dead",
-      "A Knight of the Seven Kingdoms",
+      "King of the Hill",
+      "King of the Narrow Sea",
+      "King of Kings",
+      "King of Mirzapur",
+      "King of the Damned",
     ]);
   });
 });

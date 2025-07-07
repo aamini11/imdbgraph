@@ -11,7 +11,7 @@ type Database = NodePgDatabase & {
   $client: Pool;
 };
 
-export const test = baseTest.extend<{ db: Database }>({
+export const testWithContainerDb = baseTest.extend<{ db: Database }>({
   db: async ({}, use) => {
     const url = inject("dockerDbUrl");
     const db = drizzle({
