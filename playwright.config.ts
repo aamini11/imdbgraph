@@ -37,7 +37,6 @@ export default defineConfig({
       NODE_ENV: "test",
       DATABASE_URL: process.env.DATABASE_URL ?? "",
     },
-    stdout: "pipe",
   },
 
   /* Configure projects for major browsers */
