@@ -38,17 +38,15 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 10
     needs: [build]
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
-      - name: test
-        run: echo $DATABASE_URL
       # Setup
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-node
       # Test
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
       - name: Run Playwright tests
         run: pnpm run playwright
       # Report
