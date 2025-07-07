@@ -1,4 +1,4 @@
-# Welcome to IMDB Graph's frontend
+# Welcome to IMDB Graph
 
 This Repo contains all the code for [https://www.imdbgraph.org](https://www.imdbgraph.org). The website
 is written in React/Typescript and uses Next.js as the main framework.
