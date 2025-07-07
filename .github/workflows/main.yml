@@ -44,10 +44,10 @@ jobs:
       - uses: ./.github/actions/setup-node
       # Test
       - name: Install Playwright Browsers
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: pnpm exec playwright install --with-deps
       - name: Run Playwright tests
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: pnpm run playwright
       # Report
       - uses: actions/upload-artifact@v4
