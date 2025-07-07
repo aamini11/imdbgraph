@@ -18,7 +18,11 @@ export function SearchBar({ autoFocus = false }: { autoFocus?: boolean }) {
   const [inputValue, setInputValue] = useState("");
   const deferredValue = useDeferredValue(inputValue);
 
-  const { isFetching, data: searchResults } = useQuery({
+  const {
+    isFetching,
+    data: searchResults,
+    error,
+  } = useQuery({
     queryKey: ["suggestions", deferredValue],
     queryFn: () => fetchSuggestions(deferredValue),
     placeholderData: keepPreviousData,
@@ -35,6 +39,18 @@ export function SearchBar({ autoFocus = false }: { autoFocus?: boolean }) {
   } = useCombobox({
     items: searchResults ?? [],
     inputValue,
+    getA11yStatusMessage: () => {
+      const resultCount = searchResults?.length ?? 0;
+      if (error) {
+        return "Something went wrong. Please try again.";
+      }
+      if (!resultCount) {
+        return "No TV shows found.";
+      }
+      return `${resultCount.toString()} TV show${
+        resultCount === 1 ? " is" : "s are"
+      } available.`;
+    },
     onInputValueChange: ({ inputValue }) => {
       setInputValue(inputValue);
     },
@@ -53,24 +69,25 @@ export function SearchBar({ autoFocus = false }: { autoFocus?: boolean }) {
   }, [router]);
 
   return (
-    <search className="bg-background text-popover-foreground relative flex h-full w-full flex-col text-sm">
+    <div className="bg-background text-popover-foreground relative flex h-full w-full flex-col text-sm">
       {/* Hidden label for accessibility */}
       <label {...getLabelProps()} className="sr-only">
         Search for TV shows
       </label>
 
       {/* Search Bar */}
-      <div
+      <search
         className={cn(
           "placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-10 w-full min-w-0 items-center rounded-xl border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm",
           "has-focus-visible:border-ring has-focus-visible:ring-ring/50 has-focus-visible:ring-[3px]",
           "has-disabled:pointer-events-none has-disabled:cursor-not-allowed has-disabled:opacity-50",
-          "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+          "has-aria-invalid:ring-destructive/20 dark:has-aria-invalid:ring-destructive/40 has-aria-invalid:border-destructive",
           "file:text-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium",
         )}
       >
         <SearchIcon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
         <input
+          aria-invalid={!!error}
           autoFocus={autoFocus}
           className="flex-1 outline-none"
           placeholder="Search for any TV show..."
@@ -79,7 +96,13 @@ export function SearchBar({ autoFocus = false }: { autoFocus?: boolean }) {
         <LoadingSpinner
           className={cn("px-[2px]", { invisible: !isFetching })}
         />
-      </div>
+      </search>
+
+      {error && (
+        <div aria-live="polite" className="text-destructive px-2 py-1.5 text-center">
+          Something went wrong. Please try again.
+        </div>
+      )}
 
       {/* Dropdown Menu */}
       <ul
@@ -94,7 +117,7 @@ export function SearchBar({ autoFocus = false }: { autoFocus?: boolean }) {
         )}
         {...getMenuProps()}
       >
-        {inputValue && searchResults?.length === 0 && (
+        {inputValue && !error && searchResults?.length === 0 && (
           <div className="text-foreground/60 px-2 py-1.5 text-center">
             No TV Shows Found.
           </div>
@@ -139,6 +162,6 @@ export function SearchBar({ autoFocus = false }: { autoFocus?: boolean }) {
           </li>
         ))}
       </ul>
-    </search>
+    </div>
   );
 }
