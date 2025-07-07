@@ -5,16 +5,26 @@ is written in React/Typescript and uses Next.js as the main framework.
 
 ## How to run locally
 
-To run the website locally, first install pnpm. Once installed, run the development server using the following command:
+### Dev setup
 
-```bash
-pnpm run dev
-```
+1. Install NVM.
+   - Windows: https://github.com/coreybutler/nvm-windows
+   - Linux/macOS: https://github.com/nvm-sh/nvm
+2. Install Node.js lts (version 22.x): `nvm install --lts && nvm use --lts`
+3. Install pnpm.
+   - Windows: `Invoke-WebRequest https://get.pnpm.io/install.ps1 -UseBasicParsing | Invoke-Expression`
+   - Linux/macOS: `curl https://get.pnpm.io/install.sh | sh`
+4. Install dependencies: `pnpm install`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the website.
+## Database Setup
 
-You can start editing any of the pages. It will auto-update as you edit the file without having to restart the server or
-refresh the browser page.
+This projects relies on a postgres database. To run the app you will need either a local postgres database or a connection string to a remote database.
+
+To setup database credentials, copy the .env.sample -> .env file and replace with your own connection url.
+
+## Run app
+
+Then run the server with: `pnpm run dev`. Open [http://localhost:3000](http://localhost:3000) with your browser to see the website. You can start editing any of the pages. It will auto-update as you edit the file without having to restart the server or refresh the browser page.
 
 ## Linting and Formatting
 
