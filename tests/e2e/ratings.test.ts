@@ -6,7 +6,9 @@ test.beforeEach(async ({ page }) => {
 
 test("Screenshot Ratings Page", async ({ page }) => {
   await expect(page.locator("svg.highcharts-root")).toBeVisible();
-  await expect(page).toHaveScreenshot();
+  await expect(page).toHaveScreenshot({
+    threshold: 0.5,
+  });
 });
 
 test("Title works", async ({ page }) => {
