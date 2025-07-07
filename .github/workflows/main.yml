@@ -44,9 +44,9 @@ jobs:
       - uses: ./.github/actions/setup-node
       # Test
       - name: Install Playwright Browsers
-        run: pnpm exec playwright install --with-deps
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: pnpm exec playwright install --with-deps
       - name: Run Playwright tests
         run: pnpm run playwright
       # Report
