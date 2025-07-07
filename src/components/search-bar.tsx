@@ -39,18 +39,6 @@ export function SearchBar({ autoFocus = false }: { autoFocus?: boolean }) {
   } = useCombobox({
     items: searchResults ?? [],
     inputValue,
-    getA11yStatusMessage: () => {
-      const resultCount = searchResults?.length ?? 0;
-      if (error) {
-        return "Something went wrong. Please try again.";
-      }
-      if (!resultCount) {
-        return "No TV shows found.";
-      }
-      return `${resultCount.toString()} TV show${
-        resultCount === 1 ? " is" : "s are"
-      } available.`;
-    },
     onInputValueChange: ({ inputValue }) => {
       setInputValue(inputValue);
     },

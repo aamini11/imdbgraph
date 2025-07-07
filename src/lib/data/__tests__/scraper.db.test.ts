@@ -1,4 +1,8 @@
-import { avatarRatings, gameOfThronesRatings, simpsonsRatings } from "./test-files/ratings";
+import {
+  avatarRatings,
+  gameOfThronesRatings,
+  simpsonsRatings,
+} from "./test-files/ratings";
 import { download, ImdbFile } from "@/lib/data/imdb-file-downloader";
 import { getRatings } from "@/lib/data/ratings";
 import { update } from "@/lib/data/scraper";
@@ -6,7 +10,6 @@ import { testWithContainerDb } from "@/tests/utils/db-test-fixture";
 import fs from "fs/promises";
 import path from "path";
 import { describe, expect, vi } from "vitest";
-
 
 vi.mock("@/lib/data/imdb-file-downloader");
 
