@@ -15,7 +15,7 @@
     "test:integration": "vitest --project integration",
     "playwright": "playwright test",
     "playwright:update-snapshots": "playwright test --update-snapshots",
-    "populate": "tsx --env-file=.env scripts/populate.ts"
+    "populate": "tsx scripts/populate.ts"
   },
   "dependencies": {
     "@next/env": "^15.3.4",
