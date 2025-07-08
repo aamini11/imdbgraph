@@ -18,7 +18,7 @@ const noRelativeImportsRule = {
       {
         patterns: [
           {
-            group: ["./", "../", "!./global.css"],
+            group: ["./", "../", "!./globals.css"],
             message:
               "Please use absolute imports with '@/'. Example: '@/lib/utils'.",
           },
