@@ -26,7 +26,7 @@ export default defineConfig({
         test: {
           name: "db",
           include: ["src/**/*.db.test.{ts,tsx}"],
-          globalSetup: ["tests/utils/db-setup.ts"],
+          setupFiles: ["tests/utils/db-setup.ts"],
           testTimeout: 30000, // Extra time for slower database tests
           environment: "node",
         },

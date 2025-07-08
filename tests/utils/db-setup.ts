@@ -1,21 +1,34 @@
-import { PostgreSqlContainer } from "@testcontainers/postgresql";
-import type { TestProject } from "vitest/node";
+import { db } from "@/db/connection";
+import fs from "fs/promises";
+import path from "path";
+import { beforeEach } from "vitest";
 
-export default async function setup(project: TestProject) {
-  const container = await new PostgreSqlContainer("postgres:17")
-    .withExposedPorts(5432)
-    .start();
+beforeEach(async () => {
+  await wipeDb();
+  await setUpSchema();
+});
 
-  project.provide("dockerDbUrl", container.getConnectionUri());
-
-  // Clean up
-  return async () => {
-    await container.stop();
-  };
+/**
+ * Run SQL schema migration files.
+ */
+async function setUpSchema() {
+  const migrations = path.join(process.cwd(), "./drizzle");
+  const files = await fs.readdir(migrations);
+  const sqlFiles = files.filter((file: string) => file.endsWith(".sql")).sort();
+  for (const file of sqlFiles) {
+    const content = await fs.readFile(path.join(migrations, file), "utf-8");
+    // Split on statement breakpoints and execute each statement
+    const statements = content
+      .split("--> statement-breakpoint")
+      .map((stmt: string) => stmt.trim())
+      .filter((stmt: string) => stmt.length > 0);
+    for (const statement of statements) {
+      await db.execute(statement);
+    }
+  }
 }
 
-declare module "vitest" {
-  export interface ProvidedContext {
-    dockerDbUrl: string;
-  }
+async function wipeDb() {
+  await db.execute("DROP SCHEMA public CASCADE");
+  await db.execute("CREATE SCHEMA public");
 }

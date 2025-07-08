@@ -6,40 +6,37 @@ import {
 import { download, ImdbFile } from "@/lib/data/imdb-file-downloader";
 import { getRatings } from "@/lib/data/ratings";
 import { update } from "@/lib/data/scraper";
-import { testWithContainerDb } from "@/tests/utils/db-test-fixture";
 import fs from "fs/promises";
 import path from "path";
-import { describe, expect, vi } from "vitest";
+import { expect, test, vi } from "vitest";
 
 vi.mock("@/lib/data/imdb-file-downloader");
 
 // =============================================================================
 // Tests
 // =============================================================================
-describe("Test IMDB data scraper", () => {
-  testWithContainerDb("Loading sample files into database", async ({ db }) => {
-    mockDownloads({
-      "title.basics.tsv.gz": "./test-files/titles.tsv",
-      "title.episode.tsv.gz": "./test-files/episodes.tsv",
-      "title.ratings.tsv.gz": "./test-files/ratings.tsv",
-    });
-
-    await update(db.$client);
-
-    expect(await getRatings(db, "tt0417299")).toEqual(avatarRatings);
-    expect(await getRatings(db, "tt0944947")).toEqual(gameOfThronesRatings);
-    expect(await getRatings(db, "tt0096697")).toEqual(simpsonsRatings);
+test("Loading sample files into database", async () => {
+  mockDownloads({
+    "title.basics.tsv.gz": "./test-files/titles.tsv",
+    "title.episode.tsv.gz": "./test-files/episodes.tsv",
+    "title.ratings.tsv.gz": "./test-files/ratings.tsv",
   });
 
-  testWithContainerDb("Handling bad files", async ({ db }) => {
-    mockDownloads({
-      "title.basics.tsv.gz": "./test-files/titles.tsv",
-      "title.episode.tsv.gz": "./test-files/bad-episodes.tsv",
-      "title.ratings.tsv.gz": "./test-files/ratings.tsv",
-    });
+  await update();
 
-    await expect(update(db.$client)).rejects.toThrow("Error updating database");
+  expect(await getRatings("tt0417299")).toEqual(avatarRatings);
+  expect(await getRatings("tt0944947")).toEqual(gameOfThronesRatings);
+  expect(await getRatings("tt0096697")).toEqual(simpsonsRatings);
+});
+
+test("Handling bad files", async () => {
+  mockDownloads({
+    "title.basics.tsv.gz": "./test-files/titles.tsv",
+    "title.episode.tsv.gz": "./test-files/bad-episodes.tsv",
+    "title.ratings.tsv.gz": "./test-files/ratings.tsv",
   });
+
+  await expect(update()).rejects.toThrow("Error updating database");
 });
 
 // =============================================================================

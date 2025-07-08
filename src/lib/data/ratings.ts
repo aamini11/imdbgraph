@@ -1,12 +1,9 @@
+import { db } from "@/db/connection";
 import { show, episode } from "@/db/schema";
 import { Episode, Ratings } from "@/lib/data/types";
 import { eq, asc } from "drizzle-orm";
-import { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-export async function getRatings(
-  db: NodePgDatabase,
-  showId: string,
-): Promise<Ratings> {
+export async function getRatings(showId: string): Promise<Ratings> {
   const result = await db.select().from(show).where(eq(show.imdbId, showId));
   if (!result.length) {
     throw new Error("Show not found");
