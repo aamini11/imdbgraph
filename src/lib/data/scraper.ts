@@ -9,7 +9,6 @@ import { pipeline } from "node:stream/promises";
 import { PoolClient } from "pg";
 import { from as copyFrom } from "pg-copy-streams";
 
-
 /**
  * Main method that downloads the latest files from IMDB and updates our
  * internal database with the latest data.
