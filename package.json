@@ -64,7 +64,6 @@
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.13",
-    "tailwind-variants": "^1.0.0",
     "tailwindcss": "^4.1.6",
     "tsx": "^4.20.3",
     "tw-animate-css": "^1.2.9",
