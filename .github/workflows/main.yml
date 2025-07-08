@@ -31,10 +31,14 @@ jobs:
       - name: Format
         run: pnpm run format:check
       # Test
-      - name: Unit + Integration Tests
+      - name: Unit Tests
+        run: pnpm run test:unit
+      - name: Database Integration Tests
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: pnpm run test
+        run:
+          pnpm run test:integration
+
 
   ui-tests:
     runs-on: windows-latest
@@ -44,7 +48,7 @@ jobs:
       # Setup
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-node
-      # Test
+      # Run UI Tests
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
       - name: Run Playwright tests
