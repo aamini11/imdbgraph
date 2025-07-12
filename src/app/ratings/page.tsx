@@ -1,7 +1,6 @@
 import { Graph } from "@/components/graph";
-import { db } from "@/db/connection";
-import { getRatings } from "@/lib/data/ratings";
-import { formatYears, Ratings } from "@/lib/data/types";
+import { getRatings } from "@/db/data/ratings";
+import { formatYears, Ratings } from "@/lib/types";
 import { notFound } from "next/navigation";
 
 export default async function RatingsPage({
@@ -14,7 +13,7 @@ export default async function RatingsPage({
     notFound();
   }
 
-  const ratings = await getRatings(db, id);
+  const ratings = await getRatings(id);
   const show = ratings.show;
 
   return (

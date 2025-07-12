@@ -1,4 +1,4 @@
-import { fetchSuggestions } from "@/lib/data/suggestions";
+import { fetchSuggestions } from "@/db/data/suggestions";
 import { describe, expect, test } from "vitest";
 
 // =============================================================================

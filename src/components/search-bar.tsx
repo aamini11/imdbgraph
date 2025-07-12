@@ -1,8 +1,8 @@
 "use client";
 
 import { LoadingSpinner } from "@/components/icons";
-import { fetchSuggestions } from "@/lib/data/suggestions";
-import { formatYears } from "@/lib/data/types";
+import { fetchSuggestions } from "@/db/data/suggestions";
+import { formatYears } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useCombobox } from "downshift";
@@ -39,18 +39,6 @@ export function SearchBar({ autoFocus = false }: { autoFocus?: boolean }) {
   } = useCombobox({
     items: searchResults ?? [],
     inputValue,
-    getA11yStatusMessage: () => {
-      const resultCount = searchResults?.length ?? 0;
-      if (error) {
-        return "Something went wrong. Please try again.";
-      }
-      if (!resultCount) {
-        return "No TV shows found.";
-      }
-      return `${resultCount.toString()} TV show${
-        resultCount === 1 ? " is" : "s are"
-      } available.`;
-    },
     onInputValueChange: ({ inputValue }) => {
       setInputValue(inputValue);
     },

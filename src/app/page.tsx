@@ -6,7 +6,7 @@ export default function Home() {
       <h1 className="inline px-8 text-center text-6xl font-semibold tracking-tight text-balance lg:text-6xl">
         Welcome to IMDB Graph
       </h1>
-      <div className="flex w-full max-w-md min-w-lg justify-center px-8">
+      <div className="flex w-full max-w-lg min-w-sm justify-center px-8">
         <SearchBar autoFocus />
       </div>
     </div>

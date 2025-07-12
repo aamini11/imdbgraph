@@ -1,4 +1,4 @@
-import "@/app/global.css";
+import "@/app/globals.css";
 import Providers from "@/app/providers";
 import { ThemeButton } from "@/components/theme/theme-button";
 import { cn } from "@/lib/utils";
@@ -71,7 +71,7 @@ export default function RootLayout(props: { children: ReactNode }) {
                   </a>
                   . The source code is available on{" "}
                   <a
-                    href="https://github.com/aamini11?tab=repositories"
+                    href="https://github.com/aamini11/imdbgraph"
                     target="_blank"
                     rel="noreferrer"
                     className="font-medium underline underline-offset-4"

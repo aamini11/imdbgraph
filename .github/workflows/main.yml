@@ -32,6 +32,8 @@ jobs:
         run: pnpm run format:check
       # Test
       - name: Unit + Integration Tests
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: pnpm run test
 
   ui-tests:

@@ -1,0 +1,25 @@
+# Project Guidelines for IMDB Graph
+
+## General
+
+- Adhere to existing code style and formatting (ESLint, Prettier).
+- Use pnpm for the package manager
+
+## Frontend (Next.js, React, Tailwind CSS)
+
+- Prioritize component reusability.
+- Ensure responsive design for various screen sizes.
+- Optimize images and assets for performance.
+- Follow Next.js best practices for data fetching and routing.
+
+## Backend (Drizzle ORM, PostgreSQL)
+
+- Ensure database schema changes are reflected in Drizzle migrations.
+- Use Drizzle ORM for all database interactions.
+- Validate all inputs to prevent security vulnerabilities.
+
+## Testing (Vitest, Playwright)
+
+- Write unit tests for all new business logic using Vitest.
+- Write db tests for database interactions.
+- Ensure all tests pass before finishing.

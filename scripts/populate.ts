@@ -2,15 +2,18 @@
  * Standalone script to populate the database with IMDB data Usage: pnpm run
  * populate
  */
-import { db } from "@/db/connection";
-import { update } from "@/lib/data/scraper";
+import { update } from "@/db/data/scraper";
+import { loadEnvConfig } from "@next/env";
+
+// Load variables from .env.test
+loadEnvConfig(process.cwd());
 
 async function main() {
   console.log("Starting database population...");
 
   try {
     const startTime = Date.now();
-    await update(db.$client);
+    await update();
     const endTime = Date.now();
     const duration = ((endTime - startTime) / 1000).toFixed(2);
 

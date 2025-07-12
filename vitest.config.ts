@@ -17,7 +17,7 @@ export default defineConfig({
         extends: true,
         test: {
           name: "unit",
-          include: ["src/**/*.unit.test.{ts,tsx}"],
+          include: ["src/**/*.test.{ts,tsx}"],
           environment: "jsdom",
         },
       },
@@ -25,8 +25,8 @@ export default defineConfig({
         extends: true,
         test: {
           name: "db",
-          include: ["src/**/*.db.test.{ts,tsx}"],
-          globalSetup: ["tests/utils/db-setup.ts"],
+          include: ["tests/db/**/*.test.{ts,tsx}"],
+          setupFiles: ["tests/db/config/setup.ts"],
           testTimeout: 30000, // Extra time for slower database tests
           environment: "node",
         },

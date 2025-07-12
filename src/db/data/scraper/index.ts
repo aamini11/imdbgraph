@@ -1,19 +1,20 @@
-import { download } from "@/lib/data/imdb-file-downloader";
+import { db } from "@/db/connection";
+import { download } from "@/db/data/scraper/imdb-file-downloader";
 import { randomUUID } from "node:crypto";
 import { createReadStream } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { pipeline } from "node:stream/promises";
-import { Pool, PoolClient } from "pg";
+import { PoolClient } from "pg";
 import { from as copyFrom } from "pg-copy-streams";
 
 /**
  * Main method that downloads the latest files from IMDB and updates our
  * internal database with the latest data.
  */
-export async function update(pool: Pool): Promise<void> {
-  const client = await pool.connect();
+export async function update(): Promise<void> {
+  const client = await db.$client.connect();
   try {
     await client.query("BEGIN");
     await transfer(client);
@@ -103,7 +104,7 @@ async function transfer(client: PoolClient) {
            COALESCE(imdb_rating, 0.0),
            COALESCE(num_votes, 0)
     FROM temp_title LEFT JOIN temp_ratings USING (imdb_id)
-    WHERE num_votes > 0
+    WHERE num_votes > 0 AND title_type IN ('tvSeries', 'tvMiniSeries')
     ON CONFLICT (imdb_id) DO UPDATE
         SET title = excluded.title,
             start_year = excluded.start_year,
@@ -131,7 +132,13 @@ async function transfer(client: PoolClient) {
       SELECT imdb_id FROM show
     )
     AND e.season_num >= 0
-    AND e.episode_num >= 0;
+    AND e.episode_num >= 0
+    ON CONFLICT (episode_id) DO UPDATE
+        SET title = excluded.title,
+            season_num = excluded.season_num,
+            episode_num = excluded.episode_num,
+            rating = excluded.rating,
+            num_votes = excluded.num_votes;
   `);
   console.log("Episodes successfully updated");
 }

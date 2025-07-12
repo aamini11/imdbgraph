@@ -1,7 +1,7 @@
 "use client";
 
 import { Theme, useTheme } from "@/components/theme/theme-provider";
-import { Episode, Ratings } from "@/lib/data/types";
+import { Episode, Ratings } from "@/lib/types";
 import { HighchartsReact } from "highcharts-react-official";
 import Highcharts from "highcharts/esm/highcharts";
 import "highcharts/esm/modules/accessibility";
