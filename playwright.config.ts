@@ -32,7 +32,7 @@ export default defineConfig({
   webServer: {
     command: "pnpm run dev",
     url: "http://localhost:3000",
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true,
     env: {
       NODE_ENV: "test",
       DATABASE_URL: process.env.DATABASE_URL ?? "",
