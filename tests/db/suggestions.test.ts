@@ -1,9 +1,6 @@
 import { fetchSuggestions } from "@/db/data/suggestions";
 import { expect, test } from "vitest";
 
-// =============================================================================
-// Tests
-// =============================================================================
 test.skip("Searching: Avatar", async () => {
   const results = await fetchSuggestions("Av");
   expect(results?.map((show) => show.title)).toEqual([
