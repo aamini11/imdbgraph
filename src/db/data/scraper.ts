@@ -1,5 +1,5 @@
 import { db } from "@/db/connection";
-import { download } from "@/db/data/scraper/imdb-file-downloader";
+import { download } from "@/lib/imdb-file-downloader";
 import { randomUUID } from "node:crypto";
 import { createReadStream } from "node:fs";
 import { mkdir } from "node:fs/promises";
