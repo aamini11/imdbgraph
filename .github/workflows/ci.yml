@@ -39,7 +39,7 @@ jobs:
           node-version: '22'
           cache: true
       - name: Run Tests
-      - run: vp test run --project server
+        run: vp test run --project server
 
   test:visual:
     runs-on: ubuntu-latest
