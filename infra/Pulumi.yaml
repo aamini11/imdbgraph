@@ -1,4 +1,0 @@
-name: imdbgraph-infra
-runtime:
-  name: nodejs
-description: Infrastructure for imdbgraph
