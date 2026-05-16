@@ -34,8 +34,8 @@
 		"db:drop": "drizzle-kit drop"
 	},
 	"dependencies": {
-		"@aamini/config": "file:../../projects/.worktrees/cli/packages/config",
-		"@aamini/lib": "file:../../projects/.worktrees/cli/packages/lib",
+		"@aamini/config": "^0.0.3",
+		"@aamini/lib": "^0.0.3",
 		"@fontsource-variable/dm-sans": "^5.2.8",
 		"@rolldown/plugin-babel": "^0.2.3",
 		"@tanstack/react-devtools": "^0.10.2",
