@@ -18,6 +18,27 @@ interface Viewport {
 	height: number
 }
 
+interface VisualPageOptions {
+	component: ComponentType
+	path: string
+	name: string
+	waitFor: (screen: RenderResult) => Locator
+	setup?: () => void | Promise<void>
+	prepare?: (screen: RenderResult) => void | Promise<void>
+	viewport?: Viewport
+	soft?: boolean
+}
+
+interface RenderedVisualPage {
+	screen: RenderResult
+	container: HTMLDivElement
+	viewport: Viewport
+	expectScreenshot: (
+		name: string,
+		options?: { soft?: boolean },
+	) => Promise<void>
+}
+
 function createMockRouter(path: string, component: ComponentType) {
 	const rootRoute = createRootRoute()
 	const testRoute = createRoute({
@@ -62,23 +83,30 @@ async function waitForPageIdle() {
 	await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
 }
 
-export async function expectPageScreenshot({
+async function expectScreenshot(
+	screen: RenderResult,
+	name: string,
+	{ soft = false }: { soft?: boolean } = {},
+) {
+	const options = { screenshotOptions: { scale: 'css' } } as const
+	if (soft) {
+		await expect
+			.soft(screen.locator, `${name} page screenshot`)
+			.toMatchScreenshot(`${name}.png`, options)
+		return
+	}
+
+	await expect.element(screen.locator).toMatchScreenshot(`${name}.png`, options)
+}
+
+export async function renderVisualPage({
 	component,
 	path,
-	name,
 	waitFor,
 	setup,
 	prepare,
 	viewport = { width: 1280, height: 720 },
-}: {
-	component: ComponentType
-	path: string
-	name: string
-	waitFor: (screen: RenderResult) => Locator
-	setup?: () => void | Promise<void>
-	prepare?: (screen: RenderResult) => void | Promise<void>
-	viewport?: Viewport
-}) {
+}: Omit<VisualPageOptions, 'name' | 'soft'>): Promise<RenderedVisualPage> {
 	localStorage.clear()
 	document.body.replaceChildren()
 	await setup?.()
@@ -96,9 +124,24 @@ export async function expectPageScreenshot({
 	await prepare?.(screen)
 	await expect.element(waitFor(screen)).toBeVisible()
 	await waitForPageIdle()
-	await page.viewport(viewport.width, Math.ceil(container.scrollHeight))
-	await waitForPageIdle()
-	await expect
-		.element(screen.locator)
-		.toMatchScreenshot(`${name}.png`, { screenshotOptions: { scale: 'css' } })
+
+	return {
+		screen,
+		container,
+		viewport,
+		expectScreenshot: async (screenshotName, options) => {
+			await page.viewport(viewport.width, Math.ceil(container.scrollHeight))
+			await waitForPageIdle()
+			await expectScreenshot(screen, screenshotName, options)
+		},
+	}
+}
+
+export async function expectPageScreenshot({
+	name,
+	soft,
+	...options
+}: VisualPageOptions) {
+	const visualPage = await renderVisualPage(options)
+	await visualPage.expectScreenshot(name, soft ? { soft } : undefined)
 }
