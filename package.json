@@ -34,8 +34,8 @@
 		"db:drop": "drizzle-kit drop"
 	},
 	"dependencies": {
-		"@aamini/config": "^0.0.4",
-		"@aamini/lib": "^0.0.4",
+		"@aamini/config": "0.0.12",
+		"@aamini/lib": "0.0.12",
 		"@fontsource-variable/dm-sans": "^5.2.8",
 		"@rolldown/plugin-babel": "^0.2.3",
 		"@tanstack/react-devtools": "^0.10.2",
