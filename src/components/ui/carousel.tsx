@@ -121,7 +121,7 @@ function Carousel({
 			<div
 				onKeyDownCapture={handleKeyDown}
 				className={cn('relative', className)}
-				role="region"
+				role="region" // oxlint-disable-line jsx-a11y/prefer-tag-over-role
 				aria-roledescription="carousel"
 				data-slot="carousel"
 				{...props}
