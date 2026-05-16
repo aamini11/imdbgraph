@@ -2,7 +2,10 @@ import { config } from 'dotenv'
 import { z } from 'zod'
 
 const environmentName = (() => {
-	const raw = process.env.RAILWAY_ENVIRONMENT_NAME ?? process.env.NODE_ENV ?? 'development'
+	const raw =
+		process.env.RAILWAY_ENVIRONMENT_NAME ??
+		process.env.NODE_ENV ??
+		'development'
 
 	return /(?:^|-)pr-\d+$/.test(raw) ? 'staging' : raw
 })()
@@ -25,6 +28,8 @@ for (const [key, value] of Object.entries(fileEnvironment)) {
 	process.env[key] ??= value
 }
 
-export const env = z.object({
-	DATABASE_URL: z.string(),
-}).parse(process.env)
+export const env = z
+	.object({
+		DATABASE_URL: z.string(),
+	})
+	.parse(process.env)
