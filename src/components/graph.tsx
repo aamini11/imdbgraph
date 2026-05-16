@@ -7,12 +7,12 @@ import {
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from '@aamini/ui/components/card'
+} from '@/components/ui/card'
 import {
 	type ChartConfig,
 	ChartContainer,
 	ChartTooltip,
-} from '@aamini/ui/components/chart'
+} from '@/components/ui/chart'
 import {
 	CartesianGrid,
 	Line,

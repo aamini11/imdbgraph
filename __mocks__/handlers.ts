@@ -1,4 +1,4 @@
-import suggestions from '@/mocks/data/suggestions.json' with { type: 'json' }
+import suggestions from './data/suggestions.json' with { type: 'json' }
 import { http, HttpResponse } from '@aamini/config/msw'
 
 export default [

@@ -1,4 +1,5 @@
-import { test } from '@aamini/config/test/browser'
+import { beforeEach, describe, test } from '@aamini/config/test/browser'
+import { expect, vi } from 'vite-plus/test'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
 	createRootRoute,
@@ -10,7 +11,6 @@ import {
 import { http, HttpResponse } from '@aamini/config/msw'
 import { hydrateRoot } from 'react-dom/client'
 import { renderToString } from 'react-dom/server'
-import { beforeEach, describe, expect, vi } from 'vite-plus/test'
 import { render } from 'vitest-browser-react'
 import { page, userEvent } from 'vite-plus/test/browser'
 import { SearchBar } from './search-bar'
@@ -23,9 +23,17 @@ const testQueryClient = new QueryClient({
 	},
 })
 
-vi.mock(import('@/lib/react-query'), () => ({
-	queryClient: testQueryClient,
-}))
+vi.mock('@/lib/react-query', () => {
+	return {
+		queryClient: new QueryClient({
+			defaultOptions: {
+				queries: {
+					retry: false,
+				},
+			},
+		}),
+	}
+})
 
 beforeEach(() => {
 	testQueryClient.clear()

@@ -3,9 +3,9 @@ import {
 	InputGroup,
 	InputGroupAddon,
 	InputGroupInput,
-} from '@aamini/ui/components/input-group'
-import { Spinner } from '@aamini/ui/components/spinner'
-import { cn } from '@aamini/ui/lib/utils'
+} from '@/components/ui/input-group'
+import { Spinner } from '@/components/ui/spinner'
+import { cn } from '@/lib/utils'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { Link, useRouter } from '@tanstack/react-router'
 import { Command } from 'cmdk'

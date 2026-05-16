@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v6
+      - name: setup vite+
+        uses: voidzero-dev/setup-vp@v1
+        with:
+          node-version: "22"
+          cache: true
+      - run: vp check
+      - run: vp test run --project unit
+
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-noble
+    steps:
+      - name: checkout
+        uses: actions/checkout@v6
+      - name: setup vite+
+        uses: voidzero-dev/setup-vp@v1
+        with:
+          node-version: "22"
+          cache: true
+      - run: vp test run --project browser --project server
+      - uses: actions/upload-artifact@v4
+        id: upload-report
+        with:
+          name: vitest-report
+          path: html/
+      - name: Viewer link in summary
+        run: echo "[View HTML report](https://viewer.vitest.dev/?url=${{ steps.upload-report.outputs.artifact-url }})" >> $GITHUB_STEP_SUMMARY

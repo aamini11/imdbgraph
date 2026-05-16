@@ -1,7 +1,6 @@
 import { show } from '@/db/tables'
 import { fetchSuggestions } from '@/lib/imdb/search'
-import { initDb, test } from '@aamini/config/test/db'
-import { describe, expect } from 'vite-plus/test'
+import { describe, expect, initDb, test } from '@aamini/config/test/db'
 import { shows } from './__fixtures__/shows'
 
 initDb(async (db) => {

@@ -5,7 +5,7 @@ x-app-env: &app-env
 services:
   app:
     image: node:24-bookworm
-    user: '${UID:-501}:${GID:-1000}'
+    user: "${UID:-501}:${GID:-1000}"
     working_dir: /workspace
     command: >
       sh -lc "corepack enable && pnpm --filter imdbgraph dev --host 0.0.0.0"
@@ -21,7 +21,7 @@ services:
 
   populate:
     image: node:24-bookworm
-    user: '${UID:-501}:${GID:-1000}'
+    user: "${UID:-501}:${GID:-1000}"
     working_dir: /workspace
     command: >
       sh -lc "corepack enable && pnpm --filter imdbgraph exec tsx
@@ -45,7 +45,7 @@ services:
     volumes:
       - ./src/db/migrations:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U imdbgraph_user -d imdbgraph_test']
+      test: ["CMD-SHELL", "pg_isready -U imdbgraph_user -d imdbgraph_test"]
       interval: 5s
       timeout: 5s
       retries: 10

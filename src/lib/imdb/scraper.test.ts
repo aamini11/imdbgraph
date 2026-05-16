@@ -1,13 +1,13 @@
-import { test } from '@aamini/config/test/db'
+import { describe, test } from '@aamini/config/test/db'
+import { expect, vi } from 'vite-plus/test'
 import { downloadStream, type ImdbFile } from '@/lib/imdb/file-downloader'
 import { getRatingsDb } from '@/lib/imdb/ratings'
 import { update } from '@/lib/imdb/scraper'
 import { createReadStream } from 'node:fs'
 import path from 'node:path'
-import { describe, expect, vi } from 'vite-plus/test'
 import { gameOfThronesRatings } from './__fixtures__/game-of-thrones.ts'
 
-vi.mock(import('@/lib/imdb/file-downloader'))
+vi.mock('@/lib/imdb/file-downloader')
 
 const GAME_OF_THRONES_ID = 'tt0944947'
 const SIMPSONS_ID = 'tt0096697'
