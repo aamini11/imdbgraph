@@ -28,7 +28,7 @@ jobs:
       - run: vp check
       - run: vp test run --project unit
 
-  test:db:
+  test-db:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -41,7 +41,7 @@ jobs:
       - name: Run Tests
         run: vp test run --project server
 
-  test:visual:
+  test-visual:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
