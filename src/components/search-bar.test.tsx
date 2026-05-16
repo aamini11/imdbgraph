@@ -1,10 +1,5 @@
-import {
-	beforeEach,
-	describe,
-	expect,
-	test,
-	vi,
-} from '@aamini/config/test/browser'
+import { beforeEach, describe, test } from '@aamini/config/test/browser'
+import { expect, vi } from 'vite-plus/test'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
 	createRootRoute,
@@ -28,9 +23,17 @@ const testQueryClient = new QueryClient({
 	},
 })
 
-vi.mock(import('@/lib/react-query'), () => ({
-	queryClient: testQueryClient,
-}))
+vi.mock('@/lib/react-query', () => {
+	return {
+		queryClient: new QueryClient({
+			defaultOptions: {
+				queries: {
+					retry: false,
+				},
+			},
+		}),
+	}
+})
 
 beforeEach(() => {
 	testQueryClient.clear()
