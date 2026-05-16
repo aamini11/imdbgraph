@@ -1,0 +1,6 @@
+@import '@fontsource-variable/dm-sans';
+@import '@aamini/ui/globals.css';
+
+:root {
+	--font-family-sans: 'DM Sans Variable';
+}

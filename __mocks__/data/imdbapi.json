@@ -1,0 +1,219 @@
+{
+	"id": "tt0417299",
+	"type": "tvSeries",
+	"primaryTitle": "Avatar: The Last Airbender",
+	"primaryImage": {
+		"url": "https://m.media-amazon.com/images/M/MV5BMDMwMThjYWYtY2Q2OS00OGM2LTlkODQtNDJlZTZmMjAyYmFhXkEyXkFqcGc@._V1_.jpg",
+		"width": 679,
+		"height": 1000
+	},
+	"startYear": 2005,
+	"endYear": 2008,
+	"runtimeSeconds": 1380,
+	"genres": [
+		"Animation",
+		"Action",
+		"Adventure",
+		"Family",
+		"Fantasy",
+		"Mystery"
+	],
+	"rating": {
+		"aggregateRating": 9.3,
+		"voteCount": 418670
+	},
+	"plot": "In a war-torn world of elemental powers, a young boy reawakens to undertake a dangerous mystic quest to fulfill his destiny as the Avatar, and bring peace to the world.",
+	"directors": [
+		{
+			"id": "nm2083477",
+			"displayName": "Giancarlo Volpe",
+			"alternativeNames": ["Giancarlo Angela Volpe"],
+			"primaryProfessions": ["animation_department", "director", "producer"]
+		},
+		{
+			"id": "nm2320725",
+			"displayName": "Ethan Spaulding",
+			"alternativeNames": ["Eathan Spaulding"],
+			"primaryProfessions": ["animation_department", "director", "producer"]
+		},
+		{
+			"id": "nm0534041",
+			"displayName": "Lauren MacMullan",
+			"alternativeNames": [
+				"D.R.L. MacMoortler",
+				"L.H. MacMullan",
+				"L.H. Macmullan"
+			],
+			"primaryProfessions": [
+				"animation_department",
+				"art_department",
+				"director"
+			]
+		}
+	],
+	"writers": [
+		{
+			"id": "nm0227204",
+			"displayName": "Michael Dante DiMartino",
+			"alternativeNames": [
+				"Michael Dante",
+				"Mike DeMartino",
+				"Mike Di Martino",
+				"Michael DiMartino",
+				"Mike DiMartino",
+				"Michael Dante Dimartino"
+			],
+			"primaryProfessions": ["animation_department", "producer", "writer"]
+		},
+		{
+			"id": "nm1665983",
+			"displayName": "Bryan Konietzko",
+			"alternativeNames": [
+				"Brian Konietsuko",
+				"Brian Konietzuko",
+				"Bryan Konietzuko",
+				"Byron McKittrick"
+			],
+			"primaryImage": {
+				"url": "https://m.media-amazon.com/images/M/MV5BOWQ2MDI4ZmYtNmY1OC00N2VjLTlhZTQtNGE1MGZmZGYzZTIyXkEyXkFqcGc@._V1_.jpg",
+				"width": 499,
+				"height": 750
+			},
+			"primaryProfessions": ["animation_department", "producer", "writer"]
+		},
+		{
+			"id": "nm1132209",
+			"displayName": "Aaron Ehasz",
+			"primaryProfessions": ["writer", "producer", "miscellaneous"]
+		}
+	],
+	"stars": [
+		{
+			"id": "nm0048389",
+			"displayName": "Dee Bradley Baker",
+			"alternativeNames": [
+				"Bradley D. Baker",
+				"Bradley Dee Baker",
+				"D. Bradley Baker",
+				"D. Baker",
+				"Dee B. Baker",
+				"Dee Bradly Baker",
+				"Dee Baker",
+				"Dee Barker",
+				"Di Bredli Beyker",
+				"Olmec",
+				"Archived Dee Bradley Baker Voice"
+			],
+			"primaryImage": {
+				"url": "https://m.media-amazon.com/images/M/MV5BMTk4MzkzMzk0MF5BMl5BanBnXkFtZTcwNDIwMjM4NA@@._V1_.jpg",
+				"width": 1024,
+				"height": 1536
+			},
+			"primaryProfessions": ["actor", "miscellaneous", "sound_department"]
+		},
+		{
+			"id": "nm0926165",
+			"displayName": "Mae Whitman",
+			"alternativeNames": ["Mae Margaret Whitman"],
+			"primaryImage": {
+				"url": "https://m.media-amazon.com/images/M/MV5BMTk2NjQxMTU0N15BMl5BanBnXkFyZXN1bWU@._V1_.jpg",
+				"width": 3504,
+				"height": 2336
+			},
+			"primaryProfessions": ["actress", "art_department", "producer"]
+		},
+		{
+			"id": "nm0878940",
+			"displayName": "Zach Tyler Eisen",
+			"alternativeNames": ["Zachary Tyler", "Zachery Tyler", "Zach Tyler"],
+			"primaryImage": {
+				"url": "https://m.media-amazon.com/images/M/MV5BMTI4NTU5NzczNF5BMl5BanBnXkFtZTYwNTY4NTY2._V1_.jpg",
+				"width": 450,
+				"height": 652
+			},
+			"primaryProfessions": ["actor", "assistant_director", "sound_department"]
+		},
+		{
+			"id": "nm1123750",
+			"displayName": "Jack De Sena",
+			"alternativeNames": ["Jack DeSena", "Jack Desena"],
+			"primaryImage": {
+				"url": "https://m.media-amazon.com/images/M/MV5BMjEyMTk0NTE1MV5BMl5BanBnXkFtZTgwMjU2NjA5MjE@._V1_.jpg",
+				"width": 213,
+				"height": 320
+			},
+			"primaryProfessions": ["actor", "director", "writer"]
+		}
+	],
+	"originCountries": [
+		{
+			"code": "US",
+			"name": "United States"
+		},
+		{
+			"code": "KR",
+			"name": "Republic of Korea"
+		}
+	],
+	"spokenLanguages": [
+		{
+			"code": "eng",
+			"name": "English"
+		}
+	],
+	"interests": [
+		{
+			"id": "in0000001",
+			"name": "Action"
+		},
+		{
+			"id": "in0000006",
+			"name": "Martial Arts",
+			"isSubgenre": true
+		},
+		{
+			"id": "in0000012",
+			"name": "Adventure"
+		},
+		{
+			"id": "in0000016",
+			"name": "Globetrotting Adventure",
+			"isSubgenre": true
+		},
+		{
+			"id": "in0000019",
+			"name": "Quest",
+			"isSubgenre": true
+		},
+		{
+			"id": "in0000026",
+			"name": "Animation"
+		},
+		{
+			"id": "in0000029",
+			"name": "Hand-Drawn Animation"
+		},
+		{
+			"id": "in0000093",
+			"name": "Family"
+		},
+		{
+			"id": "in0000098",
+			"name": "Fantasy"
+		},
+		{
+			"id": "in0000099",
+			"name": "Supernatural Fantasy",
+			"isSubgenre": true
+		},
+		{
+			"id": "in0000101",
+			"name": "Teen Fantasy",
+			"isSubgenre": true
+		},
+		{
+			"id": "in0000139",
+			"name": "Mystery"
+		}
+	]
+}

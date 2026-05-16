@@ -1,0 +1,42 @@
+[
+	{
+		"imdbId": "tt0417299",
+		"title": "Avatar: The Last Airbender",
+		"startYear": "2005",
+		"endYear": "2008",
+		"rating": 9.3,
+		"numVotes": 410746
+	},
+	{
+		"imdbId": "tt9018736",
+		"title": "Avatar: The Last Airbender",
+		"startYear": "2024",
+		"endYear": null,
+		"rating": 7.2,
+		"numVotes": 80299
+	},
+	{
+		"imdbId": "tt10732794",
+		"title": "The King's Avatar",
+		"startYear": "2019",
+		"endYear": "2019",
+		"rating": 8.1,
+		"numVotes": 1776
+	},
+	{
+		"imdbId": "tt6859260",
+		"title": "The King's Avatar",
+		"startYear": "2017",
+		"endYear": null,
+		"rating": 7.4,
+		"numVotes": 1617
+	},
+	{
+		"imdbId": "tt15776622",
+		"title": "Avataro Sentai Donbrothers",
+		"startYear": "2022",
+		"endYear": "2023",
+		"rating": 8.1,
+		"numVotes": 345
+	}
+]

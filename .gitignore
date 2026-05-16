@@ -1,41 +1,27 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
-#  env files
-.env*
-!.env.sample
-
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# vercel
-.vercel
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
-.pnpm-debug.log*
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-# Playwright
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
+# env files
 .env*.local
+.mise.local.toml
+
+# Build
+.turbo
+.vercel
+.output
+.nitro
+.tanstack
+node_modules
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Testing 
+test-results/
+playwright-report/
+.playwright
+.vitest-attachments
+html
+
+.pnpm-store
+.worktrees

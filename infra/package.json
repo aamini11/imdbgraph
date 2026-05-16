@@ -1,0 +1,15 @@
+{
+	"name": "imdbgraph-infra",
+	"main": "index.ts",
+	"scripts": {
+		"check": "vp check",
+		"verify": "turbo run check"
+	},
+	"dependencies": {
+		"@aamini/infra": "workspace:*",
+		"@pulumi/azure-native": "^3.15.0",
+		"@pulumi/command": "^1.2.1",
+		"@pulumi/postgresql": "^3.16.2",
+		"@pulumi/pulumi": "^3.231.0"
+	}
+}

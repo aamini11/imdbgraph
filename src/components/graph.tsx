@@ -1,233 +1,170 @@
-"use client";
+'use client'
 
-import { Theme, useTheme } from "@/components/theme/theme-provider";
-import { Episode, Ratings } from "@/lib/types";
-import { HighchartsReact } from "highcharts-react-official";
-import Highcharts from "highcharts/esm/highcharts";
-import "highcharts/esm/modules/accessibility";
-import { mergeWith } from "lodash";
+import { type Episode, type Ratings } from '@/lib/imdb/types'
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from '@aamini/ui/components/card'
+import {
+	type ChartConfig,
+	ChartContainer,
+	ChartTooltip,
+} from '@aamini/ui/components/chart'
+import {
+	CartesianGrid,
+	Line,
+	LineChart,
+	type TooltipProps,
+	XAxis,
+	YAxis,
+} from 'recharts'
+
+interface ChartDataPoint {
+	episodeIndex: number
+	[key: string]: number | Episode | null
+}
 
 export function Graph({ ratings }: { ratings: Ratings }) {
-  const { theme } = useTheme();
-  const themeSpecificOptions =
-    theme === Theme.LIGHT ? lightThemeOptions : darkThemeOptions;
+	const { show } = ratings
+	const { data: chartData, seasons } = transformRatingsData(ratings)
+	const chartConfig: ChartConfig = {}
+	const chartColors = [
+		'var(--chart-1)',
+		'var(--chart-2)',
+		'var(--chart-3)',
+		'var(--chart-4)',
+		'var(--chart-5)',
+	]
 
-  return (
-    <div className="relative flex max-h-[400px] min-h-[250px] flex-1">
-      <HighchartsReact
-        highcharts={Highcharts}
-        containerProps={{ style: { height: "100%", width: "100%" } }}
-        options={{
-          series: parseRatings(ratings),
-          ...mergeOptions(
-            Highcharts.defaultOptions,
-            commonOptions,
-            themeSpecificOptions,
-          ),
-        }}
-      />
-    </div>
-  );
+	seasons.forEach((seasonNum, index) => {
+		chartConfig[`season${seasonNum}`] = {
+			label: `Season ${seasonNum}`,
+			color: chartColors[index % chartColors.length] ?? 'var(--chart-1)',
+		}
+	})
+
+	// min()
+	return (
+		<Card
+			data-testid="ratings-graph"
+			className="m-[clamp(16px,(100vw-340px)*0.09,30px)] min-h-[300px] flex-1 px-[clamp(0px,(100vw-340px)*0.09,30px)] py-6"
+		>
+			<CardHeader className="text-center">
+				<h1 className="text-xl leading-none font-extrabold tracking-tight text-balance">
+					{show.title}
+				</h1>
+				<span className="text-muted-foreground text-sm">
+					Rating: {show.rating.toFixed(1)} / 10.0 (
+					{show.numVotes.toLocaleString()} votes)
+				</span>
+			</CardHeader>
+			<CardContent className="px-0">
+				<ChartContainer config={chartConfig}>
+					<LineChart
+						accessibilityLayer
+						data={chartData}
+						margin={{
+							left: 12,
+							right: 12,
+						}}
+					>
+						<CartesianGrid vertical={false} />
+						<XAxis
+							dataKey="episodeIndex"
+							tick={false}
+							domain={[0, 'dataMax']}
+						/>
+						<YAxis
+							tickLine={true}
+							axisLine={true}
+							tick={true}
+							allowDecimals={false}
+							width={20} // Fixes bug where there's too much margin on left.
+							domain={[(dataMin: number) => Math.floor(dataMin), 10.0]}
+						/>
+						<ChartTooltip content={<CustomTooltip />} />
+						{seasons.map((seasonNum) => (
+							<Line
+								key={seasonNum}
+								dataKey={`season${seasonNum}`}
+								type="linear"
+								isAnimationActive={false}
+								stroke={chartConfig[`season${seasonNum}`]?.color}
+								strokeWidth={2}
+								dot={true}
+								connectNulls={false}
+							/>
+						))}
+					</LineChart>
+				</ChartContainer>
+			</CardContent>
+		</Card>
+	)
 }
 
-interface Point {
-  x: number;
-  y?: number;
-  custom?: { episode: Episode };
+const CustomTooltip = ({
+	active,
+	payload,
+}: TooltipProps<string | number, string>) => {
+	if (!active || !payload || payload.length == 0) {
+		return null
+	}
+	const activeData = payload.find((item: any) => item.value !== null)
+	if (!activeData) {
+		return null
+	}
+	const seasonNum = activeData.dataKey?.toString()?.replace('season', '')
+	const episode = activeData.payload[`episode${seasonNum}`] as Episode
+	if (!episode) {
+		return null
+	}
+
+	return (
+		<Card>
+			<CardHeader>
+				<CardTitle>
+					S{episode.seasonNum}E{episode.episodeNum}:
+				</CardTitle>
+				<CardDescription>{episode.title}</CardDescription>
+			</CardHeader>
+			<CardContent>
+				<CardDescription>
+					{episode.rating.toFixed(1)} / 10.0 (
+					{episode.numVotes.toLocaleString()} votes)
+				</CardDescription>
+			</CardContent>
+		</Card>
+	)
 }
 
-/**
- * Transform data into a format that Highcharts understands.
- */
-function parseRatings(ratings: Ratings): Highcharts.SeriesSplineOptions[] {
-  let i = 1;
-  const allSeries: Highcharts.SeriesSplineOptions[] = [];
-  for (const [seasonNumber, seasonRatings] of Object.entries(
-    ratings.allEpisodeRatings,
-  )) {
-    const data = [];
-    for (const episode of Object.values(seasonRatings)) {
-      if (episode.numVotes == 0) {
-        // ignore episodes without ratings
-        continue;
-      }
+function transformRatingsData(ratings: Ratings): {
+	data: ChartDataPoint[]
+	seasons: number[]
+} {
+	let episodeIndex = 1
+	const data: ChartDataPoint[] = []
+	const seasons: number[] = []
 
-      data.push({
-        x: i,
-        y: episode.rating,
-        custom: {
-          episode: episode,
-        },
-      });
-      i++;
-    }
-
-    const series: Highcharts.SeriesSplineOptions = {
-      name: "Season " + seasonNumber,
-      type: "spline",
-      data: data,
-    };
-    if (data.length > 0) {
-      allSeries.push(series);
-    }
-  }
-  return allSeries;
-}
-
-const commonOptions: Highcharts.Options = {
-  chart: {
-    backgroundColor: "rgba(0,0,0,0)",
-    zooming: {
-      type: "x",
-      mouseWheel: true,
-    },
-    panning: {
-      enabled: true,
-      type: "xy",
-    },
-  },
-  title: {
-    text: "",
-  },
-
-  accessibility: {
-    description: "A graph showing all the episode ratings of TV show",
-  },
-
-  plotOptions: {
-    spline: {
-      animation: false,
-      dataLabels: {
-        enabled: true,
-      },
-    },
-  },
-
-  xAxis: {
-    visible: false,
-  },
-
-  yAxis: {
-    title: {
-      text: "",
-    },
-    max: 10,
-    tickInterval: 1,
-  },
-
-  tooltip: {
-    shared: false,
-    headerFormat: "",
-    followTouchMove: false, // Allow panning on mobile
-    footerFormat: "",
-    valueDecimals: 2,
-    // CAN NOT BE AN ARROW FUNCTION BECAUSE OF 'THIS' KEYWORD
-    pointFormatter: function (this: Point) {
-      const episode = this.custom?.episode;
-      if (episode) {
-        return `
-                    ${episode.title} (s${episode.seasonNum.toString()}e${episode.episodeNum.toString()})
-                    <br><br>
-                    Rating: ${episode.rating.toFixed(1)} (${episode.numVotes.toLocaleString()} votes)
-                `;
-      } else {
-        return "Error: Missing Data";
-      }
-    },
-  },
-
-  credits: {
-    enabled: false,
-  },
-};
-
-const lightThemeOptions: Highcharts.Options = {
-  plotOptions: {
-    spline: {
-      dataLabels: {
-        style: {
-          color: "rgb(0, 0, 0)",
-        },
-      },
-    },
-  },
-
-  legend: {
-    itemStyle: {
-      color: "rgb(0,0,0)",
-    },
-  },
-};
-
-const darkThemeOptions: Highcharts.Options = {
-  colors: [
-    "#7CEA9C",
-    "#50B2C0",
-    "rgb(114, 78, 145)",
-    "hsl(45, 93%, 58%)",
-    "rgb(230, 78, 108)",
-  ],
-
-  yAxis: {
-    gridLineColor: "#3f3f46",
-    labels: {
-      style: {
-        color: "#d4d4d4",
-      },
-    },
-  },
-
-  plotOptions: {
-    spline: {
-      dataLabels: {
-        style: {
-          color: "#d4d4d4",
-        },
-      },
-    },
-  },
-
-  tooltip: {
-    style: {
-      color: "#d4d4d4",
-    },
-    borderWidth: 1,
-    borderColor: "#d4d4d4",
-    backgroundColor: "#171717",
-  },
-
-  legend: {
-    itemStyle: {
-      color: "#d4d4d4",
-    },
-    itemHoverStyle: {
-      color: "#fafafa",
-    },
-  },
-};
-
-/**
- * Modified version of lodash's recursive merge function. In lodash's version,
- * it would merge together two arrays. In this version, if two arrays are
- * encountered, it just replaces the original with the new array. The main use
- * case for this function is when merging the dark theme config object I want it
- * to replace all the colors not just add dark theme colors to the original set
- * of default colors.
- */
-function mergeOptions<T>(...options: [T, T, T]): Highcharts.Options {
-  // merge mutates the first param so pass in any empty object {} instead.
-  return mergeWith(
-    {},
-    ...options,
-    (
-      obj: Highcharts.Options,
-      src: Highcharts.Options,
-    ): Highcharts.Options | undefined => {
-      if (Array.isArray(obj) && Array.isArray(src)) {
-        return src;
-      } else {
-        return undefined;
-      }
-    },
-  );
+	for (const [seasonNumber, seasonRatings] of Object.entries(
+		ratings.allEpisodeRatings,
+	)) {
+		const seasonNum = Number.parseInt(seasonNumber, 10)
+		seasons.push(seasonNum)
+		for (const episode of Object.values(seasonRatings)) {
+			if (episode.numVotes === 0 || episode.episodeNum <= 0) {
+				continue
+			}
+			const dataPoint: ChartDataPoint = {
+				episodeIndex,
+			}
+			dataPoint[`season${seasonNum}`] = episode.rating
+			dataPoint[`episode${seasonNum}`] = episode
+			data.push(dataPoint)
+			episodeIndex++
+		}
+	}
+	return { data, seasons }
 }

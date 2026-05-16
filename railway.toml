@@ -1,0 +1,22 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "apps/imdbgraph/Dockerfile"
+buildCommand = "pnpm --filter imdbgraph build"
+watchPatterns = [
+	"/apps/imdbgraph/**",
+	"/packages/**",
+	"package.json",
+	"pnpm-lock.yaml",
+]
+
+[deploy]
+multiRegionConfig = { "us-west2" = { numReplicas = 1 } }
+runtime = "V2"
+numReplicas = 1
+startCommand = "node .output/server/index.mjs"
+healthcheckPath = "/"
+sleepApplication = true
+useLegacyStacker = false
+ipv6EgressEnabled = false
+restartPolicyType = "ALWAYS"
+healthcheckTimeout = 300

@@ -1,14 +1,12 @@
-import { defineConfig } from "drizzle-kit";
-
-if (!process.env.DATABASE_URL) {
-  throw Error("Env $DATABASE_URL is empty.");
-}
+import { defineConfig } from 'drizzle-kit'
+import 'dotenv/config'
+import { env } from './src/env.ts'
 
 export default defineConfig({
-  out: "./drizzle",
-  schema: "./src/db/schema.ts",
-  dialect: "postgresql",
-  dbCredentials: {
-    url: process.env.DATABASE_URL,
-  },
-});
+	schema: './src/db/tables.ts',
+	out: './src/db/migrations',
+	dialect: 'postgresql',
+	dbCredentials: {
+		url: env.DATABASE_URL,
+	},
+})
