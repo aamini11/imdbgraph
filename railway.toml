@@ -6,3 +6,4 @@ buildCommand = "vp build"
 runtime = "V2"
 numReplicas = 1
 startCommand = "node .output/server/index.mjs"
+cronSchedule = "0 10 * * *"
