@@ -54,4 +54,4 @@ jobs:
       - name: Install Playwright Browsers
         run: vpx --no playwright install --with-deps --only-shell
       - name: Run Tests
-      - run: vp test run --project browser
+        run: vp test run --project browser
