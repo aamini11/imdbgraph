@@ -1,13 +1,6 @@
 [build]
-builder = "DOCKERFILE"
-dockerfilePath = "apps/imdbgraph/Dockerfile"
-buildCommand = "pnpm --filter imdbgraph build"
-watchPatterns = [
-	"/apps/imdbgraph/**",
-	"/packages/**",
-	"package.json",
-	"pnpm-lock.yaml",
-]
+builder = "RAILPACK"
+buildCommand = "vp build"
 
 [deploy]
 multiRegionConfig = { "us-west2" = { numReplicas = 1 } }

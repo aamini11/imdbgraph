@@ -16,7 +16,7 @@ export default mergeConfig(
 	}),
 	{
 		ssr: {
-			noExternal: ['recharts'],
+			noExternal: ['recharts', '@aamini/config'],
 		},
 	},
 )

@@ -1,4 +1,10 @@
-import { test } from '@aamini/config/test/browser'
+import {
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from '@aamini/config/test/browser'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
 	createRootRoute,
@@ -10,7 +16,6 @@ import {
 import { http, HttpResponse } from '@aamini/config/msw'
 import { hydrateRoot } from 'react-dom/client'
 import { renderToString } from 'react-dom/server'
-import { beforeEach, describe, expect, vi } from 'vite-plus/test'
 import { render } from 'vitest-browser-react'
 import { page, userEvent } from 'vite-plus/test/browser'
 import { SearchBar } from './search-bar'
