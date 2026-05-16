@@ -21,11 +21,11 @@ importers:
   .:
     dependencies:
       '@aamini/config':
-        specifier: file:../../projects/.worktrees/cli/packages/config
-        version: file:../../projects/.worktrees/cli/packages/config(@babel/runtime@7.29.2)(@opentelemetry/api@1.9.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@vercel/functions@3.5.1)(@vitest/ui@4.1.5)(crossws@0.4.5(srvx@0.11.15))(dotenv@17.4.2)(esbuild@0.28.0)(jiti@2.7.0)(playwright@1.60.0)(react-dom@19.2.6(react@19.2.6))(rolldown@1.0.1)(tsx@4.22.0)(yaml@2.9.0)
+        specifier: ^0.0.4
+        version: 0.0.4(@babel/runtime@7.29.2)(@opentelemetry/api@1.9.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@vercel/functions@3.5.1)(@vitest/ui@4.1.5)(crossws@0.4.5(srvx@0.11.15))(dotenv@17.4.2)(esbuild@0.28.0)(jiti@2.7.0)(playwright@1.60.0)(react-dom@19.2.6(react@19.2.6))(rolldown@1.0.1)(tsx@4.22.0)(yaml@2.9.0)
       '@aamini/lib':
-        specifier: file:../../projects/.worktrees/cli/packages/lib
-        version: file:../../projects/.worktrees/cli/packages/lib
+        specifier: ^0.0.4
+        version: 0.0.4
       '@fontsource-variable/dm-sans':
         specifier: ^5.2.8
         version: 5.2.8
@@ -186,11 +186,11 @@ importers:
 
 packages:
 
-  '@aamini/config@file:../../projects/.worktrees/cli/packages/config':
-    resolution: {directory: ../../projects/.worktrees/cli/packages/config, type: directory}
+  '@aamini/config@0.0.4':
+    resolution: {integrity: sha512-uVK0lNVICVHuisqmydPz1i6sTZwt578u83IF1cIIBArd8d8GWe8QTtxeoI0s2/qciHPkJmrNVr8+/SGR/Y7axQ==}
 
-  '@aamini/lib@file:../../projects/.worktrees/cli/packages/lib':
-    resolution: {directory: ../../projects/.worktrees/cli/packages/lib, type: directory}
+  '@aamini/lib@0.0.4':
+    resolution: {integrity: sha512-z7DG3XwvgNNcvx6VItKhctGUhNAhxQ4QVBUswxIYUgyynRG3tIQN8JoLiZtdPpOtGpPZfwkkCStumqtPPV1uig==}
 
   '@adobe/css-tools@4.4.4':
     resolution: {integrity: sha512-Elp+iwUx5rN5+Y8xLt5/GRoG20WGoDCQ/1Fb+1LiGtvwbDavuSk0jhD/eZdckHAuzcDzccnkv+rEjyWfRx18gg==}
@@ -4755,7 +4755,7 @@ packages:
 
 snapshots:
 
-  '@aamini/config@file:../../projects/.worktrees/cli/packages/config(@babel/runtime@7.29.2)(@opentelemetry/api@1.9.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@vercel/functions@3.5.1)(@vitest/ui@4.1.5)(crossws@0.4.5(srvx@0.11.15))(dotenv@17.4.2)(esbuild@0.28.0)(jiti@2.7.0)(playwright@1.60.0)(react-dom@19.2.6(react@19.2.6))(rolldown@1.0.1)(tsx@4.22.0)(yaml@2.9.0)':
+  '@aamini/config@0.0.4(@babel/runtime@7.29.2)(@opentelemetry/api@1.9.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@vercel/functions@3.5.1)(@vitest/ui@4.1.5)(crossws@0.4.5(srvx@0.11.15))(dotenv@17.4.2)(esbuild@0.28.0)(jiti@2.7.0)(playwright@1.60.0)(react-dom@19.2.6(react@19.2.6))(rolldown@1.0.1)(tsx@4.22.0)(yaml@2.9.0)':
     dependencies:
       '@babel/core': 7.29.0
       '@playwright/test': 1.60.0
@@ -4884,7 +4884,7 @@ snapshots:
       - yaml
       - zephyr-agent
 
-  '@aamini/lib@file:../../projects/.worktrees/cli/packages/lib':
+  '@aamini/lib@0.0.4':
     dependencies:
       dotenv: 17.4.2
       zod: 4.4.3
