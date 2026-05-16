@@ -14,7 +14,7 @@
 		"test:integration": "vp test run --project browser --project server",
 		"test:update": "vp test run --project browser --update",
 		"test:watch": "vp test --watch",
-		"test:ui": "node -e \"const { networkInterfaces } = require('node:os'); const ips = Object.values(networkInterfaces()).flat().filter((entry) => entry?.family === 'IPv4' && !entry.internal).map((entry) => entry.address); console.log('Vitest UI URLs:'); console.log('  http://localhost:5123/__vitest__/'); for (const ip of ips) console.log('  http://' + ip + ':5123/__vitest__/');\" && vp test dev --ui --open=false --api.host 0.0.0.0 --api.port 5123 --api.strictPort --api.allowWrite true --api.allowExec true --browser.api.host 0.0.0.0 --browser.api.port 5124 --browser.api.strictPort --browser.api.allowWrite true --browser.api.allowExec true",
+		"test:ui": "vp test dev --ui --open=false --api.port 5123 --api.strictPort",
 		"e2e": "playwright test",
 		"e2e:staging": "BASE_URL=https://imdbgraph.org playwright test",
 		"e2e:update": "playwright test --update-snapshots",
