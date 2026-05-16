@@ -41,17 +41,16 @@ jobs:
           node-version: "22"
           cache: true
       - run: vp test run --project browser --project server
-      - uses: actions/upload-artifact@v4
+      - uses: mmkal/artifact.ci/upload@main
         if: always()
         id: upload-report
         with:
           name: vitest-report
           path: html/
+          artifactci-mode: eager
       - name: Viewer link in summary
         if: always()
         run: |
           echo "### Vitest HTML report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "[Download vitest-report artifact](${{ steps.upload-report.outputs.artifact-url }})" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "GitHub artifact URLs require authentication, so Vitest Viewer cannot auto-fetch them. Download the artifact zip and drop it into https://viewer.vitest.dev/ to inspect screenshot diffs." >> $GITHUB_STEP_SUMMARY
+          echo "[View vitest-report](${{ steps.upload-report.outputs.artifactci_run_url }})" >> $GITHUB_STEP_SUMMARY
