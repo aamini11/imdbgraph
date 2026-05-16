@@ -12,6 +12,8 @@ import { Command } from 'cmdk'
 import { Search as SearchIcon, Star } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
+const MAX_SEARCH_RESULTS = 5
+
 /** https://www.w3.org/WAI/ARIA/apg/patterns/combobox/examples/combobox-autocomplete-list/ */
 export function SearchBar({ className }: { className?: string }) {
 	const [search, setSearch] = useState('')
@@ -38,6 +40,7 @@ export function SearchBar({ className }: { className?: string }) {
 		enabled: isHydrated && Boolean(search),
 		placeholderData: keepPreviousData,
 	})
+	const visibleSearchResults = searchResults?.slice(0, MAX_SEARCH_RESULTS)
 
 	return (
 		<Command
@@ -55,9 +58,7 @@ export function SearchBar({ className }: { className?: string }) {
 				<Command.Input
 					value={search}
 					onValueChange={setSearch}
-					placeholder={
-						isHydrated ? 'Search for any TV show...' : 'Loading search...'
-					}
+					placeholder="Search for any TV show..."
 					className="flex-1 outline-none placeholder:text-xs"
 					disabled={!isHydrated}
 					aria-busy={!isHydrated}
@@ -85,14 +86,14 @@ export function SearchBar({ className }: { className?: string }) {
 				</div>
 			)}
 
-			{search && !error && searchResults && (
+			{search && !error && visibleSearchResults && (
 				<Command.List className="bg-popover absolute top-full right-0 left-0 z-50 mt-3 w-full rounded-xl border p-2 shadow-lg">
-					{searchResults.length === 0 && !isFetching && (
+					{visibleSearchResults.length === 0 && !isFetching && (
 						<Command.Empty className="text-muted-foreground px-2 py-1.5 text-center">
 							No TV Shows Found.
 						</Command.Empty>
 					)}
-					{searchResults.map((show: Show) => (
+					{visibleSearchResults.map((show: Show) => (
 						<Command.Item
 							key={show.imdbId}
 							value={show.imdbId}

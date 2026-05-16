@@ -15,34 +15,43 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_STEP_SUMMARY: /tmp/vitest-check-summary.md
     steps:
       - name: checkout
         uses: actions/checkout@v6
       - name: setup vite+
         uses: voidzero-dev/setup-vp@v1
         with:
-          node-version: "22"
+          node-version: '22'
           cache: true
       - run: vp check
       - run: vp test run --project unit
 
-  test:
+  test-db:
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.60.0-noble
     steps:
       - name: checkout
         uses: actions/checkout@v6
       - name: setup vite+
         uses: voidzero-dev/setup-vp@v1
         with:
-          node-version: "22"
+          node-version: '22'
           cache: true
-      - run: vp test run --project browser --project server
-      - uses: actions/upload-artifact@v4
-        id: upload-report
+      - name: Run Tests
+        run: vp test run --project server
+
+  test-visual:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v6
+      - name: setup vite+
+        uses: voidzero-dev/setup-vp@v1
         with:
-          name: vitest-report
-          path: html/
-      - name: Viewer link in summary
-        run: echo "[View HTML report](https://viewer.vitest.dev/?url=${{ steps.upload-report.outputs.artifact-url }})" >> $GITHUB_STEP_SUMMARY
+          node-version: '22'
+          cache: true
+      - name: Install Playwright Browsers
+        run: vpx playwright install --with-deps --only-shell
+      - name: Run Tests
+        run: vp test run --project browser
