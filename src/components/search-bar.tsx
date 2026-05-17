@@ -13,11 +13,14 @@ import { Search as SearchIcon, Star } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 const MAX_SEARCH_RESULTS = 5
+const LOADING_INDICATOR_DELAY_MS = 200
 
 /** https://www.w3.org/WAI/ARIA/apg/patterns/combobox/examples/combobox-autocomplete-list/ */
 export function SearchBar({ className }: { className?: string }) {
 	const [search, setSearch] = useState('')
 	const [isHydrated, setIsHydrated] = useState(false)
+	const [showLoadingIndicator, setShowLoadingIndicator] = useState(false)
+	const [selectedShowId, setSelectedShowId] = useState('')
 	const router = useRouter()
 
 	useEffect(() => {
@@ -41,9 +44,31 @@ export function SearchBar({ className }: { className?: string }) {
 		placeholderData: keepPreviousData,
 	})
 	const visibleSearchResults = searchResults?.slice(0, MAX_SEARCH_RESULTS)
+	const firstVisibleSearchResultId = visibleSearchResults?.[0]?.imdbId ?? ''
+
+	useEffect(() => {
+		setSelectedShowId(firstVisibleSearchResultId)
+	}, [firstVisibleSearchResultId, search])
+
+	useEffect(() => {
+		if (!isFetching) {
+			setShowLoadingIndicator(false)
+			return
+		}
+
+		setShowLoadingIndicator(false)
+
+		const timeoutId = window.setTimeout(() => {
+			setShowLoadingIndicator(true)
+		}, LOADING_INDICATOR_DELAY_MS)
+
+		return () => window.clearTimeout(timeoutId)
+	}, [isFetching, search])
 
 	return (
 		<Command
+			value={selectedShowId}
+			onValueChange={setSelectedShowId}
 			className={cn(
 				'bg-background text-popover-foreground relative flex h-full w-full flex-col text-sm',
 				className,
@@ -71,7 +96,7 @@ export function SearchBar({ className }: { className?: string }) {
 					<SearchIcon />
 				</InputGroupAddon>
 				<InputGroupAddon align="inline-end">
-					{isFetching && (
+					{showLoadingIndicator && (
 						<Spinner className="ml-2" data-testid="loading-spinner" />
 					)}
 				</InputGroupAddon>
@@ -88,7 +113,7 @@ export function SearchBar({ className }: { className?: string }) {
 
 			{search && !error && visibleSearchResults && (
 				<Command.List className="bg-popover absolute top-full right-0 left-0 z-50 mt-3 w-full rounded-xl border p-2 shadow-lg">
-					{visibleSearchResults.length === 0 && !isFetching && (
+					{visibleSearchResults.length === 0 && !showLoadingIndicator && (
 						<Command.Empty className="text-muted-foreground px-2 py-1.5 text-center">
 							No TV Shows Found.
 						</Command.Empty>
@@ -104,12 +129,7 @@ export function SearchBar({ className }: { className?: string }) {
 									params: { id: show.imdbId },
 								})
 							}}
-							className={cn(
-								'text-foreground w-full cursor-pointer rounded-md px-2 py-1.5 text-sm outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
-								{
-									'opacity-50': isFetching,
-								},
-							)}
+							className="text-foreground w-full cursor-pointer rounded-md px-2 py-1.5 text-sm outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
 						>
 							<Link
 								to="/ratings/$id"
