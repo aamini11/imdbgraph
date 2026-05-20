@@ -15,6 +15,16 @@ export default mergeConfig(
 		},
 	}),
 	{
+		test: {
+			deps: {
+				optimizer: {
+					client: {
+						enabled: true,
+						include: ['aria-query'],
+					},
+				},
+			},
+		},
 		ssr: {
 			noExternal: ['recharts', '@aamini/config'],
 		},
