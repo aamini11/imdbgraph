@@ -1,5 +1,5 @@
 import { Button } from './ui/button'
-import { Home } from 'lucide-react'
+import { Home, LogIn } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 interface NavbarProps {
@@ -20,6 +20,14 @@ export function Navbar({ center }: NavbarProps) {
 				</a>
 			</Button>
 			{center && <div className="col-start-2 w-full">{center}</div>}
+			<Button
+				variant="default"
+				size="sm"
+				className="col-start-3 gap-2 justify-self-end"
+			>
+				<LogIn className="h-4 w-4" />
+				Log In
+			</Button>
 		</nav>
 	)
 }
