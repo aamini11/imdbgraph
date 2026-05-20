@@ -6,7 +6,9 @@ import {
 	index,
 	integer,
 	pgTable,
+	serial,
 	text,
+	timestamp,
 	varchar,
 } from 'drizzle-orm/pg-core'
 
@@ -46,3 +48,10 @@ export const show = pgTable(
 		index().using('btree', table.rating.desc().nullsLast().op('float8_ops')),
 	],
 )
+
+export const scrapeRun = pgTable('scrape_run', {
+	id: serial().primaryKey().notNull(),
+	completedAt: timestamp('completed_at', { withTimezone: true })
+		.defaultNow()
+		.notNull(),
+})

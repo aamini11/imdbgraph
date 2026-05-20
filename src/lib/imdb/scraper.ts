@@ -21,6 +21,7 @@ export async function update(
 	try {
 		await client.query('BEGIN')
 		await transfer(client)
+		await client.query('INSERT INTO scrape_run DEFAULT VALUES;')
 		await client.query('COMMIT')
 
 		const duration = ((Date.now() - startTime) / 1000).toFixed(2)
@@ -162,11 +163,9 @@ async function transfer(client: PoolClient) {
 	  ALTER TABLE show ALTER COLUMN title SET NOT NULL;
 	  ALTER TABLE show ALTER COLUMN start_year SET NOT NULL;
 	  ALTER TABLE show ALTER COLUMN rating SET NOT NULL;
-    ALTER TABLE show ALTER COLUMN num_votes SET NOT NULL;
+	  ALTER TABLE show ALTER COLUMN num_votes SET NOT NULL;
 
     ALTER TABLE show ADD PRIMARY KEY (imdb_id);
-		CREATE INDEX show_title_trigram_index ON show USING gin (title gin_trgm_ops);
-		CREATE INDEX show_rating_index ON show USING btree (rating float8_ops);
 	`)
 	console.log('Updated show table')
 
@@ -188,8 +187,8 @@ async function transfer(client: PoolClient) {
 	  ALTER TABLE episode ALTER COLUMN num_votes SET NOT NULL;
 
     ALTER TABLE episode ADD PRIMARY KEY (episode_id);
-    ALTER TABLE episode ADD CONSTRAINT episode_show_imdb_id_fk FOREIGN KEY (show_id) REFERENCES show(imdb_id);
-	  CREATE INDEX episode_show_id_index ON episode (show_id);
+    ALTER TABLE episode ADD FOREIGN KEY (show_id) REFERENCES show(imdb_id);
+	  CREATE INDEX ON episode (show_id);
 	`)
 	console.log('Updated episode table')
 

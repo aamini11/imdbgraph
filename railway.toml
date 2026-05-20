@@ -5,5 +5,5 @@ buildCommand = "vp build"
 [deploy]
 runtime = "V2"
 numReplicas = 1
-preDeployCommand = "pnpm db:bootstrap"
+preDeployCommand = "pnpm db:migrate"
 startCommand = "node .output/server/index.mjs"
