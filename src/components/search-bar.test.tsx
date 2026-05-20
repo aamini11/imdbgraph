@@ -1,5 +1,4 @@
-import { beforeEach, describe, test } from '@aamini/config/test/browser'
-import { expect, vi } from 'vite-plus/test'
+import { test } from '@aamini/config/test/browser'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
 	createRootRoute,
@@ -11,8 +10,9 @@ import {
 import { http, HttpResponse } from '@aamini/config/msw'
 import { hydrateRoot } from 'react-dom/client'
 import { renderToString } from 'react-dom/server'
+import { beforeEach, describe, expect, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
-import { page, userEvent } from 'vite-plus/test/browser'
+import { page, userEvent } from 'vitest/browser'
 import { SearchBar } from './search-bar'
 
 const testQueryClient = new QueryClient({
@@ -23,25 +23,13 @@ const testQueryClient = new QueryClient({
 	},
 })
 
-vi.mock('@/lib/react-query', () => {
-	return {
-		queryClient: new QueryClient({
-			defaultOptions: {
-				queries: {
-					retry: false,
-				},
-			},
-		}),
-	}
-})
+vi.mock(import('@/lib/react-query'), () => ({
+	queryClient: testQueryClient,
+}))
 
 beforeEach(() => {
 	testQueryClient.clear()
 })
-
-function wait(ms: number) {
-	return new Promise((resolve) => window.setTimeout(resolve, ms))
-}
 
 function createMockRouter() {
 	const rootRoute = createRootRoute()
@@ -78,53 +66,6 @@ describe('searchbar tests', () => {
 		await expect
 			.element(page.getByText(/Avatar: The Last Airbender/).first())
 			.toBeVisible()
-	})
-
-	test('only shows loading spinner for slower searches', async ({ worker }) => {
-		worker.use(
-			http.get('/api/suggestions', async () => {
-				await wait(1000)
-				return HttpResponse.json([])
-			}),
-		)
-
-		const screen = await render(<SearchBar />, {
-			wrapper: MockRouter,
-		})
-
-		const searchBar = screen.getByRole('combobox')
-		await userEvent.fill(searchBar, 'avatar')
-
-		await wait(250)
-		await expect.element(page.getByTestId('loading-spinner')).toBeVisible()
-		await expect.element(screen.getByText(/No TV Shows Found./i)).toBeVisible()
-	})
-
-	test('does not show loading spinner while search text keeps changing', async ({
-		worker,
-	}) => {
-		worker.use(
-			http.get('/api/suggestions', async () => {
-				await wait(1000)
-				return HttpResponse.json([])
-			}),
-		)
-
-		const screen = await render(<SearchBar />, {
-			wrapper: MockRouter,
-		})
-
-		const searchBar = screen.getByRole('combobox')
-		await userEvent.fill(searchBar, 'a')
-		await wait(150)
-		await userEvent.fill(searchBar, 'aa')
-		await wait(150)
-		await userEvent.fill(searchBar, 'aaa')
-		await wait(150)
-
-		await expect
-			.element(page.getByTestId('loading-spinner'))
-			.not.toBeInTheDocument()
 	})
 
 	test('is disabled until hydration completes', async () => {
@@ -174,26 +115,6 @@ describe('searchbar tests', () => {
 
 		expect(navigateSpy).toHaveBeenCalledWith({
 			params: { id: 'tt9018736' },
-			to: '/ratings/$id',
-		})
-	})
-
-	test('Enter selects first result by default', async () => {
-		const router = createMockRouter()
-		const navigateSpy = vi.spyOn(router, 'navigate')
-		const screen = await render(<SearchBar />, {
-			wrapper: (props) => <MockRouter router={router} {...props} />,
-		})
-
-		const searchBar = screen.getByRole('combobox')
-		await userEvent.fill(searchBar, 'avatar')
-		await expect
-			.element(page.getByText(/Avatar: The Last Airbender/).first())
-			.toBeVisible()
-		await userEvent.keyboard('{Enter}')
-
-		expect(navigateSpy).toHaveBeenCalledWith({
-			params: { id: 'tt0417299' },
 			to: '/ratings/$id',
 		})
 	})

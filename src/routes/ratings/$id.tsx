@@ -1,5 +1,5 @@
 import { Graph } from '@/components/graph'
-import { HomeButton } from '@/components/home-button'
+import { Navbar } from '@/components/navbar'
 import { SearchBar } from '@/components/search-bar'
 import { getRatings } from '@/lib/imdb/ratings'
 import { type Ratings } from '@/lib/imdb/types'
@@ -39,10 +39,7 @@ function Ratings() {
 
 	return (
 		<>
-			<header className="flex justify-center gap-2 border-b px-5 py-3">
-				<HomeButton />
-				<SearchBar className="max-w-md" />
-			</header>
+			<Navbar center={<SearchBar className="w-full max-w-md" />} />
 			{!hasRatings(ratings) ? (
 				<h1 className="pt-8 text-center text-6xl leading-tight">
 					No Ratings Found

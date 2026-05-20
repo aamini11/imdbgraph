@@ -76,7 +76,7 @@ test('home page search interaction matches desktop screenshots', async ({
 	const visualPage = await renderVisualPage({
 		path: '/',
 		component: HomeRoute.options.component as ComponentType,
-		waitFor: (screen) => screen.getByRole('heading', { name: /imdb graph/i }),
+		waitFor: (screen) => screen.getByRole('heading', { name: /imdbgraph/i }),
 	})
 
 	await visualPage.expectScreenshot('home', { soft: true })

@@ -1,33 +1,29 @@
+import { Navbar } from '@/components/navbar'
 import { SearchBar } from '@/components/search-bar'
-import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { useEffect } from 'react'
+import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({
 	component: Home,
 })
 
 function Home() {
-	const router = useRouter()
-
-	useEffect(() => {
-		// Preload the ratings page code bundle (without executing the loader)
-		const ratingsRoute = router.routesByPath['/ratings/$id']
-		const loadRouteChunk = router.loadRouteChunk
-		if (ratingsRoute && loadRouteChunk) {
-			loadRouteChunk(ratingsRoute)?.catch(() => {
-				// Silently fail if preload doesn't work
-			})
-		}
-	}, [router])
-
 	return (
-		<div className="flex flex-1 flex-col items-center gap-6 pt-8 md:gap-9 md:pt-20">
-			<h1 className="inline px-8 text-center text-4xl font-semibold tracking-tight text-balance md:text-5xl lg:text-6xl">
-				IMDb Graph
-			</h1>
-			<div className="flex w-full max-w-lg min-w-sm justify-center px-8">
-				<SearchBar />
-			</div>
+		<div className="flex flex-1 flex-col">
+			<Navbar />
+			<main className="flex flex-1 flex-col">
+				<section>
+					<div className="mx-auto max-w-4xl px-4 py-14 md:px-6 md:py-24">
+						<h1 className="text-center text-5xl font-black tracking-tight text-balance">
+							IMDbGraph.org
+						</h1>
+						<p className="text-muted-foreground text-center text-sm leading-7 not-first:mt-3">
+							Episode ratings for every TV series.
+						</p>
+
+						<SearchBar className="mx-auto mt-10 max-w-xl" />
+					</div>
+				</section>
+			</main>
 		</div>
 	)
 }

@@ -59,7 +59,7 @@ function RootComponent() {
 			<head>
 				<HeadContent />
 			</head>
-			<body className="flex min-h-dvh min-w-80 flex-col font-sans">
+			<body className="dark flex min-h-dvh min-w-80 flex-col font-sans">
 				<div className="flex-1">
 					<Outlet />
 				</div>

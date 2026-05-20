@@ -68,7 +68,7 @@ function createWrapper(path: string, component: ComponentType) {
 		return (
 			<QueryClientProvider client={queryClient}>
 				<RouterContextProvider router={createMockRouter(path, component)}>
-					<div className="dark bg-background text-foreground min-h-screen w-screen antialiased">
+					<div className="bg-background text-foreground min-h-screen w-screen antialiased">
 						{children}
 					</div>
 				</RouterContextProvider>
