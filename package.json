@@ -25,8 +25,6 @@
 		"compose:down": "docker compose down",
 		"compose:reset": "docker compose down --volumes --remove-orphans",
 		"db:populate": "tsx scripts/populate-db.ts",
-		"db:populate:local": "DATABASE_URL=postgres://imdbgraph_user:imdbgraph_test@localhost:5434/imdbgraph_test pnpm db:populate",
-		"db:bootstrap": "pnpm db:migrate && tsx scripts/bootstrap-db.ts",
 		"db:migrate": "drizzle-kit migrate"
 	},
 	"dependencies": {
@@ -50,7 +48,7 @@
 		"radix-ui": "^1.4.3",
 		"react": "^19.2.4",
 		"react-dom": "^19.2.4",
-		"recharts": "2.15.4",
+		"recharts": "3.8.0",
 		"tailwind-merge": "^3.5.0"
 	},
 	"devDependencies": {

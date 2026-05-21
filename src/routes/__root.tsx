@@ -1,4 +1,4 @@
-/// <reference types="vite-plus/client" />
+import { getLatestScrapeRun } from '@/lib/imdb/scrape-run'
 import type { QueryClient } from '@tanstack/react-query'
 import {
 	ClientOnly,
@@ -10,6 +10,7 @@ import {
 import { useEffect } from 'react'
 import posthog from 'posthog-js'
 import appCss from '../styles.css?url'
+
 function Analytics() {
 	useEffect(() => {
 		const posthogKey = import.meta.env.VITE_PUBLIC_POSTHOG_KEY
@@ -29,6 +30,9 @@ function Analytics() {
 export const Route = createRootRouteWithContext<{
 	queryClient: QueryClient
 }>()({
+	loader: async () => {
+		return { latestScrapeRun: await getLatestScrapeRun() }
+	},
 	head: () => ({
 		meta: [
 			{
@@ -48,42 +52,18 @@ export const Route = createRootRouteWithContext<{
 })
 
 function RootComponent() {
+	const { latestScrapeRun } = Route.useLoaderData()
+
 	return (
 		<html lang="en">
 			<head>
 				<HeadContent />
 			</head>
-			<body className="bg-background dark h-dvh min-w-80 antialiased">
-				<div className="flex min-h-dvh flex-col">
-					{/* Main content */}
-					<div className="flex-1">
-						<Outlet />
-					</div>
-					{/* Footer */}
-					<footer className="w-full p-2 text-center text-xs">
-						<span className="text-muted-foreground leading-loose text-balance">
-							Built by{' '}
-							<a
-								href="https://www.linkedin.com/in/aria-amini/"
-								target="_blank"
-								rel="noreferrer"
-								className="font-medium underline underline-offset-4"
-							>
-								Aria
-							</a>
-							. The source code is available on{' '}
-							<a
-								href="https://github.com/aamini11/imdbgraph"
-								target="_blank"
-								rel="noreferrer"
-								className="font-medium underline underline-offset-4"
-							>
-								GitHub
-							</a>
-							.
-						</span>
-					</footer>
+			<body className="dark flex min-h-dvh min-w-80 flex-col font-sans">
+				<div className="flex-1">
+					<Outlet />
 				</div>
+				<DataLastUpdated completedAt={latestScrapeRun} />
 				<ClientOnly fallback={null}>
 					<Analytics />
 				</ClientOnly>
@@ -91,4 +71,28 @@ function RootComponent() {
 			</body>
 		</html>
 	)
+}
+
+function DataLastUpdated({ completedAt }: { completedAt: string | null }) {
+	const label = completedAt
+		? `Data last updated on ${formatDataLastUpdated(completedAt)}`
+		: 'Data has not been updated yet'
+
+	return (
+		<p className="text-muted-foreground/60 px-4 py-2 text-center text-xs">
+			{label}
+		</p>
+	)
+}
+
+function formatDataLastUpdated(completedAt: string) {
+	return new Intl.DateTimeFormat('en', {
+		month: 'short',
+		day: 'numeric',
+		year: 'numeric',
+		hour: 'numeric',
+		minute: '2-digit',
+		timeZone: 'UTC',
+		timeZoneName: 'short',
+	}).format(new Date(completedAt))
 }

@@ -17,7 +17,7 @@ import {
 	CartesianGrid,
 	Line,
 	LineChart,
-	type TooltipProps,
+	type TooltipContentProps,
 	XAxis,
 	YAxis,
 } from 'recharts'
@@ -50,7 +50,7 @@ export function Graph({ ratings }: { ratings: Ratings }) {
 	return (
 		<Card
 			data-testid="ratings-graph"
-			className="m-[clamp(16px,(100vw-340px)*0.09,30px)] min-h-[300px] flex-1 px-[clamp(0px,(100vw-340px)*0.09,30px)] py-6"
+			className="m-[clamp(16px,(100vw-340px)*0.09,30px)] min-h-[300px] px-[clamp(0px,(100vw-340px)*0.09,30px)] py-6"
 		>
 			<CardHeader className="text-center">
 				<h1 className="text-xl leading-none font-extrabold tracking-tight text-balance">
@@ -85,14 +85,16 @@ export function Graph({ ratings }: { ratings: Ratings }) {
 							width={20} // Fixes bug where there's too much margin on left.
 							domain={[(dataMin: number) => Math.floor(dataMin), 10.0]}
 						/>
-						<ChartTooltip content={<CustomTooltip />} />
+						<ChartTooltip content={CustomTooltip} />
 						{seasons.map((seasonNum) => (
-							<Line
+							<Line<ChartDataPoint, number>
 								key={seasonNum}
-								dataKey={`season${seasonNum}`}
+								dataKey={`season${seasonNum}` as string}
 								type="linear"
 								isAnimationActive={false}
-								stroke={chartConfig[`season${seasonNum}`]?.color}
+								stroke={
+									chartConfig[`season${seasonNum}`]?.color ?? 'var(--chart-1)'
+								}
 								strokeWidth={2}
 								dot={true}
 								connectNulls={false}
@@ -105,14 +107,11 @@ export function Graph({ ratings }: { ratings: Ratings }) {
 	)
 }
 
-const CustomTooltip = ({
-	active,
-	payload,
-}: TooltipProps<string | number, string>) => {
+const CustomTooltip = ({ active, payload }: TooltipContentProps) => {
 	if (!active || !payload || payload.length == 0) {
 		return null
 	}
-	const activeData = payload.find((item: any) => item.value !== null)
+	const activeData = payload.find((item) => item.value !== null)
 	if (!activeData) {
 		return null
 	}
