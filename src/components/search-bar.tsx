@@ -17,7 +17,9 @@ export function SearchBar({ className }: { className?: string }) {
 	const [search, setSearch] = useState('')
 	const [isHydrated, setIsHydrated] = useState(false)
 	const [isFocused, setIsFocused] = useState(false)
+	const [isSubmitting, setIsSubmitting] = useState(false)
 	const containerRef = useRef<HTMLDivElement>(null)
+	const isSubmittingRef = useRef(false)
 	const router = useRouter()
 
 	useEffect(() => {
@@ -33,6 +35,29 @@ export function SearchBar({ className }: { className?: string }) {
 				setIsFocused(false)
 			}
 		})
+	}
+
+	const closeSearch = () => {
+		setIsFocused(false)
+		setSearch('')
+	}
+
+	const submitShow = (showId: string) => {
+		if (isSubmittingRef.current) return
+
+		isSubmittingRef.current = true
+		setIsSubmitting(true)
+		closeSearch()
+
+		void router
+			.navigate({
+				to: '/ratings/$id',
+				params: { id: showId },
+			})
+			.finally(() => {
+				isSubmittingRef.current = false
+				setIsSubmitting(false)
+			})
 	}
 
 	const {
@@ -76,15 +101,17 @@ export function SearchBar({ className }: { className?: string }) {
 								isHydrated ? 'Search for any TV show...' : 'Loading search...'
 							}
 							className="h-full flex-1 py-0 text-sm placeholder:text-xs"
-							disabled={!isHydrated}
-							aria-busy={!isHydrated}
+							disabled={!isHydrated || isSubmitting}
+							aria-busy={!isHydrated || isSubmitting}
 							asChild={true}
 						>
 							<InputGroupInput />
 						</Command.Input>
 
 						<InputGroupAddon align="inline-end">
-							{isFetching && <Spinner data-testid="loading-spinner" />}
+							{(isFetching || isSubmitting) && (
+								<Spinner data-testid="loading-spinner" />
+							)}
 						</InputGroupAddon>
 					</InputGroup>
 
@@ -110,10 +137,7 @@ export function SearchBar({ className }: { className?: string }) {
 									value={show.imdbId}
 									asChild
 									onSelect={() => {
-										void router.navigate({
-											to: '/ratings/$id',
-											params: { id: show.imdbId },
-										})
+										submitShow(show.imdbId)
 									}}
 									className={cn(
 										'w-full cursor-pointer px-2 py-1.5 text-sm outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
@@ -125,6 +149,10 @@ export function SearchBar({ className }: { className?: string }) {
 									<Link
 										to="/ratings/$id"
 										params={{ id: show.imdbId }}
+										onClick={(event) => {
+											event.preventDefault()
+											submitShow(show.imdbId)
+										}}
 										className="group aria-selected:bg-accent aria-selected:text-accent-foreground flex items-center gap-4"
 									>
 										<div className="flex flex-1 flex-col">
