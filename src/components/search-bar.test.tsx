@@ -117,6 +117,10 @@ describe('searchbar tests', () => {
 			params: { id: 'tt9018736' },
 			to: '/ratings/$id',
 		})
+		expect(document.body.textContent).not.toContain(
+			'Avatar: The Last Airbender',
+		)
+		expect(document.querySelector('input')?.getAttribute('value')).toBe('')
 	})
 
 	test('no results', async ({ worker }) => {
