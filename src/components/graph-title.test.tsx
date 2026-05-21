@@ -1,6 +1,6 @@
 import { test } from '@aamini/config/test/browser'
 import { expect } from 'vite-plus/test'
-import { gameOfThronesRatings } from '@/lib/imdb/__fixtures__/game-of-thrones'
+import { gameOfThronesRatings } from '@/mocks/data/game-of-thrones'
 import { render } from 'vitest-browser-react'
 import { Graph } from './graph'
 
