@@ -6,7 +6,7 @@ import type { ComponentType } from 'react'
 import type { Locator } from 'vite-plus/test/browser'
 import type { RenderResult } from 'vitest-browser-react'
 
-import { gameOfThronesRatings } from '@/lib/imdb/__fixtures__/game-of-thrones'
+import { gameOfThronesRatings } from '@/mocks/data/game-of-thrones'
 import { shows } from '@/lib/imdb/__fixtures__/shows'
 import { Route as HomeRoute } from '@/routes/index'
 import { Route as RatingsRoute } from '@/routes/ratings/$id'

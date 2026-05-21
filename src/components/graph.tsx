@@ -48,10 +48,7 @@ export function Graph({ ratings }: { ratings: Ratings }) {
 
 	// min()
 	return (
-		<Card
-			data-testid="ratings-graph"
-			className="m-[clamp(16px,(100vw-340px)*0.09,30px)] min-h-[300px] px-[clamp(0px,(100vw-340px)*0.09,30px)] py-6"
-		>
+		<Card data-testid="ratings-graph" className="px-2 py-4 sm:px-4 lg:px-8">
 			<CardHeader className="text-center">
 				<h1 className="text-xl leading-none font-extrabold tracking-tight text-balance">
 					{show.title}
@@ -62,7 +59,10 @@ export function Graph({ ratings }: { ratings: Ratings }) {
 				</span>
 			</CardHeader>
 			<CardContent className="px-0">
-				<ChartContainer config={chartConfig}>
+				<ChartContainer
+					config={chartConfig}
+					className="aspect-auto h-[clamp(260px,min(56vw,calc(100dvh-12rem)),620px)]"
+				>
 					<LineChart
 						accessibilityLayer
 						data={chartData}
