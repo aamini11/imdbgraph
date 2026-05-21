@@ -9,7 +9,11 @@ export default mergeConfig(
 		browser: {
 			test: {
 				browser: {
-					provider: playwright(),
+					provider: playwright({
+						launchOptions: {
+							args: ['--disable-lcd-text'],
+						},
+					}),
 				},
 			},
 		},
