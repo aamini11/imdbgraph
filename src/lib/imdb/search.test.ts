@@ -1,6 +1,6 @@
 import { show } from '@/db/tables'
 import { fetchSuggestions } from '@/lib/imdb/search'
-import { initDb, test } from '@aamini/config/test/db'
+import { initDb, test } from '@config/test/db'
 import { describe, expect } from 'vitest'
 import { shows } from './__fixtures__/shows'
 

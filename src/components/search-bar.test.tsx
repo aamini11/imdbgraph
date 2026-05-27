@@ -1,4 +1,4 @@
-import { test } from '@aamini/config/test/browser'
+import { test } from '@config/test/browser'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
 	createRootRoute,
@@ -7,7 +7,7 @@ import {
 	RouterContextProvider,
 	type AnyRouter,
 } from '@tanstack/react-router'
-import { http, HttpResponse } from '@aamini/config/msw'
+import { http, HttpResponse } from 'msw'
 import { hydrateRoot } from 'react-dom/client'
 import { renderToString } from 'react-dom/server'
 import { beforeEach, describe, expect, vi } from 'vitest'

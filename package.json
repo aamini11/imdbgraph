@@ -28,8 +28,8 @@
 		"db:migrate": "drizzle-kit migrate"
 	},
 	"dependencies": {
-		"@aamini/config": "0.0.12",
-		"@aamini/lib": "0.0.12",
+		"@aamini/config": "0.0.17",
+		"@aamini/lib": "0.0.17",
 		"@fontsource-variable/dm-sans": "^5.2.8",
 		"@rolldown/plugin-babel": "^0.2.3",
 		"@tanstack/react-devtools": "^0.10.2",

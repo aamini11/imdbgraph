@@ -1,5 +1,5 @@
-import { test } from '@aamini/config/test/browser'
-import { http, HttpResponse } from '@aamini/config/msw'
+import { test } from '@config/test/browser'
+import { http, HttpResponse } from 'msw'
 import { expect, vi } from 'vite-plus/test'
 import { userEvent } from 'vite-plus/test/browser'
 import type { ComponentType } from 'react'
